@@ -18,6 +18,10 @@ solution "project-zombye"
         files "src/source/**.cpp"
 
         configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                buildoptions = "-stdlib=libc++"
+                links "c++"
+            end
             links {"GL","SDL2"}
 
         configuration {"gmake", "macosx"}
@@ -25,4 +29,3 @@ solution "project-zombye"
 
         configuration "debug"
             flags "Symbols"
-
