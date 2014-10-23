@@ -2,6 +2,8 @@
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
+
+    input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
 }
 
 zombye::game::~game() {
@@ -31,7 +33,8 @@ void zombye::game::run() {
                 running_ = false;
             }
 
-            // TODO: handle input
+            // handle input
+            input_system_->update(event);
         }
 
         old_time = current_time;
@@ -49,4 +52,8 @@ int zombye::game::width() const {
 
 int zombye::game::height() const {
     return height_;
+}
+
+zombye::input_system* zombye::game::input() {
+    return input_system_.get();
 }
