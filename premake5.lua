@@ -13,6 +13,8 @@ solution "project-zombye"
     project "zombye"
         kind "WindowedApp"
 
+        targetname "zombye.out"
+
         files "src/source/**.cpp"
 
         configuration {"gmake", "linux"}
@@ -20,4 +22,7 @@ solution "project-zombye"
 
         configuration {"gmake", "macosx"}
             links {"OpenGL.framework","SDL2"}
+
+        configuration "debug"
+            flags "Symbols"
 
