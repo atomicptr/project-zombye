@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <utility>
 
-namespace zombeye {
+namespace zombye {
 
     template<typename T, typename Constructor, typename Destructor, typename... Arguments>
     auto make_smart(Constructor construct, Destructor destroy, Arguments... args) {

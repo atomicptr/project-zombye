@@ -7,7 +7,7 @@
 
 #include <zombye/utils/make_smart.hpp>
 
-namespace zombeye {
+namespace zombye {
 
     template<typename... Arguments>
     auto make_window(Arguments... args) {

@@ -1,20 +1,14 @@
 #include <iostream>
 #include <string>
 
-#include <zombye/assets/asset_manager.hpp>
+#include <zombye/core/game.hpp>
 
 int main() {
     std::cout << "init zombye" << std::endl;
 
-    zombye::asset_manager manager;
+    zombye::game game("project-zombye", 800, 600);
 
-    auto asset = manager.load("keep_me.txt");
-
-    if(asset) {
-        std::cout << std::string(asset->content().begin(), asset->content().end()) << std::endl;
-    } else {
-        std::cout << "no asset found :(" << std::endl;
-    }
+    game.run();
 
     return 0;
 }
