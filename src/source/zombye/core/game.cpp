@@ -42,6 +42,7 @@ void zombye::game::run() {
     SDL_Quit();
 }
 
+// TODO: window is resizable so width and height can't stay fixed
 int zombye::game::width() const {
     return width_;
 }
