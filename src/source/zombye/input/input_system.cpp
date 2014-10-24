@@ -11,6 +11,25 @@ zombye::input_system::input_system() {
     detect_joysticks();
 }
 
+zombye::joystick* zombye::input_system::get_joystick(int id) {
+    return joysticks_.at(id).get();
+}
+
+std::vector<int> zombye::input_system::ids() const {
+    static std::vector<int> id;
+    static bool initial = true;
+
+    if(initial) {
+        for(auto &j : joysticks_) {
+            id.push_back(j.first);
+        }
+
+        initial = false;
+    }
+
+    return id;
+}
+
 void zombye::input_system::update(SDL_Event &event) {
     switch(event.type) {
         case SDL_JOYAXISMOTION:

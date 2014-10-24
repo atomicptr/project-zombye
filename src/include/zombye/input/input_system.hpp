@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include <utility>
+#include <vector>
 
 #include <SDL2/SDL.h>
 
@@ -15,6 +16,9 @@ namespace zombye {
     class input_system {
     public:
         input_system();
+
+        joystick* get_joystick(int);
+        std::vector<int> ids() const;
 
         void update(SDL_Event&);
     private:
