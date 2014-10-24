@@ -53,22 +53,22 @@ void zombye::joystick::update(SDL_Event &event) {
 
     // left stick right/left
     if(event.jaxis.axis == leftx_) {
-        left_stick_.update_x(value);
+        left_stick_.x = value;
     }
 
     // left stick up/down
     if(event.jaxis.axis == lefty_) {
-        left_stick_.update_y(value);
+        left_stick_.y = value;
     }
 
     // right stick right/left
     if(event.jaxis.axis == rightx_) {
-        right_stick_.update_x(value);
+        right_stick_.x = value;
     }
 
     // right stick up/down
     if(event.jaxis.axis == righty_) {
-        right_stick_.update_y(value);
+        right_stick_.y = value;
     }
 
     // right trigger

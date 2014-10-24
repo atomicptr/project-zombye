@@ -8,7 +8,13 @@ zombye::input_system::input_system() {
     // TODO: add logger
     std::cout << "init input system" << std::endl;
 
+    mouse_ = std::unique_ptr<zombye::mouse>(new zombye::mouse());
+
     detect_joysticks();
+}
+
+zombye::mouse* zombye::input_system::get_mouse() {
+    return mouse_.get();
 }
 
 zombye::joystick* zombye::input_system::get_joystick(int id) {
@@ -40,6 +46,13 @@ void zombye::input_system::update(SDL_Event &event) {
             auto which = event.jaxis.which;
 
             joysticks_.at(which)->update(event);
+    }
+
+    switch(event.type) {
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+        case SDL_MOUSEMOTION:
+            mouse_->update(event);
     }
 }
 

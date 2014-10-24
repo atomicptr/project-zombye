@@ -10,6 +10,7 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/input/joystick.hpp>
+#include <zombye/input/mouse.hpp>
 
 namespace zombye {
 
@@ -17,12 +18,14 @@ namespace zombye {
     public:
         input_system();
 
+        mouse* get_mouse();
         joystick* get_joystick(int);
         std::vector<int> ids() const;
 
         void update(SDL_Event&);
     private:
         std::map<int, std::shared_ptr<joystick>> joysticks_;
+        std::unique_ptr<mouse> mouse_;
 
         void detect_joysticks();
     };

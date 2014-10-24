@@ -5,11 +5,15 @@
 
 #include <SDL2/SDL.h>
 
-#include <zombye/input/stick.hpp>
 #include <zombye/input/button.hpp>
 #include <zombye/utils/os.h>
 
 namespace zombye {
+    struct stick {
+        float x;
+        float y;
+    };
+
     class joystick {
     public:
         joystick(int, SDL_Joystick*);
