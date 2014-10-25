@@ -9,6 +9,7 @@
 
 #include <SDL2/SDL.h>
 
+#include <zombye/input/keyboard.hpp>
 #include <zombye/input/joystick.hpp>
 #include <zombye/input/mouse.hpp>
 
@@ -19,6 +20,7 @@ namespace zombye {
         input_system();
 
         mouse* mouse();
+        keyboard* keyboard();
         joystick* joystick(int);
         std::vector<int> joystick_ids() const;
 
@@ -26,6 +28,7 @@ namespace zombye {
     private:
         std::map<int, std::shared_ptr<zombye::joystick>> joysticks_;
         std::unique_ptr<zombye::mouse> mouse_;
+        std::unique_ptr<zombye::keyboard> keyboard_;
 
         void detect_joysticks();
     };

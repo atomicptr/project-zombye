@@ -9,8 +9,13 @@ zombye::input_system::input_system() {
     std::cout << "init input system" << std::endl;
 
     mouse_ = std::unique_ptr<zombye::mouse>(new zombye::mouse());
+    keyboard_ = std::unique_ptr<zombye::keyboard>(new zombye::keyboard());
 
     detect_joysticks();
+}
+
+zombye::keyboard* zombye::input_system::keyboard() {
+    return keyboard_.get();
 }
 
 zombye::mouse* zombye::input_system::mouse() {
@@ -53,6 +58,12 @@ void zombye::input_system::update(SDL_Event &event) {
         case SDL_MOUSEBUTTONUP:
         case SDL_MOUSEMOTION:
             mouse_->update(event);
+    }
+
+    switch(event.type) {
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            keyboard_->update(event);
     }
 }
 

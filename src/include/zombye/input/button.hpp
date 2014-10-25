@@ -10,7 +10,6 @@ namespace zombye {
         bool just_pressed();
         void key_down();
         void key_up();
-        void reset();
 
     private:
         bool was_pressed;
