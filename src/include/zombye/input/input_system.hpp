@@ -18,14 +18,14 @@ namespace zombye {
     public:
         input_system();
 
-        mouse* get_mouse();
-        joystick* get_joystick(int);
-        std::vector<int> ids() const;
+        mouse* mouse();
+        joystick* joystick(int);
+        std::vector<int> joystick_ids() const;
 
         void update(SDL_Event&);
     private:
-        std::map<int, std::shared_ptr<joystick>> joysticks_;
-        std::unique_ptr<mouse> mouse_;
+        std::map<int, std::shared_ptr<zombye::joystick>> joysticks_;
+        std::unique_ptr<zombye::mouse> mouse_;
 
         void detect_joysticks();
     };

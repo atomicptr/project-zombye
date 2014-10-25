@@ -13,15 +13,15 @@ zombye::input_system::input_system() {
     detect_joysticks();
 }
 
-zombye::mouse* zombye::input_system::get_mouse() {
+zombye::mouse* zombye::input_system::mouse() {
     return mouse_.get();
 }
 
-zombye::joystick* zombye::input_system::get_joystick(int id) {
+zombye::joystick* zombye::input_system::joystick(int id) {
     return joysticks_.at(id).get();
 }
 
-std::vector<int> zombye::input_system::ids() const {
+std::vector<int> zombye::input_system::joystick_ids() const {
     static std::vector<int> id;
     static bool initial = true;
 
