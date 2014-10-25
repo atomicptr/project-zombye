@@ -17,6 +17,8 @@ solution "project-zombye"
 
         files "src/source/**.cpp"
 
+        defines "GLM_FORCE_RADIANS"
+
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
                 buildoptions = "-stdlib=libc++"
