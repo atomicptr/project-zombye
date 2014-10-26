@@ -10,6 +10,7 @@ zombye::input_system::input_system() {
 
     mouse_ = std::unique_ptr<zombye::mouse>(new zombye::mouse());
     keyboard_ = std::unique_ptr<zombye::keyboard>(new zombye::keyboard());
+    manager_ = std::unique_ptr<zombye::input_manager>(new zombye::input_manager(this));
 
     detect_joysticks();
 }
@@ -24,6 +25,18 @@ zombye::mouse* zombye::input_system::mouse() {
 
 zombye::joystick* zombye::input_system::joystick(int id) {
     return joysticks_.at(id).get();
+}
+
+zombye::joystick* zombye::input_system::first_joystick() {
+    if(joysticks_.size() > 0) {
+        return joysticks_.begin()->second.get();
+    }
+
+    return nullptr;
+}
+
+zombye::input_manager* zombye::input_system::manager() const {
+    return manager_.get();
 }
 
 std::vector<int> zombye::input_system::joystick_ids() const {
