@@ -8,6 +8,7 @@ zombye::game::game(std::string title, int width, int height) :
     SDL_Init(SDL_INIT_EVERYTHING);
 
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
+    audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
 }
 
 zombye::game::~game() {
@@ -41,6 +42,11 @@ void zombye::game::run() {
             input_system_->update(event);
         }
 
+        if(input()->keyboard()->just_pressed("space")) {
+            zombye::log("try to play music...");
+            audio()->play_music("test");
+        }
+
         old_time = current_time;
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
@@ -58,4 +64,8 @@ int zombye::game::height() const {
 
 zombye::input_system* zombye::game::input() {
     return input_system_.get();
+}
+
+zombye::audio_system* zombye::game::audio() {
+    return audio_system_.get();
 }

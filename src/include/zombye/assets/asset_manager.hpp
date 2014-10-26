@@ -10,6 +10,8 @@
 
 #include <zombye/assets/native_loader.hpp>
 
+#include <zombye/utils/logger.hpp>
+
 namespace zombye {
     class asset_manager {
     public:

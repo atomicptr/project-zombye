@@ -14,5 +14,7 @@ std::shared_ptr<zombye::asset> zombye::asset_manager::load(std::string path) con
         }
     }
 
+    zombye::log(LOG_WARNING, "Could not find asset: " + path);
+
     return nullptr;
 }
