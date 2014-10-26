@@ -1,8 +1,7 @@
 #include <zombye/input/joystick.hpp>
 
 zombye::joystick::joystick(int id, SDL_Joystick *joystick) : id_(id), joystick_(joystick) {
-    // TODO: add logger
-    std::cout << "opened joystick #" << id << " " << SDL_JoystickNameForIndex(id) << std::endl;
+    zombye::log("opened joystick #" + std::to_string(id) + " " + std::string(SDL_JoystickNameForIndex(id)));
 
     // OSX xbox 360
     enable_profile(0, 1, 3, 4, 5, 2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14);

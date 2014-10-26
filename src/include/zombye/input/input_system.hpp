@@ -13,6 +13,7 @@
 #include <zombye/input/joystick.hpp>
 #include <zombye/input/mouse.hpp>
 #include <zombye/input/input_manager.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     class input_manager;

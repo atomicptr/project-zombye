@@ -5,8 +5,7 @@ zombye::input_system::input_system() {
         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     }
 
-    // TODO: add logger
-    std::cout << "init input system" << std::endl;
+    zombye::log("init input system");
 
     mouse_ = std::unique_ptr<zombye::mouse>(new zombye::mouse());
     keyboard_ = std::unique_ptr<zombye::keyboard>(new zombye::keyboard());
@@ -81,8 +80,7 @@ void zombye::input_system::update(SDL_Event &event) {
 }
 
 void zombye::input_system::detect_joysticks() {
-    // TODO: add logger
-    std::cout << "trying to detect joysticks..." << std::endl;
+    zombye::log("trying to detect joysticks...");
 
     const auto joystick_count = SDL_NumJoysticks();
 
@@ -97,14 +95,12 @@ void zombye::input_system::detect_joysticks() {
             if(joystick_ptr) {
                 joysticks_.insert(std::make_pair(i, joystick));
             } else {
-                // TODO: add logger
-                std::cerr << "Err: [Joystick] " << SDL_GetError() << std::endl;
+                zombye::log(LOG_ERROR, "[Joystick] " + std::string(SDL_GetError()));
             }
         }
 
         SDL_JoystickEventState(SDL_ENABLE);
     }
 
-    // TODO: add logger
-    std::cout << "Found " << joysticks_.size() << " joysticks." << std::endl;
+    zombye::log("Found " + std::to_string(joysticks_.size()) + " joysticks.");
 }

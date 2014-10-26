@@ -2,11 +2,13 @@
 #define __ZOMBYE_JOYSTICK_HPP__
 
 #include <iostream>
+#include <string>
 
 #include <SDL2/SDL.h>
 
 #include <zombye/input/button.hpp>
 #include <zombye/utils/os.h>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     struct stick {

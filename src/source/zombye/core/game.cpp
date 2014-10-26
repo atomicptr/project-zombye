@@ -3,17 +3,21 @@
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
 
+    zombye::log("init game with OS: " + std::string(OS_NAME));
+
+    SDL_Init(SDL_INIT_EVERYTHING);
+
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
 }
 
 zombye::game::~game() {
+    zombye::log("quit game");
 
+    SDL_Quit();
 }
 
 void zombye::game::run() {
     running_ = true;
-
-    SDL_Init(SDL_INIT_EVERYTHING);
 
     // create window
     auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
@@ -41,8 +45,6 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
     }
-
-    SDL_Quit();
 }
 
 // TODO: window is resizable so width and height can't stay fixed

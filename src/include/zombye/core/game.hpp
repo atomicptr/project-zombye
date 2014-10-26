@@ -8,6 +8,8 @@
 
 #include <zombye/input/input_system.hpp>
 #include <zombye/utils/sdlhelper.hpp>
+#include <zombye/utils/logger.hpp>
+#include <zombye/utils/os.h>
 
 namespace zombye {
     class game {
