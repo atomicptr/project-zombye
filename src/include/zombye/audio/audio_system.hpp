@@ -12,8 +12,7 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include <zombye/audio/music.hpp>
-#include <zombye/audio/collection.hpp>
+#include <zombye/audio/music_collection.hpp>
 
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_manager.hpp>
@@ -34,7 +33,7 @@ namespace zombye {
     private:
         bool music_playing_;
 
-        collection<music> music_collection_;
+        music_collection music_collection_;
         //collection<sound> sound_collection_;
     };
 }

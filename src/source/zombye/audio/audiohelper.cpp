@@ -1,4 +1,4 @@
-#include <zombye/utils/audiohelper.hpp>
+#include <zombye/audio/audiohelper.hpp>
 
 SDL_RWops* zombye::get_raw_from_asset(zombye::asset *asset) {
     auto &content = asset->content();

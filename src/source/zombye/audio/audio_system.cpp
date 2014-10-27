@@ -20,7 +20,6 @@ zombye::audio_system::audio_system() {
 
 zombye::audio_system::~audio_system() {
     Mix_CloseAudio();
-    Mix_Quit();
 }
 
 void zombye::audio_system::set_music_volume(unsigned int vol) const {
@@ -44,7 +43,7 @@ void zombye::audio_system::play_music(std::string name, int loop, int fade_in, i
 
     auto music = music_collection_.get(name);
 
-    if(Mix_FadeInMusic(music->content(), loop, fade_in) == -1) {
+    if(Mix_FadeInMusic(music, loop, fade_in) == -1) {
         zombye::log(LOG_ERROR, "Could not play music: " + std::string(Mix_GetError()));
     } else {
         music_playing_ = true;
