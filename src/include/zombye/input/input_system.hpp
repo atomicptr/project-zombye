@@ -22,9 +22,9 @@ namespace zombye {
     public:
         input_system();
 
-        mouse* mouse();
-        keyboard* keyboard();
-        joystick* joystick(int);
+        zombye::mouse* mouse();
+        zombye::keyboard* keyboard();
+        zombye::joystick* joystick(int);
         std::vector<int> joystick_ids() const;
 
         zombye::joystick* first_joystick();
