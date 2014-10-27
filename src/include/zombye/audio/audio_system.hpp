@@ -39,6 +39,8 @@ namespace zombye {
 
         music_collection music_collection_;
         sound_collection sound_collection_;
+
+        void load_collection();
     };
 }
 

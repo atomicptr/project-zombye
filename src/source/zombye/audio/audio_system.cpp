@@ -15,12 +15,19 @@ zombye::audio_system::audio_system() {
 
     music_playing_ = false;
 
-    music_collection_.add("test", "music/test.ogg");
-    sound_collection_.add("test", "sound/test.ogg");
+    load_collection();
 }
 
 zombye::audio_system::~audio_system() {
     Mix_CloseAudio();
+}
+
+void zombye::audio_system::load_collection() {
+    // load music
+    music_collection_.add("test", "music/test.ogg");
+
+    // load sound effects
+    sound_collection_.add("test", "sound/test.ogg");
 }
 
 void zombye::audio_system::set_music_volume(unsigned int vol) const {
