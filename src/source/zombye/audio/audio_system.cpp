@@ -16,6 +16,7 @@ zombye::audio_system::audio_system() {
     music_playing_ = false;
 
     music_collection_.add("test", "music/test.ogg");
+    sound_collection_.add("test", "sound/test.ogg");
 }
 
 zombye::audio_system::~audio_system() {
@@ -53,4 +54,24 @@ void zombye::audio_system::play_music(std::string name, int loop, int fade_in, i
 void zombye::audio_system::stop_music() {
     Mix_HaltMusic();
     music_playing_ = false;
+}
+
+int zombye::audio_system::play_sound(std::string name, int fade_in) {
+    auto sound = sound_collection_.get(name);
+
+    auto channel = Mix_FadeInChannel(-1, sound, 0, fade_in);
+
+    if(channel == -1) {
+        zombye::log(LOG_ERROR, "Could not play sound: " + std::string(Mix_GetError()));
+    }
+
+    return channel;
+}
+
+void zombye::audio_system::stop_sound(int channel, int fade_out) {
+    if(channel < -1) {
+        return;
+    }
+
+    Mix_FadeOutChannel(channel, fade_out);
 }

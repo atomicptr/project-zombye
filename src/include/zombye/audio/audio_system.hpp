@@ -13,6 +13,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include <zombye/audio/music_collection.hpp>
+#include <zombye/audio/sound_collection.hpp>
 
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_manager.hpp>
@@ -30,11 +31,14 @@ namespace zombye {
         void play_music(std::string, int loop=-1, int fade_in=0, int fade_out=0);
         void stop_music();
 
+        int play_sound(std::string, int fade_in=0);
+        void stop_sound(int, int fade_out=0);
+
     private:
         bool music_playing_;
 
         music_collection music_collection_;
-        //collection<sound> sound_collection_;
+        sound_collection sound_collection_;
     };
 }
 

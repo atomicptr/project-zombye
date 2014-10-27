@@ -42,11 +42,6 @@ void zombye::game::run() {
             input_system_->update(event);
         }
 
-        if(input()->keyboard()->just_pressed("space")) {
-            zombye::log("try to play music...");
-            audio()->play_music("test");
-        }
-
         old_time = current_time;
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
