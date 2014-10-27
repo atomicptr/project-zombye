@@ -38,6 +38,14 @@ void zombye::game::run() {
                 quit();
             }
 
+            if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                width_ = event.window.data1;
+                height_ = event.window.data2;
+
+                zombye::log("resized window to { width: " + std::to_string(width_) + ", height: " +
+                    std::to_string(height_) + " }");
+            }
+
             // handle input
             input_system_->update(event);
         }
@@ -52,7 +60,6 @@ void zombye::game::quit() {
     running_ = false;
 }
 
-// TODO: window is resizable so width and height can't stay fixed
 int zombye::game::width() const {
     return width_;
 }
