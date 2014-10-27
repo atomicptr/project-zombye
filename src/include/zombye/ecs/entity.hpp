@@ -17,7 +17,7 @@ namespace zombye {
         static unsigned long next_id_;
         game& game_;
         unsigned long id_;
-        std::unordered_map<unsigned int, std::unique_ptr<component>> components_;
+        std::unordered_map<unsigned int, std::unique_ptr<class component>> components_;
         glm::vec3 position_;
         glm::quat rotation_;
         glm::vec3 scalation_;
@@ -50,7 +50,7 @@ namespace zombye {
         }
 
         template <typename component_type>
-        component_type* get_component() noexcept {
+        component_type* component() noexcept {
             auto component_position = components_.find(component_type::rtti::type_id);
             if (component_position != components_.end()) {
                 return static_cast<component_type*>(component_position->second.get());
