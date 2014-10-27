@@ -19,6 +19,7 @@ namespace zombye {
         ~game();
 
         void run();
+        void quit();
 
         int width() const;
         int height() const;

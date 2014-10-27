@@ -35,7 +35,7 @@ void zombye::game::run() {
     while(running_) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
-                running_ = false;
+                quit();
             }
 
             // handle input
@@ -46,6 +46,10 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
     }
+}
+
+void zombye::game::quit() {
+    running_ = false;
 }
 
 // TODO: window is resizable so width and height can't stay fixed
