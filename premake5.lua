@@ -21,7 +21,7 @@ solution "project-zombye"
 
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
-                buildoptions = "-stdlib=libc++"
+                buildoptions "-stdlib=libc++"
                 links "c++"
             end
             links {"GL","SDL2", "SDL2_mixer"}

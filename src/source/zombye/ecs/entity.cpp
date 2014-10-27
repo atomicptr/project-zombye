@@ -5,7 +5,7 @@ namespace zombye {
     unsigned long entity::next_id_ = 0;
 
     entity::entity(game& game, glm::vec3 position, glm::quat rotation, glm::vec3 scalation) noexcept
-    : game_(game_), id_(next_id_++), position_(position), rotation_(rotation), scalation_(scalation) { }
+    : game_(game), id_(next_id_++), position_(position), rotation_(rotation), scalation_(scalation) { }
 
     glm::mat4 entity::transform() const {
         glm::mat4 transform = glm::toMat4(rotation_);
