@@ -8,6 +8,7 @@
 #include <chrono>
 #include <ctime>
 #include <utility>
+#include <memory>
 
 namespace zombye {
     enum log_level {
