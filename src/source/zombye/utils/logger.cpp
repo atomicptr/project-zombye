@@ -4,10 +4,13 @@ std::string zombye::format_time(std::string format) {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&in_time_t), format.c_str());
+    char buffer[100];
 
-    return ss.str();
+    auto time_info = localtime(&in_time_t);
+
+    std::strftime(buffer, 100, format.c_str(), time_info);
+
+    return std::string(buffer);
 }
 
 std::fstream zombye::init_log_system() {
