@@ -5,6 +5,7 @@
 #include <string>
 #include <typeinfo>
 
+#include <zombye/ecs/property.hpp>
 #include <zombye/ecs/rtti.hpp>
 #include <zombye/utils/demangle.hpp>
 
@@ -28,6 +29,13 @@ namespace zombye {
             return new type(game, owner);
         }
         static void register_reflection() noexcept { }
+        template <typename property_type>
+        static void register_property(const std::string& name,
+            decltype(property<type, property_type>::getter) getter,
+            decltype(property<type, property_type>::setter) setter) {
+            std::shared_ptr<property<type, property_type>> property = std::make_shared(name, getter, setter);
+            type::type_rtti()->properties().push_back(property);
+        }
         static std::shared_ptr<class rtti> type_rtti() noexcept {
             return rtti_;
         }
