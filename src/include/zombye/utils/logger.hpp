@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <chrono>
+#include <utility>
 
 namespace zombye {
     enum log_level {

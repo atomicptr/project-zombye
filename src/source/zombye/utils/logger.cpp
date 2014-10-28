@@ -1,5 +1,4 @@
 #include <zombye/utils/logger.hpp>
-#include <utility>
 
 std::string zombye::format_time(std::string format) {
     auto now = std::chrono::system_clock::now();
