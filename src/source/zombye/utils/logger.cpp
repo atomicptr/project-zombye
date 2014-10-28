@@ -13,12 +13,12 @@ std::string zombye::format_time(std::string format) {
     return std::string(buffer);
 }
 
-std::fstream zombye::init_log_system() {
-    std::fstream logger;
+std::unique_ptr<std::fstream> zombye::init_log_system() {
+    auto logger = std::unique_ptr<std::fstream>(new std::fstream());
 
     auto filename = format_time("zombye-%Y-%m-%d-%X.log");
 
-    logger.open("logs/" + filename, std::fstream::out | std::fstream::app);
+    logger->open("logs/" + filename, std::fstream::out | std::fstream::app);
 
     return std::move(logger);
 }
@@ -50,6 +50,6 @@ void zombye::log(log_level level, std::string msg) {
 
     ss << " " << msg << std::endl;
 
-    logger << ss.str();
+    *logger << ss.str();
     std::cout << ss.str();
 }

@@ -17,7 +17,7 @@ namespace zombye {
         LOG_ERROR
     };
 
-    std::fstream init_log_system();
+    std::unique_ptr<std::fstream> init_log_system();
 
     std::string format_time(std::string);
 
