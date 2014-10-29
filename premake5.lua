@@ -13,8 +13,6 @@ solution "project-zombye"
     project "zombye"
         kind "WindowedApp"
 
-        targetname "zombye.out"
-
         files "src/source/**.cpp"
 
         configuration {"gmake", "linux"}
