@@ -19,7 +19,7 @@ namespace zombye {
         virtual value_type value(component* owner) {
             return (static_cast<owner_type*>(owner)->*getter_)();
         }
-        virtual void value(component* owner, value_type value) {
+        virtual void set_value(component* owner, value_type value) {
             if (!setter_) {
                 // TODO: Appropriate errror handling
                 return;

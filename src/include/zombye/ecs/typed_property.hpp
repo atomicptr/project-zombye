@@ -13,7 +13,7 @@ namespace zombye {
             return property_type<value_type>::type_id();
         }
         virtual value_type value(component* owner) = 0;
-        virtual void value(component* owner, value_type value) = 0;
+        virtual void set_value(component* owner, value_type value) = 0;
     };
 }
 

@@ -35,10 +35,7 @@ namespace zombye {
         static void register_property(const std::string& name,
             typename property<type, property_type>::getter_type getter,
             typename property<type, property_type>::setter_type setter) {
-            std::cout << "before" << std::endl;
-            std::shared_ptr<abstract_property> prop = std::make_shared<property<type, property_type>>(name, getter, setter);
-            std::cout << "after" << std::endl;
-            type_rtti()->properties().push_back(prop);
+            type_rtti()->properties().emplace_back(new property<type, property_type>(name, getter, setter));
         }
         static class rtti* type_rtti() noexcept {
             return &rtti_;

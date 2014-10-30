@@ -3,9 +3,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
+#include <zombye/ecs/abstract_property.hpp>
 
 namespace zombye {
-    class abstract_property;
     class component;
     class entity;
     class game;
@@ -16,15 +18,10 @@ namespace zombye {
         std::string type_name_;
         rtti* base_rtti_;
         factory_function factory_;
-        std::vector<std::shared_ptr<abstract_property>> properties_;
+        std::vector<std::unique_ptr<abstract_property>> properties_;
     public:
         rtti(unsigned long type_id, const std::string& type_name,rtti* base_rtti, factory_function factory,
-            reflection_function reflection) noexcept
-        : type_id_(type_id), type_name_(type_name), base_rtti_(base_rtti), factory_(factory) {
-            if (reflection) {
-                reflection();
-            }
-        }
+            reflection_function reflection) noexcept;
         unsigned long type_id() const noexcept {
             return type_id_;
         }
@@ -37,7 +34,7 @@ namespace zombye {
         const factory_function factory() const noexcept {
             return factory_;
         }
-        std::vector<std::shared_ptr<abstract_property>>& properties() noexcept {
+        std::vector<std::unique_ptr<abstract_property>>& properties() noexcept {
             return properties_;
         }
     };

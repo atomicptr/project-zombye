@@ -9,6 +9,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include <zombye/ecs/component.hpp>
+#include <zombye/ecs/rtti_manager.hpp>
 
 namespace zombye {
     class game;
@@ -21,6 +22,18 @@ namespace zombye {
         glm::vec3 position_;
         glm::quat rotation_;
         glm::vec3 scalation_;
+
+        template <size_t i = 0, typename... arguments>
+        void fill_in_properties(class component* owner) { }
+
+        template <size_t i = 0, typename arg, typename... arguments>
+        void fill_in_properties(class component* owner, arg first, arguments... args) {
+            auto type_info = owner->rtti();
+            if (type_info) {
+                static_cast<typed_property<arg>*>(type_info->properties()[i].get())->set_value(owner, first);
+            }
+            fill_in_properties<i + 1, arguments...>(owner, args...);
+        }
     public:
         entity(game& game, glm::vec3 position, glm::quat rotation, glm::vec3 scalation) noexcept;
         entity(const entity& other) = delete;
@@ -29,10 +42,27 @@ namespace zombye {
 
         template <typename component_type, typename... arguments>
         component_type& emplace(arguments... args) {
-            auto insert_position = components_.find(component_type::rtti::type_id);
+            auto insert_position = components_.find(component_type::type_rtti()->type_id());
             if (insert_position == components_.end()) {
                 auto component = new component_type(game_, *this, std::forward<arguments>(args)...);
-                components_.insert(std::make_pair(component_type::rtti::type_id, std::unique_ptr<component_type>(component)));
+                components_.insert(std::make_pair(component_type::rtti::type_id, std::unique_ptr<class component>(component)));
+                return *component;
+            } else {
+                // TODO: Appropirate error handling.
+            }
+        }
+
+        template <typename... arguments>
+        class component& emplace(const std::string& name, arguments... args) {
+            auto type_info = rtti_manager::type_info(name);
+            if (!type_info) {
+                // TODO: Appropirate error handling.
+            }
+            auto insert_position = components_.find(type_info->type_id());
+            if (insert_position == components_.end()) {
+                auto component = type_info->factory()(game_, *this);
+                components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<class component>(component)));
+                fill_in_properties(component, args...);
                 return *component;
             } else {
                 // TODO: Appropirate error handling.
@@ -41,7 +71,7 @@ namespace zombye {
 
         template <typename component_type>
         void erase() {
-            auto erase_position = components_.find(component_type::rtti::type_id);
+            auto erase_position = components_.find(component_type::type_rtti()->type_id());
             if (erase_position != components_.end()) {
                 components_.erase(erase_position);
             } else {
@@ -51,7 +81,7 @@ namespace zombye {
 
         template <typename component_type>
         component_type* component() noexcept {
-            auto component_position = components_.find(component_type::rtti::type_id);
+            auto component_position = components_.find(component_type::type_rtti()->type_id());
             if (component_position != components_.end()) {
                 return static_cast<component_type*>(component_position->second.get());
             }
