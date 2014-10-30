@@ -6,7 +6,7 @@
 
 namespace zombye {
     component::component(game& game, entity& owner) noexcept
-    : game_(game), owner_(owner) { }
+    : reflective(game, owner), game_(game), owner_(owner) { }
 
     component::~component() noexcept { }
 

@@ -7,22 +7,24 @@ namespace zombye {
     class component;
     template <typename owner_type, typename value_type>
     class property : public typed_property<value_type> {
+    public:
         typedef value_type (owner_type::*getter_type)();
         typedef void (owner_type::*setter_type)(value_type value);
     protected:
-        getter_type getter;
-        setter_type setter;
+        getter_type getter_;
+        setter_type setter_;
     public:
-        property(const std::string& name) noexcept : typed_property<value_type>(name) { }
-        virtual value_type value(component* owner) const noexcept {
-            return owner->*getter();
+        property(const std::string& name, getter_type getter, setter_type setter) noexcept
+        : typed_property<value_type>(name), getter_(getter), setter_(setter) { }
+        virtual value_type value(component* owner) {
+            return (static_cast<owner_type*>(owner)->*getter_)();
         }
-        virtual void value(component* owner, value_type value) noexcept {
-            if (!setter) {
+        virtual void value(component* owner, value_type value) {
+            if (!setter_) {
                 // TODO: Appropriate errror handling
                 return;
             }
-            owner->*setter(value);
+            (static_cast<owner_type*>(owner)->*setter_)(value);
         }
     };
 }

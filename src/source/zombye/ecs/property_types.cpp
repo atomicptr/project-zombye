@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <property_types.hpp>
+#include <zombye/ecs/property_types.hpp>
 
 namespace zombye {
     template <> property_types property_type<bool>::type_id_ = property_types::BOOL;
