@@ -14,13 +14,14 @@ namespace zombye {
     typedef component*(*factory_function)(game&, entity&);
     typedef void (*reflection_function)();
     class rtti {
+        static unsigned long id_generator_;
         unsigned long type_id_;
         std::string type_name_;
         rtti* base_rtti_;
         factory_function factory_;
         std::vector<std::unique_ptr<abstract_property>> properties_;
     public:
-        rtti(unsigned long type_id, const std::string& type_name,rtti* base_rtti, factory_function factory,
+        rtti(const std::string& type_name,rtti* base_rtti, factory_function factory,
             reflection_function reflection) noexcept;
         unsigned long type_id() const noexcept {
             return type_id_;

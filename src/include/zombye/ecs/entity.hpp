@@ -18,7 +18,7 @@ namespace zombye {
         static unsigned long next_id_;
         game& game_;
         unsigned long id_;
-        std::unordered_map<unsigned int, std::unique_ptr<class component>> components_;
+        std::unordered_map<unsigned long, std::unique_ptr<class component>> components_;
         glm::vec3 position_;
         glm::quat rotation_;
         glm::vec3 scalation_;
@@ -42,46 +42,64 @@ namespace zombye {
 
         template <typename component_type, typename... arguments>
         component_type& emplace(arguments... args) {
-            auto insert_position = components_.find(component_type::type_rtti()->type_id());
+            auto type_info = component_type::type_rtti();
+            if (!type_info) {
+                log(LOG_ERROR, demangle(typeid(component_type).name()) + " has no runtime type information");
+                throw std::invalid_argument(demangle(typeid(component_type).name()) + " has no runtime type information");
+            }
+            auto insert_position = components_.find(type_info->type_id());
             if (insert_position == components_.end()) {
                 auto component = new component_type(game_, *this, std::forward<arguments>(args)...);
-                components_.insert(std::make_pair(component_type::rtti::type_id, std::unique_ptr<class component>(component)));
+                components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<component_type>(component)));
                 return *component;
             } else {
-                // TODO: Appropirate error handling.
+                log(LOG_WARNING, "entity " + std::to_string(id_) + " already has component of type " + type_info->type_name());
+                return *static_cast<component_type*>(insert_position->second.get());
             }
         }
 
         template <typename... arguments>
-        class component& emplace(const std::string& name, arguments... args) {
+        zombye::component& emplace(const std::string& name, arguments... args) {
             auto type_info = rtti_manager::type_info(name);
             if (!type_info) {
-                // TODO: Appropirate error handling.
+                log(LOG_ERROR, name + " has no runtime type information");
+                throw std::invalid_argument(name + " has no runtime type information");
             }
             auto insert_position = components_.find(type_info->type_id());
             if (insert_position == components_.end()) {
                 auto component = type_info->factory()(game_, *this);
-                components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<class component>(component)));
+                components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<zombye::component>(component)));
                 fill_in_properties(component, args...);
                 return *component;
             } else {
-                // TODO: Appropirate error handling.
+                log(LOG_WARNING, "entity " + std::to_string(id_) + " already has component of type " + type_info->type_name());
+                return *(insert_position->second.get());
             }
         }
 
         template <typename component_type>
         void erase() {
-            auto erase_position = components_.find(component_type::type_rtti()->type_id());
+            auto type_info = component_type::type_rtti();
+            if (!type_info) {
+                log(LOG_ERROR, demangle(typeid(component_type).name()) + " has no runtime type information");
+                throw std::invalid_argument(demangle(typeid(component_type).name()) + " has no runtime type information");
+            }
+            auto erase_position = components_.find(type_info->type_id());
             if (erase_position != components_.end()) {
                 components_.erase(erase_position);
             } else {
-                // TODO: Appropirate error handling.
+                log(LOG_WARNING, "entity " + std::to_string(id_) + " has no component of type " + type_info->type_name());
             }
         }
 
         template <typename component_type>
         component_type* component() noexcept {
-            auto component_position = components_.find(component_type::type_rtti()->type_id());
+            auto type_info = component_type::type_rtti();
+            if (!type_info) {
+                log(LOG_ERROR, demangle(typeid(component_type).name()) + " has no runtime type information");
+                throw std::invalid_argument(demangle(typeid(component_type).name()) + " has no runtime type information");
+            }
+            auto component_position = components_.find(type_info->type_id());
             if (component_position != components_.end()) {
                 return static_cast<component_type*>(component_position->second.get());
             }

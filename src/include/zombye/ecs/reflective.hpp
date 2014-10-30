@@ -47,7 +47,7 @@ namespace zombye {
         reflective& operator= (reflective&& other) = delete;
     };
     template <typename type, typename base_type>
-    rtti reflective<type, base_type>::rtti_(0, demangle(typeid(type).name()), base_type::type_rtti(), (factory_function)type::create,
+    rtti reflective<type, base_type>::rtti_(demangle(typeid(type).name()), base_type::type_rtti(), (factory_function)type::create,
                 (reflection_function)type::register_reflection);
 }
 

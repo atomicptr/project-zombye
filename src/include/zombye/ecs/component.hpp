@@ -15,7 +15,6 @@ namespace zombye {
         component(const component& other) = delete;
         component(component&& other) = delete;
         virtual ~component() noexcept = 0;
-        //virtual unsigned int type_id() const noexcept = 0;
         static component* create(game& game, entity& owner);
         entity& owner() const noexcept {
             return owner_;
