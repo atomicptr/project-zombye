@@ -21,7 +21,7 @@ namespace zombye {
         }
         virtual void set_value(component* owner, const value_type& value) {
             if (!setter_) {
-                // TODO: Appropriate errror handling
+                log(LOG_WARNING, "property " + this->name_ + " has no setter");
                 return;
             }
             (static_cast<owner_type*>(owner)->*setter_)(value);
