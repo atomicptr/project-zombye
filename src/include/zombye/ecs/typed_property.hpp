@@ -12,8 +12,8 @@ namespace zombye {
         virtual property_types type() const noexcept {
             return property_type<value_type>::type_id();
         }
-        virtual value_type value(component* owner) = 0;
-        virtual void set_value(component* owner, value_type value) = 0;
+        virtual const value_type& value(component* owner) const = 0;
+        virtual void set_value(component* owner, const value_type& value) = 0;
     };
 }
 

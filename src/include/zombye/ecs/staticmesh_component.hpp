@@ -13,7 +13,7 @@ namespace zombye {
         staticmesh_component(game& game, entity& owner) noexcept : reflective(game, owner), file_() { }
         staticmesh_component(game& game, entity& owner, const std::string& file)
         : reflective(game, owner), file_(file) { }
-        std::string file() {
+        const std::string& file() const noexcept {
             return file_;
         }
         static void register_reflection() {
