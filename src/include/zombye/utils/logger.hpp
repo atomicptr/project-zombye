@@ -3,9 +3,12 @@
 
 #include <string>
 #include <fstream>
-#include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <chrono>
+#include <ctime>
+#include <utility>
+#include <memory>
 
 namespace zombye {
     enum log_level {
@@ -15,7 +18,7 @@ namespace zombye {
         LOG_ERROR
     };
 
-    std::fstream init_log_system();
+    std::unique_ptr<std::fstream> init_log_system();
 
     std::string format_time(std::string);
 

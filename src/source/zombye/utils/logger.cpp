@@ -1,22 +1,24 @@
 #include <zombye/utils/logger.hpp>
-#include <utility>
 
 std::string zombye::format_time(std::string format) {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&in_time_t), format.c_str());
+    char buffer[100];
 
-    return ss.str();
+    auto time_info = localtime(&in_time_t);
+
+    std::strftime(buffer, 100, format.c_str(), time_info);
+
+    return std::string(buffer);
 }
 
-std::fstream zombye::init_log_system() {
-    std::fstream logger;
+std::unique_ptr<std::fstream> zombye::init_log_system() {
+    auto logger = std::unique_ptr<std::fstream>(new std::fstream());
 
     auto filename = format_time("zombye-%Y-%m-%d-%X.log");
 
-    logger.open("logs/" + filename, std::fstream::out | std::fstream::app);
+    logger->open("logs/" + filename, std::fstream::out | std::fstream::app);
 
     return std::move(logger);
 }
@@ -48,6 +50,6 @@ void zombye::log(log_level level, std::string msg) {
 
     ss << " " << msg << std::endl;
 
-    logger << ss.str();
+    *logger << ss.str();
     std::cout << ss.str();
 }
