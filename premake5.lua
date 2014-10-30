@@ -28,3 +28,6 @@ solution "project-zombye"
         configuration "debug"
             warnings "Extra"
             flags {"Symbols", "FatalWarnings"}
+
+        configuration "release"
+            flags {"Optimize"}
