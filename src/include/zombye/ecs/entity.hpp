@@ -24,10 +24,10 @@ namespace zombye {
         glm::vec3 scalation_;
 
         template <size_t i = 0, typename... arguments>
-        void fill_in_properties(class component* owner) { }
+        void fill_in_properties(zombye::component* owner) { }
 
         template <size_t i = 0, typename arg, typename... arguments>
-        void fill_in_properties(class component* owner, arg first, arguments... args) {
+        void fill_in_properties(zombye::component* owner, arg first, arguments... args) {
             auto type_info = owner->rtti();
             if (type_info) {
                 static_cast<typed_property<arg>*>(type_info->properties()[i].get())->set_value(owner, first);

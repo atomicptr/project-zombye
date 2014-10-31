@@ -32,7 +32,7 @@ namespace zombye {
         rtti* base_rtti() const noexcept {
             return base_rtti_;
         }
-        const factory_function factory() const noexcept {
+        const factory_function& factory() const noexcept {
             return factory_;
         }
         std::vector<std::unique_ptr<abstract_property>>& properties() noexcept {
