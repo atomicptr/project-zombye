@@ -4,7 +4,11 @@ zombye::music_collection::music_collection() {
 }
 
 Mix_Music* zombye::music_collection::get(std::string name) {
-    return music_[name].get();
+    if(music_.find(name) != music_.end()) {
+        return music_[name].get();
+    }
+
+    return nullptr;
 }
 
 void zombye::music_collection::add(std::string name, std::string asset_path) {

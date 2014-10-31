@@ -4,7 +4,11 @@ zombye::sound_collection::sound_collection() {
 }
 
 Mix_Chunk* zombye::sound_collection::get(std::string name) {
-    return sounds_[name].get();
+    if(sounds_.find(name) != sounds_.end()) {
+        return sounds_[name].get();
+    }
+
+    return nullptr;
 }
 
 void zombye::sound_collection::add(std::string name, std::string asset_path) {
