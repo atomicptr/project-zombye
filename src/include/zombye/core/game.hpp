@@ -8,6 +8,7 @@
 
 #include <zombye/input/input_system.hpp>
 #include <zombye/audio/audio_system.hpp>
+#include <zombye/ecs/entity_manager.hpp>
 #include <zombye/utils/sdlhelper.hpp>
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/os.h>
@@ -18,11 +19,16 @@ namespace zombye {
         game(std::string, int, int);
         ~game();
 
+        void update(float delta_time);
         void run();
         void quit();
 
         int width() const;
         int height() const;
+
+        zombye::entity_manager& entity_manager() noexcept {
+            return *entity_manager_;
+        }
 
         input_system* input();
         audio_system* audio();
@@ -33,6 +39,7 @@ namespace zombye {
 
         bool running_;
 
+        std::unique_ptr<zombye::entity_manager> entity_manager_;
         std::unique_ptr<input_system> input_system_;
         std::unique_ptr<audio_system> audio_system_;
     };

@@ -7,6 +7,7 @@ zombye::game::game(std::string title, int width, int height) :
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
+    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
 }
@@ -15,6 +16,13 @@ zombye::game::~game() {
     zombye::log("quit game");
 
     SDL_Quit();
+}
+
+void zombye::game::update(float delta_time) {
+    // TODO: wibbly wobbly timey wimey stuff
+    static auto& ent = entity_manager_->emplace(glm::vec3(), glm::quat(), glm::vec3());
+    ent.emplace("health_component", 10.f, 20.f);
+    ent.emplace("staticmesh_component", "models/space_goblin.msh");
 }
 
 void zombye::game::run() {
@@ -53,6 +61,10 @@ void zombye::game::run() {
         old_time = current_time;
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
+
+        update(delta_time);
+
+        entity_manager_->clear();
     }
 }
 
