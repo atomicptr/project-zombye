@@ -4,7 +4,6 @@
 #include <string>
 
 #include <zombye/gameplay/game_states.hpp>
-#include <zombye/gameplay/states/menu_state.hpp>
 
 #include <zombye/core/game.hpp>
 #include <zombye/utils/state_machine.hpp>
