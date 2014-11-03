@@ -10,12 +10,12 @@ zombye::game::game(std::string title, int width, int height) :
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    rtti_manager::register_type(health_component::type_rtti());
-    rtti_manager::register_type(staticmesh_component::type_rtti());
+    register_components();
 
-    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
+    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
+    gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
 
 zombye::game::~game() {
@@ -46,6 +46,9 @@ void zombye::game::run() {
     float current_time = 0.f;
     float old_time;
 
+    // start menu state
+    gameplay_system_->use(GAME_STATE_MENU);
+
     while(running_) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
@@ -68,14 +71,21 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
 
-        update(delta_time);
-
+        gameplay_system_->update(delta_time);
         entity_manager_->clear();
     }
+
+    // to ensure that the last game state "leaves" before SDL_Quit
+    gameplay_system_->dispose_current();
 }
 
 void zombye::game::quit() {
     running_ = false;
+}
+
+void zombye::game::register_components() {
+    rtti_manager::register_type(health_component::type_rtti());
+    rtti_manager::register_type(staticmesh_component::type_rtti());
 }
 
 int zombye::game::width() const {
@@ -92,4 +102,8 @@ zombye::input_system* zombye::game::input() {
 
 zombye::audio_system* zombye::game::audio() {
     return audio_system_.get();
+}
+
+zombye::gameplay_system* zombye::game::gameplay() {
+    return gameplay_system_.get();
 }
