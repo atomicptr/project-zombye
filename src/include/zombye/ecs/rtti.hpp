@@ -21,8 +21,7 @@ namespace zombye {
         factory_function factory_;
         std::vector<std::unique_ptr<abstract_property>> properties_;
     public:
-        rtti(const std::string& type_name,rtti* base_rtti, factory_function factory,
-            reflection_function reflection) noexcept;
+        rtti(const std::string& type_name,rtti* base_rtti, factory_function factory) noexcept;
         unsigned long type_id() const noexcept {
             return type_id_;
         }

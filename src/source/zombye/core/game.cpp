@@ -1,4 +1,7 @@
 #include <zombye/core/game.hpp>
+#include <zombye/ecs/rtti_manager.hpp>
+#include <zombye/ecs/health_component.hpp>
+#include <zombye/ecs/staticmesh_component.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
@@ -6,6 +9,9 @@ zombye::game::game(std::string title, int width, int height) :
     zombye::log("init game with OS: " + std::string(OS_NAME));
 
     SDL_Init(SDL_INIT_EVERYTHING);
+
+    rtti_manager::register_type(health_component::type_rtti());
+    rtti_manager::register_type(staticmesh_component::type_rtti());
 
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
@@ -21,8 +27,8 @@ zombye::game::~game() {
 void zombye::game::update(float delta_time) {
     // TODO: wibbly wobbly timey wimey stuff
     static auto& ent = entity_manager_->emplace(glm::vec3(), glm::quat(), glm::vec3());
-    ent.emplace("health_component", 10.f, 20.f);
     ent.emplace("staticmesh_component", "models/space_goblin.msh");
+    ent.emplace("health_component", 10.f, 20.f);
 }
 
 void zombye::game::run() {
