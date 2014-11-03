@@ -15,7 +15,8 @@ namespace zombye {
         LOG_INFO,
         LOG_DEBUG,
         LOG_WARNING,
-        LOG_ERROR
+        LOG_ERROR,
+        LOG_FATAL
     };
 
     std::unique_ptr<std::fstream> init_log_system();

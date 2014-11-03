@@ -52,4 +52,8 @@ void zombye::log(log_level level, std::string msg) {
 
     *logger << ss.str();
     std::cout << ss.str();
+
+    if(level == LOG_FATAL) {
+        std::exit(1);
+    }
 }
