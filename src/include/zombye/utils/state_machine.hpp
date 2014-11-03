@@ -29,6 +29,7 @@ namespace zombye {
         void remove(std::string);
         void use(std::string);
         bool has(std::string) const;
+        void dispose_current();
 
         void update(float) const;
 

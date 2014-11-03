@@ -60,6 +60,9 @@ void zombye::game::run() {
 
         gameplay_system_->update(delta_time);
     }
+
+    // to ensure that the last game state "leaves" before SDL_Quit
+    gameplay_system_->dispose_current();
 }
 
 void zombye::game::quit() {

@@ -14,6 +14,10 @@ void zombye::gameplay_system::use(std::string name) {
     sm_->use(name);
 }
 
+void zombye::gameplay_system::dispose_current() {
+    sm_->dispose_current();
+}
+
 void zombye::gameplay_system::update(float delta_time) {
     sm_->update(delta_time);
 }

@@ -18,6 +18,7 @@ namespace zombye {
         gameplay_system(game*);
 
         void use(std::string);
+        void dispose_current();
 
         void update(float);
     private:

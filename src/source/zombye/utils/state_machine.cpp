@@ -32,6 +32,14 @@ bool zombye::state_machine::has(std::string name) const {
     return it != states_.end();
 }
 
+void zombye::state_machine::dispose_current() {
+    if(current_ != nullptr) {
+        current_->leave();
+    }
+
+    current_ = nullptr;
+}
+
 void zombye::state_machine::update(float delta_time) const {
     if(current_ != nullptr) {
         current_->update(delta_time);
