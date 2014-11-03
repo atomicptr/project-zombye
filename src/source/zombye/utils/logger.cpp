@@ -46,6 +46,9 @@ void zombye::log(log_level level, std::string msg) {
         case LOG_ERROR:
             ss << "[ERROR]";
             break;
+        case LOG_FATAL:
+            ss << "[FATAL]";
+            break;
     }
 
     ss << " " << msg << std::endl;
