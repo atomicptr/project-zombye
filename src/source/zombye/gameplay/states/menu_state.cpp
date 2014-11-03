@@ -13,4 +13,5 @@ void zombye::menu_state::leave() {
 }
 
 void zombye::menu_state::update(float delta_time) {
+    sm_->use(GAME_STATE_PLAY);
 }

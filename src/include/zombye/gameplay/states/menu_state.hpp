@@ -3,6 +3,7 @@
 
 #include <zombye/utils/state.hpp>
 #include <zombye/utils/state_machine.hpp>
+#include <zombye/gameplay/game_states.hpp>
 
 #include <zombye/utils/logger.hpp>
 
