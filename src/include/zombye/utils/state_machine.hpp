@@ -13,61 +13,29 @@
 
 namespace zombye {
     class game;
+    class state;
 
     class state_machine {
     public:
-        state_machine(game* game) : game_(game) {}
-
-        ~state_machine() {
-            if(current_ != nullptr) {
-                current_->leave();
-            }
-        }
+        state_machine(game*);
+        ~state_machine();
 
         template<typename T, typename... Arguments>
         void add(std::string name, Arguments... args) {
-            auto s = std::make_shared<T>(this, std::forward<Arguments>(args)...);
-            states.emplace(std::make_pair(name, s));
+            auto ptr = std::unique_ptr<T>(new T(this, std::forward<Arguments>(args)...));
+            states_.insert(std::make_pair(name, std::move(ptr)));
         }
 
-        void remove(std::string name) {
-            states.erase(name);
-        }
+        void remove(std::string);
+        void use(std::string);
+        bool has(std::string) const;
 
-        void use(std::string name) {
-            if(has(name)) {
-                if(current_ != nullptr) {
-                    current_->leave();
-                }
+        void update(float) const;
 
-                current_ = states.at(name).get();
-                current_->enter();
-            } else {
-                zombye::log(LOG_ERROR, "Unknown state: " + name);
-            }
-        }
-
-        bool has(std::string name) {
-            auto it = states.find(name);
-
-            return it != states.end();
-        }
-
-        void update(float delta_time) const {
-            if(current_ != nullptr) {
-                current_->update(delta_time);
-            }
-        }
-
-        state* current() const noexcept {
-            return current_;
-        }
-
-        zombye::game* game() const {
-            return game_;
-        }
+        state* current() const noexcept;
+        zombye::game* game() const;
     private:
-        std::unordered_map<std::string, std::shared_ptr<state>> states;
+        std::unordered_map<std::string, std::unique_ptr<state>> states_;
         state *current_ = nullptr;
 
         zombye::game* game_;

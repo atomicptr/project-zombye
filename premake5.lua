@@ -26,7 +26,6 @@ solution "project-zombye"
             links {"OpenGL.framework", "SDL2", "SDL2_mixer"}
 
         configuration "debug"
-            warnings "Extra"
             flags {"Symbols", "FatalWarnings"}
 
         configuration "release"

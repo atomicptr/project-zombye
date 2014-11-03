@@ -11,9 +11,6 @@ namespace zombye {
         virtual void enter() = 0;
         virtual void leave() = 0;
         virtual void update(float) {}
-
-    protected:
-        state_machine *sm;
     };
 }
 
