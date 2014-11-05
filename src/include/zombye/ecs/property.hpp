@@ -10,7 +10,7 @@ namespace zombye {
     public:
         typedef const value_type& (owner_type::*getter_type)() const;
         typedef void (owner_type::*setter_type)(const value_type& value);
-    protected:
+    private:
         getter_type getter_;
         setter_type setter_;
     public:

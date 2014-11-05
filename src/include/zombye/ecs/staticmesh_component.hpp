@@ -16,8 +16,11 @@ namespace zombye {
         const std::string& file() const noexcept {
             return file_;
         }
+        void set_file(const std::string& file) {
+            file_ = file;
+        }
         static void register_reflection() {
-            register_property<std::string>("file", &staticmesh_component::file, nullptr);
+            register_property<std::string>("file", &staticmesh_component::file, &staticmesh_component::set_file);
         }
     };
 }
