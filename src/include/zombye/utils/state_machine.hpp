@@ -34,7 +34,7 @@ namespace zombye {
         void update(float) const;
 
         state* current() const noexcept;
-        zombye::game* game() const;
+        zombye::game* get_game() const;
     private:
         std::unordered_map<std::string, std::unique_ptr<state>> states_;
         state *current_ = nullptr;

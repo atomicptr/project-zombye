@@ -50,6 +50,6 @@ zombye::state* zombye::state_machine::current() const noexcept {
     return current_;
 }
 
-zombye::game* zombye::state_machine::game() const {
+zombye::game* zombye::state_machine::get_game() const {
     return game_;
 }
