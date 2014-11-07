@@ -4,9 +4,8 @@
 #include <string>
 #include <unordered_map>
 
-#include <zombye/ecs/rtti.hpp>
-
 namespace zombye {
+    class rtti;
 	class rtti_manager {
 		static std::unordered_map<std::string, rtti*>& rttis();
 	public:

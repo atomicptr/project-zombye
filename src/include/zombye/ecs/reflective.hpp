@@ -22,25 +22,24 @@ namespace zombye {
 
     template <typename type, typename base_type>
     class reflective : public base_type {
+        friend void rtti_manager::register_type(rtti*);
+        static void register_reflection() { }
     public:
-        reflective(game& game, entity& owner) noexcept : base_type(game, owner) {
-            type::register_reflection();
-        }
+        reflective(game& game, entity& owner) noexcept : base_type(game, owner) { }
         reflective(const reflective& other) = delete;
         reflective(reflective&& other) = delete;
         static type* create(game& game, entity& owner) {
             return new type(game, owner);
         }
-        static void register_reflection() { }
         template <typename property_type>
         static void register_property(const std::string& name,
             typename property<type, property_type>::getter_type getter,
             typename property<type, property_type>::setter_type setter) {
-            type_rtti()->properties().emplace_back(new property<type, property_type>(name, getter, setter));
+            type_rtti()->emplace_back(new property<type, property_type>(name, getter, setter));
         }
         static zombye::rtti* type_rtti() noexcept {
             static zombye::rtti rtti_(demangle(typeid(type).name()), base_type::type_rtti(),
-                (factory_function)type::create);
+                (factory_function)type::create, (reflection_function)type::register_reflection);
             return &rtti_;
         }
         virtual zombye::rtti* rtti() noexcept {

@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include <zombye/ecs/entity.hpp>
+#include <zombye/ecs/entity_template_manager.hpp>
 
 namespace zombye {
     class game;
@@ -13,16 +14,14 @@ namespace zombye {
         game& game_;
         std::unordered_map<unsigned long, std::unique_ptr<entity>> entities_;
         std::queue<unsigned long> deletion_;
+        entity_template_manager template_manager_;
     public:
         entity_manager(game& game) noexcept;
         entity_manager(const entity_manager& other) = delete;
         entity_manager(entity_manager&& other) = delete;
         zombye::entity& emplace(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scalation);
-
-        template <typename... arguments>
-        zombye::entity& emplace(const std::string& name, arguments... args) {
-            // TODO: create new entity
-        }
+        zombye::entity& emplace(const std::string& name, const glm::vec3& position, const glm::quat& rotation,
+            const glm::vec3& scalation);
 
         void erase(unsigned long id);
         void clear();

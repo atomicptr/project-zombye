@@ -10,6 +10,7 @@
 
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
+#include <zombye/ecs/value_pack.hpp>
 
 namespace zombye {
     class game;
@@ -70,6 +71,26 @@ namespace zombye {
                 auto component = type_info->factory()(game_, *this);
                 components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<zombye::component>(component)));
                 fill_in_properties(component, args...);
+                return *component;
+            } else {
+                log(LOG_WARNING, "entity " + std::to_string(id_) + " already has component of type " + type_info->type_name());
+                return *(insert_position->second.get());
+            }
+        }
+
+        zombye::component& emplace(const std::string& name, const zombye::value_pack& value_pack) {
+            auto type_info = rtti_manager::type_info(name);
+            if (!type_info) {
+                log(LOG_ERROR, name + " has no runtime type information");
+                throw std::invalid_argument(name + " has no runtime type information");
+            }
+            auto insert_position = components_.find(type_info->type_id());
+            if (insert_position == components_.end()) {
+                auto component = type_info->factory()(game_, *this);
+                components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<zombye::component>(component)));
+                for (auto& v : value_pack.get()) {
+                    v->assign(component);
+                }
                 return *component;
             } else {
                 log(LOG_WARNING, "entity " + std::to_string(id_) + " already has component of type " + type_info->type_name());

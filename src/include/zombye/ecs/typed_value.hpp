@@ -8,10 +8,10 @@ namespace zombye {
     class component;
     template <typename type>
     class typed_value : public abstract_value {
-        const typed_property<type>& assigner_;
+        typed_property<type>& assigner_;
         type value_;
     public:
-        typed_value(const typed_property<type>& assigner, const type& value) noexcept
+        typed_value(typed_property<type>& assigner, const type& value) noexcept
         : assigner_(assigner), value_(value) { }
         typed_value(const typed_value& other) = delete;
         typed_value(typed_value&& other) = delete;

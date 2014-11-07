@@ -2,6 +2,7 @@
 #define __ZOMBYE_VALUE_PACK_HPP__
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <zombye/ecs/typed_property.hpp>
@@ -9,14 +10,19 @@
 
 namespace zombye {
     class value_pack {
+        std::string name_;
         std::vector<std::unique_ptr<abstract_value>> values_;
     public:
-        value_pack() noexcept = default;
+        value_pack(const std::string& name) noexcept : name_(name) { }
         value_pack(const value_pack& other) = delete;
         value_pack(value_pack&& other) = delete;
         template <typename type>
-        void emplace(const typed_property<type>& assigner, type value) {
-            values_.emplace(std::unique_ptr<typed_value<type>>(new typed_value<type>(assigner, value)));
+        void emplace_back(typed_property<type>& assigner, type value) {
+            values_.emplace_back(std::unique_ptr<typed_value<type>>(new typed_value<type>(assigner, value)));
+        }
+
+        const std::string& name() const  {
+            return name_;
         }
 
         auto begin() const {

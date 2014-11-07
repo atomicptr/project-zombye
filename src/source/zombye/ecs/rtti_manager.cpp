@@ -1,3 +1,4 @@
+#include <zombye/ecs/rtti.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
 
 namespace zombye {
@@ -6,8 +7,12 @@ namespace zombye {
         return rttis;
     }
     void rtti_manager::register_type(rtti* type_info) {
+        if (!type_info) {
+            return;
+        }
         auto pos = rttis().find(type_info->type_name());
         if (pos == rttis().end()) {
+            type_info->reflection_();
             rttis().insert(std::make_pair(type_info->type_name(), type_info));
         }
     }

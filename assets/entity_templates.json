@@ -1,0 +1,20 @@
+{
+    "goblin": {
+        "health_component": {
+            "health": 20.0,
+            "max_health": 25.0
+        },
+        "staticmesh_component": {
+            "file": "models/goblin.msh"
+        }
+    },
+    "wolf": {
+        "health_component": {
+            "health": 50.0,
+            "max_health": 55.0
+        },
+        "staticmesh_component": {
+            "file": "models/wolf.msh"
+        }
+    }
+}

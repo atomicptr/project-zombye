@@ -3,11 +3,27 @@
 
 
 namespace zombye {
-    entity_manager::entity_manager(game& game) noexcept : game_(game) { }
+    entity_manager::entity_manager(game& game) noexcept : game_(game), template_manager_(game) { }
 
-    zombye::entity& entity_manager::emplace(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scalation) {
+    zombye::entity& entity_manager::emplace(const glm::vec3& position, const glm::quat& rotation,
+    const glm::vec3& scalation) {
         auto entity = new zombye::entity(game_, position, rotation, scalation);
         entities_.insert(std::make_pair(entity->id(), std::unique_ptr<zombye::entity>(entity)));
+        return *entity;
+    }
+
+    zombye::entity& entity_manager::emplace(const std::string& name, const glm::vec3& position,
+    const glm::quat& rotation, const glm::vec3& scalation) {
+        auto entity = new zombye::entity(game_, position, rotation, scalation);
+        entities_.insert(std::make_pair(entity->id(), std::unique_ptr<zombye::entity>(entity)));
+        auto entity_template = template_manager_.load(name, "entity_templates.json");
+        if (!entity_template) {
+            log(LOG_ERROR, "No template " + name + " in ");
+            throw std::invalid_argument("No template " + name + " in ");
+        }
+        for (auto& pack : entity_template->get()) {
+            entity->emplace(pack->name(), *pack.get());
+        }
         return *entity;
     }
 

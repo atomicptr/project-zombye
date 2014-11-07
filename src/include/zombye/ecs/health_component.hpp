@@ -8,6 +8,7 @@ namespace zombye {
     class health_component : public reflective<health_component, component> {
         float health_;
         float max_health_;
+        friend class reflective<health_component, component>;
     public:
         health_component(game& game, entity& owner) noexcept
         : reflective(game, owner) { }
@@ -25,6 +26,7 @@ namespace zombye {
         void set_max_health(const float& max_health) {
             max_health_ = max_health;
         }
+    private:
         static void register_reflection() {
             register_property<float>("health", &health_component::health, &health_component::set_health);
             register_property<float>("max_health", &health_component::max_health, &health_component::set_max_health);
