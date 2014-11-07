@@ -7,8 +7,13 @@ solution "project-zombye"
     configuration "not windows"
         defines "ZOMBYE_NOT_WINDOOF"
 
-    includedirs "src/include"
+    includedirs { "deps/include", "src/include" }
     buildoptions "-std=c++1y"
+
+    project "deps"
+        kind "StaticLib"
+
+        files "deps/source/**.cpp"
 
     project "zombye"
         kind "WindowedApp"
@@ -22,10 +27,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links {"GL","SDL2", "SDL2_mixer"}
+            links { "GL", "SDL2", "SDL2_mixer", "deps" }
 
         configuration {"gmake", "macosx"}
-            links {"OpenGL.framework", "SDL2", "SDL2_mixer"}
+            links { "OpenGL.framework", "SDL2", "SDL2_mixer", "deps" }
 
         configuration "debug"
             flags {"Symbols", "FatalWarnings"}
