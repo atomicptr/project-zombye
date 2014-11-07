@@ -14,6 +14,11 @@ solution "project-zombye"
         kind "StaticLib"
 
         files "deps/source/**.cpp"
+        configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                buildoptions "-stdlib=libc++"
+                links "c++"
+            end
 
     project "zombye"
         kind "WindowedApp"

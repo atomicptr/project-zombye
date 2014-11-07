@@ -35,6 +35,7 @@ namespace zombye {
                 log(LOG_ERROR, name + " has no runtime type information");
                 return nullptr;
             }
+            /*
             auto value_pack = new zombye::value_pack(name);
             for (auto& p : rtti->properties()) {
                 auto value = (*it)[p->name()];
@@ -67,12 +68,29 @@ namespace zombye {
                             return nullptr;
                         }
                         value_pack->emplace_back(*static_cast<typed_property<std::string>*>(p.get()), value.asString());
+                    case ValueType::arrayValue:
+                        break;
                     default:
                         break;
                 }
+            }*/
+            auto value_pack = assign_values(name, *it, rtti->properties());
+            if (!value_pack) {
+                log(LOG_ERROR, "Values could not be assigned to " + name + " value pack");
+                return nullptr;
             }
-            entity_template->push_back(value_pack);
+            entity_template->emplace_back(value_pack);
         }
         return entity_template;
+    }
+
+    zombye::value_pack* entity_template_manager::assign_values(const std::string& name, const Json::Value& object,
+    const std::vector<std::unique_ptr<abstract_property>>& properties) {
+        auto value_pack = new zombye::value_pack(name);
+        for (auto& p : properties) {
+            auto value = object[p->name()];
+            auto type = value.type();
+        }
+        return value_pack;
     }
 }

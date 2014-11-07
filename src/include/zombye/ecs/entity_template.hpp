@@ -15,7 +15,7 @@ namespace zombye {
         entity_template(const std::string& name) noexcept;
         entity_template(const entity_template& other) = delete;
         entity_template(entity_template&& other) = delete;
-        void push_back(value_pack* value_pack);
+        void emplace_back(value_pack* value_pack);
         const std::string& name() const {
             return name_;
         }
