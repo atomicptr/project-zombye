@@ -79,13 +79,13 @@ namespace zombye {
                 log(LOG_ERROR, "Values could not be assigned to " + name + " value pack");
                 return nullptr;
             }
-            entity_template->emplace_back(value_pack);
+            entity_template->emplace_back(std::move(value_pack));
         }
         return entity_template;
     }
 
-    zombye::value_pack* entity_template_manager::assign_values(const std::string& name, const Json::Value& object,
-    const std::vector<std::unique_ptr<abstract_property>>& properties) {
+    std::unique_ptr<zombye::value_pack> entity_template_manager::assign_values(const std::string& name,
+    const Json::Value& object, const rtti::property_list& properties) {
         auto value_pack = new zombye::value_pack(name);
         for (auto& p : properties) {
             auto wrapped_value = object[p->name()];
@@ -93,6 +93,6 @@ namespace zombye {
             //auto value = get<wrapped_value.type()>(wrapped_value);
             //value_pack->emplace_back(*static_cast<typed_property<decltype(value)>*>(p.get()), value);
         }
-        return value_pack;
+        return std::unique_ptr<zombye::value_pack>{value_pack};
     }
 }

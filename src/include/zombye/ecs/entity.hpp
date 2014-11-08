@@ -68,7 +68,7 @@ namespace zombye {
             }
             auto insert_position = components_.find(type_info->type_id());
             if (insert_position == components_.end()) {
-                auto component = type_info->factory()(game_, *this);
+                auto component = type_info->ctor()(game_, *this);
                 components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<zombye::component>(component)));
                 fill_in_properties(component, args...);
                 return *component;
@@ -86,7 +86,7 @@ namespace zombye {
             }
             auto insert_position = components_.find(type_info->type_id());
             if (insert_position == components_.end()) {
-                auto component = type_info->factory()(game_, *this);
+                auto component = type_info->ctor()(game_, *this);
                 components_.insert(std::make_pair(type_info->type_id(), std::unique_ptr<zombye::component>(component)));
                 for (auto& v : value_pack.get()) {
                     v->assign(component);

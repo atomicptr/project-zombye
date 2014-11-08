@@ -39,7 +39,7 @@ namespace zombye {
         }
         static zombye::rtti* type_rtti() noexcept {
             static zombye::rtti rtti_(demangle(typeid(type).name()), base_type::type_rtti(),
-                (factory_function)type::create, (reflection_function)type::register_reflection);
+                (rtti::factory)type::create, (rtti::reflection)type::register_reflection);
             return &rtti_;
         }
         virtual zombye::rtti* rtti() noexcept {

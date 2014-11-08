@@ -12,20 +12,22 @@ namespace zombye {
     class component;
     class entity;
     class game;
-    typedef component*(*factory_function)(game&, entity&);
-    typedef void (*reflection_function)();
     class rtti {
+    public:
+        using factory = component* (*)(game&, entity&);
+        using reflection = void (*)();
+        using property_list = std::vector<std::unique_ptr<abstract_property>>;
+    private:
         friend void rtti_manager::register_type(rtti*);
         static unsigned long id_generator_;
         unsigned long type_id_;
         std::string type_name_;
         rtti* base_rtti_;
-        factory_function factory_;
-        reflection_function reflection_;
-        std::vector<std::unique_ptr<abstract_property>> properties_;
+        factory factory_;
+        reflection reflection_;
+        property_list properties_;
     public:
-        rtti(const std::string& type_name,rtti* base_rtti, factory_function factory,
-            reflection_function reflection) noexcept;
+        rtti(const std::string& type_name,rtti* base_rtti, factory factory, reflection reflection) noexcept;
         void emplace_back(abstract_property* property) {
             properties_.emplace_back(property);
         }
@@ -38,10 +40,10 @@ namespace zombye {
         rtti* base_rtti() const noexcept {
             return base_rtti_;
         }
-        const factory_function& factory() const noexcept {
+        const factory& ctor() const noexcept {
             return factory_;
         }
-        const std::vector<std::unique_ptr<abstract_property>>& properties() noexcept {
+        const property_list& properties() const noexcept {
             return properties_;
         }
     };

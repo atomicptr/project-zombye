@@ -22,7 +22,7 @@ namespace zombye {
     protected:
         std::shared_ptr<const entity_template> load_new(const std::string& name, const std::string& file);
     private:
-        value_pack* assign_values(const std::string& name, const Json::Value& object,
+        std::unique_ptr<value_pack> assign_values(const std::string& name, const Json::Value& object,
         const std::vector<std::unique_ptr<abstract_property>>& properties);
     };
 }
