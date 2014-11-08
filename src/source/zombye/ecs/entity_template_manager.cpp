@@ -88,8 +88,10 @@ namespace zombye {
     const std::vector<std::unique_ptr<abstract_property>>& properties) {
         auto value_pack = new zombye::value_pack(name);
         for (auto& p : properties) {
-            auto value = object[p->name()];
-            auto type = value.type();
+            auto wrapped_value = object[p->name()];
+            auto type = wrapped_value.type();
+            //auto value = get<wrapped_value.type()>(wrapped_value);
+            //value_pack->emplace_back(*static_cast<typed_property<decltype(value)>*>(p.get()), value);
         }
         return value_pack;
     }

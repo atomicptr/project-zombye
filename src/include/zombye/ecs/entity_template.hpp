@@ -12,10 +12,13 @@ namespace zombye {
         std::string name_;
         std::vector<std::unique_ptr<value_pack>> value_packs_;
     public:
-        entity_template(const std::string& name) noexcept;
+        explicit entity_template(const std::string& name) noexcept;
         entity_template(const entity_template& other) = delete;
         entity_template(entity_template&& other) = delete;
-        void emplace_back(value_pack* value_pack);
+        template <typename... arguments>
+        void emplace_back(arguments... args) {
+            value_packs_.emplace_back(std::forward<arguments>(args)...);
+        }
         const std::string& name() const {
             return name_;
         }

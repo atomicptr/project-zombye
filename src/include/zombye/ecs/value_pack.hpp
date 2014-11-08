@@ -16,9 +16,9 @@ namespace zombye {
         value_pack(const std::string& name) noexcept : name_(name) { }
         value_pack(const value_pack& other) = delete;
         value_pack(value_pack&& other) = delete;
-        template <typename type>
-        void emplace_back(typed_property<type>& assigner, type value) {
-            values_.emplace_back(std::unique_ptr<typed_value<type>>(new typed_value<type>(assigner, value)));
+        template <typename... arguments>
+        void emplace_back(arguments... args) {
+            values_.emplace_back(std::forward<arguments>(args)...);
         }
 
         const std::string& name() const  {
