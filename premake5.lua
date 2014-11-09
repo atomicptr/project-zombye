@@ -39,6 +39,7 @@ solution "project-zombye"
 
         configuration "debug"
             flags {"Symbols", "FatalWarnings"}
+            optimize "Off"
 
         configuration "release"
-            flags {"Optimize"}
+            optimize "Full"
