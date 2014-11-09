@@ -6,6 +6,19 @@
         },
         "staticmesh_component": {
             "file": "models/goblin.msh"
+        },
+        "test_component": {
+            "boolean": false,
+            "integer": 42,
+            "ivec2": ["i", 0, 1],
+            "ivec3": ["i", 0, 0, 1],
+            "ivec4": ["i", 0, 0, 0, 1],
+            "floating_point": 3.14,
+            "vec2": ["f", 0.1, -0.1],
+            "vec3": ["f", 0.1, 0.01, 0.001],
+            "vec4": ["f", 0.1, 0.01, 0.001, 0.0001],
+            "quat": ["q", 0.5, 1.0, 0.0, 0.0],
+            "string": "this is a c++ string"
         }
     },
     "wolf": {

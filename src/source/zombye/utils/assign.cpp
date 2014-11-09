@@ -205,7 +205,7 @@ namespace zombye {
         glm::vec2 vec;
         for (auto i = 1; i < 3; ++i) {
             auto& elem = wrapped_value[i];
-            if (elem.type() != Json::ValueType::intValue) {
+            if (elem.type() != Json::ValueType::realValue) {
                 log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
                 return nullptr;
@@ -233,7 +233,7 @@ namespace zombye {
         glm::vec3 vec;
         for (auto i = 1; i < 4; ++i) {
             auto& elem = wrapped_value[i];
-            if (elem.type() != Json::ValueType::intValue) {
+            if (elem.type() != Json::ValueType::realValue) {
                 log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
                 return nullptr;
@@ -261,7 +261,7 @@ namespace zombye {
         glm::vec4 vec;
         for (auto i = 1; i < 5; ++i) {
             auto& elem = wrapped_value[i];
-            if (elem.type() != Json::ValueType::intValue) {
+            if (elem.type() != Json::ValueType::realValue) {
                 log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
                 return nullptr;
@@ -289,7 +289,7 @@ namespace zombye {
         glm::vec4 vec;
         for (auto i = 1; i < 5; ++i) {
             auto& elem = wrapped_value[i];
-            if (elem.type() != Json::ValueType::intValue) {
+            if (elem.type() != Json::ValueType::realValue) {
                 log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
                 return nullptr;

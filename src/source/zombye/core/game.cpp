@@ -2,6 +2,7 @@
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/ecs/health_component.hpp>
 #include <zombye/ecs/staticmesh_component.hpp>
+#include <zombye/ecs/test_component.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
@@ -86,6 +87,7 @@ void zombye::game::quit() {
 void zombye::game::register_components() {
     rtti_manager::register_type(health_component::type_rtti());
     rtti_manager::register_type(staticmesh_component::type_rtti());
+    rtti_manager::register_type(test_component::type_rtti());
 }
 
 int zombye::game::width() const {
