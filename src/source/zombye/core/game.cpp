@@ -1,8 +1,5 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
-#include <zombye/ecs/health_component.hpp>
-#include <zombye/ecs/staticmesh_component.hpp>
-#include <zombye/ecs/test_component.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
@@ -23,13 +20,6 @@ zombye::game::~game() {
     zombye::log("quit game");
 
     SDL_Quit();
-}
-
-void zombye::game::update(float delta_time) {
-    // TODO: wibbly wobbly timey wimey stuff
-    static auto& ent = entity_manager_->emplace(glm::vec3(), glm::quat(), glm::vec3());
-    ent.emplace("staticmesh_component", "models/space_goblin.msh");
-    ent.emplace("health_component", 10.f, 20.f);
 }
 
 void zombye::game::run() {
@@ -85,9 +75,7 @@ void zombye::game::quit() {
 }
 
 void zombye::game::register_components() {
-    rtti_manager::register_type(health_component::type_rtti());
-    rtti_manager::register_type(staticmesh_component::type_rtti());
-    rtti_manager::register_type(test_component::type_rtti());
+
 }
 
 int zombye::game::width() const {
