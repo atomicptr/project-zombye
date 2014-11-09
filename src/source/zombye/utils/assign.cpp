@@ -30,6 +30,11 @@ namespace zombye {
 
     std::unique_ptr<zombye::value_pack> assign_values(const std::string& name, const Json::Value& object,
     const rtti::property_list& properties) {
+        if (object.size() != properties.size()) {
+            log(LOG_ERROR, "expected " + std::to_string(properties.size()) + " properties at "
+                + name + " but got " + std::to_string(object.size()));
+            return nullptr;
+        }
         auto value_pack = new zombye::value_pack(name);
         for (auto& p : properties) {
             auto wrapped_value = object[p->name()];
