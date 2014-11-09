@@ -298,7 +298,7 @@ namespace zombye {
         }
         glm::quat quat(vec[0], glm::vec3{vec[1], vec[2], vec[3]});
         return std::unique_ptr<abstract_value>(new typed_value<glm::quat>
-            {*static_cast<typed_property<glm::quat>*>(property), quat});
+            {*static_cast<typed_property<glm::quat>*>(property), glm::normalize(quat)});
     }
 
     std::unique_ptr<abstract_value> assign_string(abstract_property* property, const Json::Value& wrapped_value) {
