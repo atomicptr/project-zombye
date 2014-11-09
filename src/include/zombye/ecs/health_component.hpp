@@ -14,13 +14,13 @@ namespace zombye {
         : reflective(game, owner) { }
         health_component(game& game, entity& owner, float health, float max_health) noexcept
         : reflective(game, owner), health_(health), max_health_(max_health) { }
-        const float& health() const {
+        float health() const {
             return health_;
         }
         void set_health(const float& health) {
             health_ = health;
         }
-        const float& max_health() const {
+        float max_health() const {
             return max_health_;
         }
         void set_max_health(const float& max_health) {
