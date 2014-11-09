@@ -1,4 +1,5 @@
 #include <zombye/core/game.hpp>
+#include <zombye/ecs/rtti_manager.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false) {
@@ -7,8 +8,11 @@ zombye::game::game(std::string title, int width, int height) :
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
+    register_components();
+
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
+    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
 
@@ -59,6 +63,7 @@ void zombye::game::run() {
         delta_time = current_time - old_time;
 
         gameplay_system_->update(delta_time);
+        entity_manager_->clear();
     }
 
     // to ensure that the last game state "leaves" before SDL_Quit
@@ -67,6 +72,10 @@ void zombye::game::run() {
 
 void zombye::game::quit() {
     running_ = false;
+}
+
+void zombye::game::register_components() {
+
 }
 
 int zombye::game::width() const {

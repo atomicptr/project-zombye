@@ -1,5 +1,7 @@
 #include <zombye/gameplay/states/menu_state.hpp>
 
+using namespace std::string_literals;
+
 zombye::menu_state::menu_state(zombye::state_machine *sm) : sm_(sm) {
 
 }
