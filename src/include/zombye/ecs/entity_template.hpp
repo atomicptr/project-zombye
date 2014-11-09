@@ -9,8 +9,9 @@
 
 namespace zombye {
     class entity_template {
+        using value_packs = std::vector<std::unique_ptr<value_pack>>;
         std::string name_;
-        std::vector<std::unique_ptr<value_pack>> value_packs_;
+        value_packs value_packs_;
     public:
         explicit entity_template(const std::string& name) noexcept;
         entity_template(const entity_template& other) = delete;

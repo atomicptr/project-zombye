@@ -16,6 +16,7 @@ solution "project-zombye"
         files "deps/source/**.cpp"
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
@@ -29,6 +30,7 @@ solution "project-zombye"
 
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end

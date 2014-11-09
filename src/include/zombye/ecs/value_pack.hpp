@@ -10,8 +10,9 @@
 
 namespace zombye {
     class value_pack {
+        using values = std::vector<std::unique_ptr<abstract_value>>;
         std::string name_;
-        std::vector<std::unique_ptr<abstract_value>> values_;
+        values values_;
     public:
         value_pack(const std::string& name) noexcept : name_(name) { }
         value_pack(const value_pack& other) = delete;

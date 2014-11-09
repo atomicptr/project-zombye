@@ -48,7 +48,7 @@ namespace zombye {
         }
     }
 
-    zombye::entity* entity_manager::entity(unsigned long id) noexcept {
+    entity* entity_manager::resolve(unsigned long id) noexcept {
         auto entity = entities_.find(id);
         if (entity != entities_.end()) {
             return entity->second.get();

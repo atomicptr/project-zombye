@@ -12,7 +12,7 @@ namespace zombye {
         std::unordered_map<std::string, std::weak_ptr<resource>> cache_;
         std::vector<std::string> clear_buffer_;
     public:
-        cached_resource_manager() noexcept = default;
+        cached_resource_manager() = default;
         cached_resource_manager(const cached_resource_manager& other) = delete;
         cached_resource_manager(cached_resource_manager&& other) = delete;
         ~cached_resource_manager() noexcept = default;

@@ -25,7 +25,7 @@ namespace zombye {
 
         void erase(unsigned long id);
         void clear();
-        zombye::entity* entity(unsigned long id) noexcept;
+        entity* resolve(unsigned long id) noexcept;
         entity_manager& operator= (const entity_manager& other) = delete;
         entity_manager& operator= (entity_manager&& other) = delete;
     };

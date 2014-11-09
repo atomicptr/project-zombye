@@ -27,7 +27,8 @@ namespace zombye {
             return type_id_;
         }
     };
-    template <typename type> property_types property_type<type>::type_id_ = property_types::UNKNOWN;
+    // thanks to gcc there is no default assignment for unknown types
+    //template <typename type>property_types property_type<type>::type_id_ = property_types::UNKNOWN;
 }
 
 #endif
