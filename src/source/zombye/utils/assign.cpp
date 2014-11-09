@@ -167,7 +167,7 @@ namespace zombye {
                 log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
                     + wrapped_value.asString());
             }
-            vec[i - 1] = elem.asInt();
+            vec[i - 1] = elem.asFloat();
         }
         return std::unique_ptr<abstract_value>(new typed_value<glm::vec2>
             {*static_cast<typed_property<glm::vec2>*>(property), vec});
@@ -191,7 +191,7 @@ namespace zombye {
                 log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
                     + wrapped_value.asString());
             }
-            vec[i - 1] = elem.asInt();
+            vec[i - 1] = elem.asFloat();
         }
         return std::unique_ptr<abstract_value>(new typed_value<glm::vec3>
             {*static_cast<typed_property<glm::vec3>*>(property), vec});
@@ -215,14 +215,35 @@ namespace zombye {
                 log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
                     + wrapped_value.asString());
             }
-            vec[i - 1] = elem.asInt();
+            vec[i - 1] = elem.asFloat();
         }
         return std::unique_ptr<abstract_value>(new typed_value<glm::vec4>
             {*static_cast<typed_property<glm::vec4>*>(property), vec});
     }
 
     std::unique_ptr<abstract_value> assign_quat(abstract_property* property, const Json::Value& wrapped_value) {
-        return nullptr;
+        auto type = wrapped_value.type();
+        if (type != Json::ValueType::arrayValue) {
+            log(LOG_FATAL, "expected type quat at property " + property->name() + " : " + wrapped_value.asString());
+        }
+        if (wrapped_value.size() != 5) {
+            log(LOG_FATAL, "expected size 4 at property " + property->name() + " : " + wrapped_value.asString());
+        }
+        if (wrapped_value[0].asString() != "q") {
+            log(LOG_FATAL, "expected type quat at property " + property->name() + " : " + wrapped_value.asString());
+        }
+        glm::vec4 vec;
+        for (auto i = 1; i < 5; ++i) {
+            auto& elem = wrapped_value[i];
+            if (elem.type() != Json::ValueType::intValue) {
+                log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
+                    + wrapped_value.asString());
+            }
+            vec[i - 1] = elem.asFloat();
+        }
+        glm::quat quat(vec[0], glm::vec3{vec[1], vec[2], vec[3]});
+        return std::unique_ptr<abstract_value>(new typed_value<glm::quat>
+            {*static_cast<typed_property<glm::quat>*>(property), quat});
     }
 
     std::unique_ptr<abstract_value> assign_string(abstract_property* property, const Json::Value& wrapped_value) {
