@@ -16,16 +16,16 @@ namespace zombye {
         }
         Json::Value root;
         if (!reader_.parse(&(*asset->content().begin()), &(*asset->content().end()), root)) {
-            log(LOG_ERROR, "Could not parse " + file + " " + reader_.getFormattedErrorMessages());
+            log(LOG_ERROR, "could not parse " + file + " " + reader_.getFormattedErrorMessages());
             return nullptr;
         }
         auto entity_type = root[name];
         if (entity_type.isNull()) {
-            log(LOG_ERROR, "No template " + name + " in " + file);
+            log(LOG_ERROR, "no template " + name + " in " + file);
             return nullptr;
         }
         if (!entity_type.isObject()) {
-            log(LOG_ERROR, "Template " + name + " is not an object");
+            log(LOG_ERROR, "template " + name + " is not an object");
             return nullptr;
         }
         auto entity_template = std::make_shared<zombye::entity_template>(name);
@@ -38,7 +38,7 @@ namespace zombye {
             }
             auto value_pack = assign_values(name, *it, rtti->properties());
             if (!value_pack) {
-                log(LOG_ERROR, "Values could not be assigned to " + name + " value pack");
+                log(LOG_ERROR, "values could not be assigned to " + name + " value pack");
                 return nullptr;
             }
             entity_template->emplace_back(std::move(value_pack));

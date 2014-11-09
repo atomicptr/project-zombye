@@ -18,8 +18,7 @@ namespace zombye {
         entities_.insert(std::make_pair(entity->id(), std::unique_ptr<zombye::entity>(entity)));
         auto entity_template = template_manager_.load(name, "entity_templates.json");
         if (!entity_template) {
-            log(LOG_ERROR, "No template " + name + " in ");
-            throw std::invalid_argument("No template " + name + " in ");
+            throw std::invalid_argument("no template " + name + " in entity_templates.json");
         }
         for (auto& pack : entity_template->get()) {
             entity->emplace(pack->name(), *pack.get());

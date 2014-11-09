@@ -35,7 +35,9 @@ namespace zombye {
             auto wrapped_value = object[p->name()];
             auto value = assign_value(p.get(), wrapped_value);
             if (!value) {
-                log(LOG_FATAL, "type of property " + p->name() + " at " + name + " is unknown");
+                log(LOG_ERROR, "conversion from json value to type of property " + p->name()
+                    + " at " + name + " failed");
+                return nullptr;
             }
             value_pack->emplace_back(std::move(value));
         }
@@ -75,7 +77,8 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_bool(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::booleanValue) {
-            log(LOG_FATAL, "expected type bool at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type bool at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         return std::unique_ptr<abstract_value>(new typed_value<bool>{*static_cast<typed_property<bool>*>(property),
             wrapped_value.asBool()});
@@ -84,7 +87,8 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_int(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::intValue) {
-            log(LOG_FATAL, "expected type int at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type int at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         return std::unique_ptr<abstract_value>(new typed_value<int>{*static_cast<typed_property<int>*>(property),
             wrapped_value.asInt()});
@@ -93,20 +97,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_ivec2(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type ivec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 3) {
-            log(LOG_FATAL, "expected size 2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "i") {
-            log(LOG_FATAL, "expected type ivec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::ivec2 vec;
         for (auto i = 1; i < 3; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type int at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type int at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asInt();
         }
@@ -117,20 +125,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_ivec3(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type ivec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 4) {
-            log(LOG_FATAL, "expected size 3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "i") {
-            log(LOG_FATAL, "expected type ivec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::ivec3 vec;
         for (auto i = 1; i < 4; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type int at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type int at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asInt();
         }
@@ -141,20 +153,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_ivec4(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type ivec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 5) {
-            log(LOG_FATAL, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "i") {
-            log(LOG_FATAL, "expected type ivec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type ivec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::ivec4 vec;
         for (auto i = 1; i < 5; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type int at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type int at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asInt();
         }
@@ -165,7 +181,8 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_float(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::realValue) {
-            log(LOG_FATAL, "expected type float at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type float at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         return std::unique_ptr<abstract_value>(new typed_value<float>{*static_cast<typed_property<float>*>(property),
             wrapped_value.asFloat()});
@@ -174,20 +191,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_vec2(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type vec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 3) {
-            log(LOG_FATAL, "expected size 2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "f") {
-            log(LOG_FATAL, "expected type vec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec2 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::vec2 vec;
         for (auto i = 1; i < 3; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asFloat();
         }
@@ -198,20 +219,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_vec3(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type vec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 4) {
-            log(LOG_FATAL, "expected size 3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "f") {
-            log(LOG_FATAL, "expected type vec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec3 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::vec3 vec;
         for (auto i = 1; i < 4; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asFloat();
         }
@@ -222,20 +247,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_vec4(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type vec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 5) {
-            log(LOG_FATAL, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "f") {
-            log(LOG_FATAL, "expected type vec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type vec4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::vec4 vec;
         for (auto i = 1; i < 5; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asFloat();
         }
@@ -246,20 +275,24 @@ namespace zombye {
     std::unique_ptr<abstract_value> assign_quat(abstract_property* property, const Json::Value& wrapped_value) {
         auto type = wrapped_value.type();
         if (type != Json::ValueType::arrayValue) {
-            log(LOG_FATAL, "expected type quat at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type quat at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value.size() != 5) {
-            log(LOG_FATAL, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected size 4 at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         if (wrapped_value[0].asString() != "q") {
-            log(LOG_FATAL, "expected type quat at property " + property->name() + " : " + to_string(wrapped_value));
+            log(LOG_ERROR, "expected type quat at property " + property->name() + " : " + to_string(wrapped_value));
+            return nullptr;
         }
         glm::vec4 vec;
         for (auto i = 1; i < 5; ++i) {
             auto& elem = wrapped_value[i];
             if (elem.type() != Json::ValueType::intValue) {
-                log(LOG_FATAL, "expected element type float at property " + property->name() + " : "
+                log(LOG_ERROR, "expected element type float at property " + property->name() + " : "
                     + to_string(wrapped_value));
+                return nullptr;
             }
             vec[i - 1] = elem.asFloat();
         }
