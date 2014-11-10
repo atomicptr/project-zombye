@@ -13,7 +13,7 @@ namespace zombye {
         buffer(GLuint target, size_t size, const void* data, GLenum usage) noexcept;
         buffer(const buffer& other) = delete;
         buffer(buffer&& other) = delete;
-        ~buffer() noexcept;
+        virtual ~buffer() noexcept = 0;
 
         void data(size_t size, const void* data) noexcept;
         void sub_data(intptr_t offset, size_t size, const void* data) noexcept;
