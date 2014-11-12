@@ -2,7 +2,8 @@
 #include <zombye/ecs/rtti_manager.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
-    title_(title), width_(width), height_(height), running_(false) {
+    title_(title), width_(width), height_(height), running_(false),
+    window_(nullptr, SDL_DestroyWindow) {
 
     zombye::log("init game with OS: " + std::string(OS_NAME));
 
@@ -10,9 +11,20 @@ zombye::game::game(std::string title, int width, int height) :
 
     register_components();
 
+    auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+    window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
+        height_, mask);
+    auto error = std::string{SDL_GetError()};
+    if (!window_) {
+        throw std::runtime_error("could not create window: " + error);
+    }
+    SDL_ClearError();
+
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
+    rendering_system_ = std::unique_ptr<zombye::rendering_system>(
+        new zombye::rendering_system(*this, window_.get()));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
 
@@ -24,12 +36,6 @@ zombye::game::~game() {
 
 void zombye::game::run() {
     running_ = true;
-
-    // create window
-    auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
-
-    auto window = zombye::make_window(title_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        width_, height_, mask);
 
     SDL_Event event;
 
@@ -63,6 +69,7 @@ void zombye::game::run() {
         delta_time = current_time - old_time;
 
         gameplay_system_->update(delta_time);
+        rendering_system_->update(delta_time);
         entity_manager_->clear();
     }
 
