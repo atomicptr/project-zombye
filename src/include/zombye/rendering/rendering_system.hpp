@@ -4,12 +4,15 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
+#include <zombye/rendering/shader_manager.hpp>
+
 namespace zombye {
     class game;
     class rendering_system {
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
+        shader_manager shader_manager_;
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
