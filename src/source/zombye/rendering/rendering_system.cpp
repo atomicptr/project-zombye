@@ -1,10 +1,14 @@
 #include <string>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/shader_program.hpp>
 #include <zombye/rendering/vertex_buffer.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
+#include <zombye/assets/asset_manager.hpp>
+#include <zombye/rendering/mesh.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
@@ -14,12 +18,14 @@ namespace zombye {
     static std::unique_ptr<vertex_buffer> vb;
     static std::unique_ptr<vertex_array> va;
     static std::unique_ptr<vertex_layout> vl;
+    static std::unique_ptr<mesh> m_;
 
+    /*
     struct vertex {
         glm::vec3 pos;
         glm::vec4 col;
     };
-
+    */
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_(game), window_(window), shader_manager_() {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -43,7 +49,7 @@ namespace zombye {
         log("OpenGL version " + std::string{reinterpret_cast<const char*>(version)});
 
         glEnable(GL_DEPTH_TEST);
-        set_clear_color(0.5f, 0.5f, 0.5f, 1.0f);
+        set_clear_color(0.0f, 0.0f, 0.0f, 1.0f);
 
         if (GLEW_KHR_debug) {
             glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -59,17 +65,18 @@ namespace zombye {
         vs = shader_manager_.load("shader/color.vs", GL_VERTEX_SHADER);
         fs = shader_manager_.load("shader/color.fs", GL_FRAGMENT_SHADER);
         sp = std::unique_ptr<shader_program>{new shader_program{}};
-        vb = std::unique_ptr<vertex_buffer>{new vertex_buffer{0, GL_STATIC_DRAW}};
-        va = std::unique_ptr<vertex_array>{new vertex_array{}};
-        vl = std::unique_ptr<vertex_layout>{new vertex_layout{}};
-        vl->emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        vl->emplace("in_color", 4, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        //vb = std::unique_ptr<vertex_buffer>{new vertex_buffer{0, GL_STATIC_DRAW}};
+        //va = std::unique_ptr<vertex_array>{new vertex_array{}};
+        //vl = std::unique_ptr<vertex_layout>{new vertex_layout{}};
+        vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+        vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
         sp->attach_shader(vs);
         sp->attach_shader(fs);
-        vl->setup_layout(*va, &vb);
-        vl->setup_program(*sp, "fragcolor");
+        //vl->setup_layout(*va, &vb);
+        vertex_layout_.setup_program(*sp, "fragcolor");
         sp->link();
-
+        /*
         vertex vertex[3] = {
             {glm::vec3{0.f, 0.5f, 0.f}, glm::vec4{1.f, 0.f, 0.f, 1.f}},
             {glm::vec3{0.5f, -0.5f, 0.f}, glm::vec4{0.f, 1.f, 0.f, 1.f}},
@@ -77,6 +84,13 @@ namespace zombye {
         };
 
         vb->data(3 * sizeof(vertex), vertex);
+        */
+        static asset_manager am;
+        auto asset = am.load("meshes/Suzanne.msh");
+        if (!asset) {
+            throw std::runtime_error("no mesh");
+        }
+        m_ = std::unique_ptr<mesh>{new mesh{*this, asset->content()}};
     }
 
     rendering_system::~rendering_system() noexcept {
@@ -88,9 +102,14 @@ namespace zombye {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // TODO: fancy rendering
-        va->bind();
+        //va->bind();
         sp->use();
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+        auto p = glm::perspective(90.0f * 3.14f / 180.0f, 800.0f / 600.0f, 0.01f, 1000.0f);
+        auto v = glm::lookAt(glm::vec3{-2.f, 2.f, -3.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
+        auto vp = p * v;
+        sp->uniform("vp", 1, GL_FALSE, vp);
+        m_->draw();
+        //glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 
         SDL_GL_SwapWindow(window_);
     }

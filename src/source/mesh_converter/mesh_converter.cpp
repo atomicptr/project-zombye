@@ -37,6 +37,7 @@ namespace devtools {
         auto line = std::string{};
         auto dump = std::string{};
         std::getline(is_, line);
+        auto i = int{0};
         while (line != "end") {
             is_ >> dump;
             auto v = vertex{};
@@ -48,10 +49,13 @@ namespace devtools {
             is_ >> v.nor[2];
             is_ >> v.tex[0];
             is_ >> v.tex[1];
-            is_ >> dump;
             vertices_.push_back(v);
             std::getline(is_, line);
-            std::getline(is_, line);
+            ++i;
+            if (i > 2) {
+                std::getline(is_, line);
+                i = 0;
+            }
         }
     }
 
