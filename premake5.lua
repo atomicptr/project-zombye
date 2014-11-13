@@ -22,10 +22,33 @@ solution "project-zombye"
                 links "c++"
             end
 
+    project "mesh_converter"
+        kind "ConsoleApp"
+
+        files "src/source/mesh_converter/**.cpp"
+
+        defines "GLM_FORCE_RADIANS"
+
+        configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
+                buildoptions "-stdlib=libc++"
+                links "c++"
+            end
+
+        configuration {"gmake", "macosx"}
+
+        configuration "debug"
+            flags {"Symbols", "FatalWarnings"}
+            optimize "Off"
+
+        configuration "release"
+            optimize "Full"
+
     project "zombye"
         kind "WindowedApp"
 
-        files "src/source/**.cpp"
+        files "src/source/zombye/**.cpp"
 
         defines "GLM_FORCE_RADIANS"
 
