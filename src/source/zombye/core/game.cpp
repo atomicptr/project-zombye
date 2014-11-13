@@ -1,8 +1,9 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
 
-zombye::game::game(std::string title, int width, int height) :
-    title_(title), width_(width), height_(height), running_(false) {
+zombye::game::game(std::string title) : title_(title), running_(false) {
+    width_ = 800;
+    height_ = 600;
 
     zombye::log("init game with OS: " + std::string(OS_NAME));
 
@@ -96,4 +97,12 @@ zombye::audio_system* zombye::game::audio() {
 
 zombye::gameplay_system* zombye::game::gameplay() {
     return gameplay_system_.get();
+}
+
+int glCreateGame(const char* name) {
+    zombye::game game{name};
+
+    game.run();
+
+    return 0;
 }

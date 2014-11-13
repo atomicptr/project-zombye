@@ -22,7 +22,7 @@ namespace zombye {
 namespace zombye {
     class game {
     public:
-        game(std::string, int, int);
+        game(std::string);
         ~game();
 
         void update(float delta_time);
@@ -53,5 +53,8 @@ namespace zombye {
         std::unique_ptr<gameplay_system> gameplay_system_;
     };
 }
+
+// easter egg :P
+int glCreateGame(const char*);
 
 #endif
