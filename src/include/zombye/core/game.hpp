@@ -8,6 +8,7 @@
 
 #include <zombye/input/input_system.hpp>
 #include <zombye/audio/audio_system.hpp>
+#include <zombye/config/config_system.hpp>
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
@@ -46,7 +47,9 @@ namespace zombye {
         int height_;
 
         bool running_;
+        bool fullscreen_;
 
+        std::unique_ptr<zombye::config_system> config_system_;
         std::unique_ptr<zombye::entity_manager> entity_manager_;
         std::unique_ptr<input_system> input_system_;
         std::unique_ptr<audio_system> audio_system_;
