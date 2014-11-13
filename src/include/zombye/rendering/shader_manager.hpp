@@ -13,7 +13,7 @@ namespace zombye {
     class shader_manager : public cached_resource_manager<const shader, shader_manager> {
         friend class cached_resource_manager<const shader, shader_manager>;
     public:
-        shader_manager() noexcept = default;
+        shader_manager() = default;
         ~shader_manager() noexcept = default;
     protected:
         shader_ptr load_new(const std::string& name, GLenum type);

@@ -1,9 +1,25 @@
 #include <string>
 
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/rendering/shader_program.hpp>
+#include <zombye/rendering/vertex_buffer.hpp>
+#include <zombye/rendering/vertex_array.hpp>
+#include <zombye/rendering/vertex_layout.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
+    static std::shared_ptr<const shader> vs;
+    static std::shared_ptr<const shader> fs;
+    static std::unique_ptr<shader_program> sp;
+    static std::unique_ptr<vertex_buffer> vb;
+    static std::unique_ptr<vertex_array> va;
+    static std::unique_ptr<vertex_layout> vl;
+
+    struct vertex {
+        glm::vec3 pos;
+        glm::vec4 col;
+    };
+
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_(game), window_(window), shader_manager_() {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -27,7 +43,7 @@ namespace zombye {
         log("OpenGL version " + std::string{reinterpret_cast<const char*>(version)});
 
         glEnable(GL_DEPTH_TEST);
-        set_clear_color(0.0f, 0.0f, 0.0f, 1.0f);
+        set_clear_color(0.5f, 0.5f, 0.5f, 1.0f);
 
         if (GLEW_KHR_debug) {
             glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -39,6 +55,28 @@ namespace zombye {
         } else {
             log(LOG_ERROR, "no OpenGL debug log available");
         }
+
+        vs = shader_manager_.load("shader/color.vs", GL_VERTEX_SHADER);
+        fs = shader_manager_.load("shader/color.fs", GL_FRAGMENT_SHADER);
+        sp = std::unique_ptr<shader_program>{new shader_program{}};
+        vb = std::unique_ptr<vertex_buffer>{new vertex_buffer{0, GL_STATIC_DRAW}};
+        va = std::unique_ptr<vertex_array>{new vertex_array{}};
+        vl = std::unique_ptr<vertex_layout>{new vertex_layout{}};
+        vl->emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+        vl->emplace("in_color", 4, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        sp->attach_shader(vs);
+        sp->attach_shader(fs);
+        vl->setup_layout(*va, &vb);
+        vl->setup_program(*sp, "fragcolor");
+        sp->link();
+
+        vertex vertex[3] = {
+            {glm::vec3{0.f, 0.5f, 0.f}, glm::vec4{1.f, 0.f, 0.f, 1.f}},
+            {glm::vec3{0.5f, -0.5f, 0.f}, glm::vec4{0.f, 1.f, 0.f, 1.f}},
+            {glm::vec3{-0.5f, -0.5f, 0.f}, glm::vec4{0.f, 0.f, 1.f, 1.f}}
+        };
+
+        vb->data(3 * sizeof(vertex), vertex);
     }
 
     rendering_system::~rendering_system() noexcept {
@@ -50,7 +88,9 @@ namespace zombye {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // TODO: fancy rendering
-        static std::shared_ptr<const shader> shader_ = shader_manager_.load("shader/color.vs", GL_VERTEX_SHADER);
+        va->bind();
+        sp->use();
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 
         SDL_GL_SwapWindow(window_);
     }
