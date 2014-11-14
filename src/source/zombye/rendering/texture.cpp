@@ -1,7 +1,7 @@
 #include <zombye/rendering/texture.hpp>
 
 namespace zombye {
-    texture::texture(const gli::texture2D tex_image) noexcept {
+    texture::texture(const gli::texture2D& tex_image) noexcept {
         glGenTextures(1, &name_);
         glBindTexture(GL_TEXTURE_2D, name_);
         // adapted from http://www.g-truc.net/project-0024.html

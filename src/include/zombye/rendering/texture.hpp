@@ -10,7 +10,7 @@ namespace zombye {
         size_t width_;
         size_t height_;
     public:
-        texture(const gli::texture2D tex_image) noexcept;
+        texture(const gli::texture2D& tex_image) noexcept;
         texture(const texture& other) = delete;
         texture(texture&& other) = delete;
         ~texture() noexcept;

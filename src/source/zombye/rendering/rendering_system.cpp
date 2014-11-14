@@ -21,7 +21,7 @@ namespace zombye {
     static std::unique_ptr<mesh> m_;
 
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_(game), window_(window), shader_manager_() {
+    : game_(game), window_(window), shader_manager_{} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -72,6 +72,12 @@ namespace zombye {
             throw std::runtime_error("no mesh");
         }
         m_ = std::unique_ptr<mesh>{new mesh{*this, asset->content()}};
+
+        auto tex = texture_manager_.load("texture/dummy.dds");
+        if (!tex) {
+            throw std::runtime_error("no tex");
+        }
+        tex->bind(0);
     }
 
     rendering_system::~rendering_system() noexcept {

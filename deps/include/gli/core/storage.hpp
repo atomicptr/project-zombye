@@ -8,10 +8,10 @@
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,9 @@
 #include <cstring>
 
 // GLM
+#ifndef GLM_FORCE_RADIANS
 #define GLM_FORCE_RADIANS
+#endif
 #include <glm/glm.hpp>
 #include <glm/gtx/component_wise.hpp>
 #include <glm/gtx/gradient_paint.hpp>
@@ -128,7 +130,7 @@ namespace detail
 			impl();
 
 			explicit impl(
-				size_type const & Layers, 
+				size_type const & Layers,
 				size_type const & Faces,
 				size_type const & Levels,
 				format_type const & Format,
@@ -136,7 +138,7 @@ namespace detail
 				size_type const & BlockSize,
 				dimensions_type const & BlockDimensions);
 
-			size_type const Layers; 
+			size_type const Layers;
 			size_type const Faces;
 			size_type const Levels;
 			format_type const Format;
@@ -151,45 +153,45 @@ namespace detail
 
 /*
 	storage extractLayers(
-		storage const & Storage, 
-		storage::size_type const & Offset, 
+		storage const & Storage,
+		storage::size_type const & Offset,
 		storage::size_type const & Size);
 */
 /*
 	storage extractFace(
-		storage const & Storage, 
+		storage const & Storage,
 		face const & Face);
 */
 /*
 	storage extractLevels(
-		storage const & Storage, 
-		storage::size_type const & Offset, 
+		storage const & Storage,
+		storage::size_type const & Offset,
 		storage::size_type const & Size);
 */
 /*
 	void copy_layers(
-		storage const & SourceStorage, 
+		storage const & SourceStorage,
 		storage::size_type const & SourceLayerOffset,
 		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
+		storage & DestinationStorage,
 		storage::size_type const & DestinationLayerOffset);
 
 	void copy_faces(
-		storage const & SourceStorage, 
+		storage const & SourceStorage,
 		storage::size_type const & SourceLayerOffset,
 		storage::size_type const & SourceFaceOffset,
 		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
+		storage & DestinationStorage,
 		storage::size_type const & DestinationLayerOffset,
 		storage::size_type const & DestinationFaceOffset);
 
 	void copy_levels(
-		storage const & SourceStorage, 
+		storage const & SourceStorage,
 		storage::size_type const & SourceLayerOffset,
 		storage::size_type const & SourceFaceOffset,
 		storage::size_type const & SourceLevelOffset,
 		storage::size_type const & SourceLayerSize,
-		storage & DestinationStorage, 
+		storage & DestinationStorage,
 		storage::size_type const & DestinationLayerOffset,
 		storage::size_type const & DestinationFaceOffset,
 		storage::size_type const & DestinationlevelOffset);

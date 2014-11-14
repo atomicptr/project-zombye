@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/shader_manager.hpp>
+#include <zombye/rendering/texture_manager.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 
 namespace zombye {
@@ -14,6 +15,7 @@ namespace zombye {
         SDL_Window* window_;
         SDL_GLContext context_;
         shader_manager shader_manager_;
+        texture_manager texture_manager_;
         zombye::vertex_layout vertex_layout_;
     public:
         rendering_system(game& game, SDL_Window* window);
@@ -24,6 +26,14 @@ namespace zombye {
         void update(float delta_time);
 
         void set_clear_color(float red, float green, float blue, float alpha);
+
+        zombye::shader_manager& shader_manager() {
+            return shader_manager_;
+        }
+
+        zombye::texture_manager& texture_manager() {
+            return texture_manager_;
+        }
 
         zombye::vertex_layout& vertex_layout() {
             return vertex_layout_;

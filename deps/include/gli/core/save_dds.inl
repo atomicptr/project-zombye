@@ -29,52 +29,52 @@
 namespace gli{
 namespace detail
 {
-	glm::uint32 getMaskRed(format const & Formatl)
+	inline glm::uint32 getMaskRed(format const & Formatl)
 	{
 		switch(Formatl)
 		{
 		default:
 			return 0x0000000;
-		case R8_UNORM: 
-		case RG8_UNORM: 
-		case RGB8_UNORM: 
-		case RGBA8_UNORM: 
+		case R8_UNORM:
+		case RG8_UNORM:
+		case RGB8_UNORM:
+		case RGBA8_UNORM:
 			return 0xFF000000;
 		}
 	}
 
-	glm::uint32 getMaskGreen(format const & Formatl)
+	inline glm::uint32 getMaskGreen(format const & Formatl)
 	{
 		switch(Formatl)
 		{
 		default:
 			return 0x0000000;
-		case RG8_UNORM: 
-		case RGB8_UNORM: 
-		case RGBA8_UNORM: 
+		case RG8_UNORM:
+		case RGB8_UNORM:
+		case RGBA8_UNORM:
 			return 0x00FF0000;
 		}
 	}
 
-	glm::uint32 getMaskBlue(format const & Formatl)
+	inline glm::uint32 getMaskBlue(format const & Formatl)
 	{
 		switch(Formatl)
 		{
 		default:
 			return 0x0000000;
-		case RGB8_UNORM: 
-		case RGBA8_UNORM: 
+		case RGB8_UNORM:
+		case RGBA8_UNORM:
 			return 0x0000FF00;
 		}
 	}
 
-	glm::uint32 getMaskAlpha(format const & Formatl)
+	inline glm::uint32 getMaskAlpha(format const & Formatl)
 	{
 		switch(Formatl)
 		{
 		default:
 			return 0x0000000;
-		case RGBA8_UNORM: 
+		case RGBA8_UNORM:
 			return 0x000000FF;
 		}
 	}
@@ -83,7 +83,7 @@ namespace detail
 
 	inline void save_dds
 	(
-		storage const & Storage, 
+		storage const & Storage,
 		char const * Filename
 	)
 	{
