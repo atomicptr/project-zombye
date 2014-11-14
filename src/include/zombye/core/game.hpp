@@ -8,6 +8,7 @@
 
 #include <zombye/input/input_system.hpp>
 #include <zombye/audio/audio_system.hpp>
+#include <zombye/config/config_system.hpp>
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
@@ -23,7 +24,7 @@ namespace zombye {
 namespace zombye {
     class game {
     public:
-        game(std::string, int, int);
+        game(std::string);
         ~game();
 
         void update(float delta_time);
@@ -45,14 +46,17 @@ namespace zombye {
         input_system* input();
         audio_system* audio();
         gameplay_system* gameplay();
+        config_system* config();
     private:
         std::string title_;
         int width_;
         int height_;
 
         bool running_;
+        bool fullscreen_;
 
         std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window_;
+        std::unique_ptr<zombye::config_system> config_system_;
         std::unique_ptr<zombye::rendering_system> rendering_system_;
         std::unique_ptr<zombye::entity_manager> entity_manager_;
         std::unique_ptr<input_system> input_system_;
@@ -60,5 +64,8 @@ namespace zombye {
         std::unique_ptr<gameplay_system> gameplay_system_;
     };
 }
+
+// easter egg :P
+int glCreateGame(const char*);
 
 #endif

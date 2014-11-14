@@ -1,6 +1,6 @@
 #include <zombye/input/input_system.hpp>
 
-zombye::input_system::input_system() {
+zombye::input_system::input_system(zombye::config_system *config) : config_system_(config) {
     if(!SDL_WasInit(SDL_INIT_JOYSTICK)) {
         SDL_InitSubSystem(SDL_INIT_JOYSTICK);
     }
@@ -90,7 +90,7 @@ void zombye::input_system::detect_joysticks() {
 
         for(auto i = 0; i < joystick_count; i++) {
             auto joystick_ptr = SDL_JoystickOpen(i);
-            auto joystick = std::make_shared<zombye::joystick>(SDL_JoystickInstanceID(joystick_ptr), joystick_ptr);
+            auto joystick = std::make_shared<zombye::joystick>(SDL_JoystickInstanceID(joystick_ptr), joystick_ptr, config_system_);
 
             if(joystick_ptr) {
                 joysticks_.insert(std::make_pair(i, joystick));

@@ -2,11 +2,14 @@
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 
-zombye::game::game(std::string title, int width, int height) :
-    title_(title), width_(width), height_(height), running_(false),
-    window_(nullptr, SDL_DestroyWindow) {
-
+zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
     zombye::log("init game with OS: " + std::string(OS_NAME));
+
+    config_system_ = std::unique_ptr<zombye::config_system>(new zombye::config_system());
+
+    width_ = config_system_->get("main", "width").asInt();
+    height_ = config_system_->get("main", "height").asInt();
+    fullscreen_ = config_system_->get("main", "fullscreen").asBool();
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -21,7 +24,7 @@ zombye::game::game(std::string title, int width, int height) :
     }
     SDL_ClearError();
 
-    input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
+    input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(
@@ -106,4 +109,16 @@ zombye::audio_system* zombye::game::audio() {
 
 zombye::gameplay_system* zombye::game::gameplay() {
     return gameplay_system_.get();
+}
+
+zombye::config_system* zombye::game::config() {
+    return config_system_.get();
+}
+
+int glCreateGame(const char* name) {
+    zombye::game game{name};
+
+    game.run();
+
+    return 0;
 }

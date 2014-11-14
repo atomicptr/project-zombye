@@ -1,10 +1,22 @@
 #include <zombye/input/joystick.hpp>
 
-zombye::joystick::joystick(int id, SDL_Joystick *joystick) : id_(id), joystick_(joystick) {
+zombye::joystick::joystick(int id, SDL_Joystick *joystick, zombye::config_system *config) : id_(id), joystick_(joystick) {
     zombye::log("opened joystick #" + std::to_string(id) + " " + std::string(SDL_JoystickNameForIndex(id)));
 
-    // OSX xbox 360
-    enable_profile(0, 1, 3, 4, 5, 2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14);
+    if(config->has("gamepad")) {
+        auto profile = config->get("gamepad", "config");
+        auto hats_as_buttons = config->get("gamepad", "hats_are_buttons").asBool();
+
+        auto p = [&](std::string name) -> int {
+            return profile[name].asInt();
+        };
+
+        enable_profile(
+            p("LS_X"), p("LS_Y"), p("RS_X"), p("RS_Y"), p("RT"), p("LT"), p("A"), p("B"),
+            p("X"), p("Y"), p("LB"), p("RB"), p("LS"), p("RS"), p("START"), p("SELECT"),
+            p("DPADUP"), p("DPADDOWN"), p("DPADLEFT"), p("DPADRIGHT"), hats_as_buttons
+        );
+    }
 }
 
 zombye::joystick::~joystick() {
@@ -15,7 +27,7 @@ zombye::joystick::~joystick() {
 
 void zombye::joystick::enable_profile(int leftx, int lefty, int rightx, int righty, int rtrigger,
         int ltrigger, int a, int b, int x, int y, int lb, int rb, int ls, int rs, int start,
-        int select, int up, int down, int left, int right) {
+        int select, int up, int down, int left, int right, bool hats_as_buttons) {
     leftx_ = leftx;
     lefty_ = lefty;
     rightx_ = rightx;
@@ -36,6 +48,7 @@ void zombye::joystick::enable_profile(int leftx, int lefty, int rightx, int righ
     dpad_down_ = down;
     dpad_left_ = left;
     dpad_right_ = right;
+    hats_as_buttons_ = hats_as_buttons;
 }
 
 void zombye::joystick::reset() {

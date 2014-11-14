@@ -15,12 +15,14 @@
 #include <zombye/input/input_manager.hpp>
 #include <zombye/utils/logger.hpp>
 
+#include <zombye/config/config_system.hpp>
+
 namespace zombye {
     class input_manager;
 
     class input_system {
     public:
-        input_system();
+        input_system(zombye::config_system*);
 
         zombye::mouse* mouse();
         zombye::keyboard* keyboard();
@@ -37,6 +39,7 @@ namespace zombye {
         std::unique_ptr<zombye::mouse> mouse_;
         std::unique_ptr<zombye::keyboard> keyboard_;
         std::unique_ptr<zombye::input_manager> manager_;
+        config_system *config_system_;
 
         void detect_joysticks();
     };
