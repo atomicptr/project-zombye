@@ -38,7 +38,7 @@ namespace zombye {
     }
 
     void texture::bind(uint32_t unit) const noexcept {
-        glActiveTexture(unit);
+        glActiveTexture(GL_TEXTURE0 + unit);
         glBindTexture(GL_TEXTURE_2D, name_);
     }
 }

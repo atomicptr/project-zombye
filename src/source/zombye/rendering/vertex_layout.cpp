@@ -9,7 +9,7 @@ namespace zombye {
 
     void vertex_layout::setup_layout(vertex_array& vao, const std::unique_ptr<vertex_buffer>* vbo) noexcept {
         vao.bind();
-        auto i = uint32_t{0};
+        auto i = uint32_t{1};
         for (auto& va : vertex_attributes_) {
             vbo[va.index]->bind();
             vao.bind_vertex_attribute(*(vbo[va.index]), i, va.size, va.type, va.normalized, va.stride, va.offset);
@@ -18,7 +18,7 @@ namespace zombye {
     }
 
     void vertex_layout::setup_program(shader_program& program, const std::string& name) noexcept {
-        auto i = uint32_t{0};
+        auto i = uint32_t{1};
         for (auto& va : vertex_attributes_) {
             program.bind_attribute_location(i, va.name);
             ++i;

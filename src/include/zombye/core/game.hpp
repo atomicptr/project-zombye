@@ -53,8 +53,8 @@ namespace zombye {
         bool running_;
 
         std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window_;
-        std::unique_ptr<zombye::entity_manager> entity_manager_;
         std::unique_ptr<zombye::rendering_system> rendering_system_;
+        std::unique_ptr<zombye::entity_manager> entity_manager_;
         std::unique_ptr<input_system> input_system_;
         std::unique_ptr<audio_system> audio_system_;
         std::unique_ptr<gameplay_system> gameplay_system_;

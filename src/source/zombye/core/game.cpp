@@ -1,5 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
+#include <zombye/rendering/staticmesh_component.hpp>
 
 zombye::game::game(std::string title, int width, int height) :
     title_(title), width_(width), height_(height), running_(false),
@@ -82,7 +83,7 @@ void zombye::game::quit() {
 }
 
 void zombye::game::register_components() {
-
+    rtti_manager::register_type(staticmesh_component::type_rtti());
 }
 
 int zombye::game::width() const {

@@ -11,6 +11,7 @@
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/ecs/value_pack.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     class game;

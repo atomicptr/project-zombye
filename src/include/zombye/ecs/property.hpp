@@ -2,6 +2,7 @@
 #define __ZOMBYE_PROPERTY_HPP__
 
 #include <zombye/ecs/typed_property.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     class component;
