@@ -12,8 +12,6 @@ zombye::input_system::input_system(zombye::config_system *config) : config_syste
     manager_ = std::unique_ptr<zombye::input_manager>(new zombye::input_manager(this));
 
     detect_joysticks();
-
-    // enable profile
 }
 
 zombye::keyboard* zombye::input_system::keyboard() {
