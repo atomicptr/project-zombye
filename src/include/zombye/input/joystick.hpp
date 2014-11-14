@@ -90,7 +90,7 @@ namespace zombye {
         int dpad_down_;
         int dpad_left_;
         int dpad_right_;
-        bool hats_as_buttons_;
+        bool hats_are_buttons_;
     };
 }
 
