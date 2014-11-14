@@ -32,6 +32,12 @@ Json::Value zombye::config_system::get(std::string file, std::string value) {
     return Json::Value();
 }
 
+bool zombye::config_system::has(std::string file) {
+    auto it = configs_.find(file);
+
+    return it != configs_.end();
+}
+
 void zombye::config_system::register_config(std::string name, zombye::asset *asset) {
     Json::Reader reader;
 

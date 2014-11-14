@@ -18,6 +18,7 @@ namespace zombye {
         config_system();
 
         Json::Value get(std::string, std::string);
+        bool has(std::string);
 
     private:
         std::unordered_map<std::string, Json::Value> configs_;

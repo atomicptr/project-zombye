@@ -14,7 +14,7 @@ zombye::game::game(std::string title) : title_(title), running_(false) {
 
     register_components();
 
-    input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system());
+    input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
@@ -104,6 +104,10 @@ zombye::audio_system* zombye::game::audio() {
 
 zombye::gameplay_system* zombye::game::gameplay() {
     return gameplay_system_.get();
+}
+
+zombye::config_system* zombye::game::config() {
+    return config_system_.get();
 }
 
 int glCreateGame(const char* name) {

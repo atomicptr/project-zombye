@@ -41,6 +41,7 @@ namespace zombye {
         input_system* input();
         audio_system* audio();
         gameplay_system* gameplay();
+        config_system* config();
     private:
         std::string title_;
         int width_;

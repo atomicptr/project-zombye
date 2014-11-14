@@ -10,6 +10,8 @@
 #include <zombye/utils/os.h>
 #include <zombye/utils/logger.hpp>
 
+#include <zombye/config/config_system.hpp>
+
 namespace zombye {
     struct stick {
         float x;
@@ -18,11 +20,11 @@ namespace zombye {
 
     class joystick {
     public:
-        joystick(int, SDL_Joystick*);
+        joystick(int, SDL_Joystick*, config_system*);
         ~joystick();
 
         void enable_profile(int, int, int, int, int, int, int, int, int, int, int,
-            int, int, int, int, int, int, int, int, int);
+            int, int, int, int, int, int, int, int, int, bool);
 
         void reset();
         void update(SDL_Event&);
@@ -88,6 +90,7 @@ namespace zombye {
         int dpad_down_;
         int dpad_left_;
         int dpad_right_;
+        bool hats_as_buttons_;
     };
 }
 
