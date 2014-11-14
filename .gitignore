@@ -1,5 +1,6 @@
 *.log
 /zombye
+/mesh_converter
 
 # Created by https://www.gitignore.io
 
