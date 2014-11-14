@@ -17,11 +17,11 @@ namespace zombye {
     : reflective{game, owner} {
         auto& rendering_system = game.rendering_system();
         rendering_system.register_component(this);
-        mesh_ = rendering_system.mesh_manager().load(mesh);
+        mesh_ = rendering_system.get_mesh_manager().load(mesh);
         if (!mesh_) {
             throw std::runtime_error("could not load mesh from file " + mesh);
         }
-        diffuse_texture_ = rendering_system.texture_manager().load(diffuse_texture);
+        diffuse_texture_ = rendering_system.get_texture_manager().load(diffuse_texture);
         if (!diffuse_texture_) {
             throw std::runtime_error("coudl not load texture from file " + diffuse_texture);
         }
@@ -32,14 +32,14 @@ namespace zombye {
     }
 
     void staticmesh_component::set_mesh(const std::string& name) {
-        auto tmp = game_.rendering_system().mesh_manager().load(name);
+        auto tmp = game_.rendering_system().get_mesh_manager().load(name);
         if (tmp) {
             mesh_ = tmp;
         }
     }
 
     void staticmesh_component::set_diffuse_texture(const std::string& name) {
-        auto tmp = game_.rendering_system().texture_manager().load(name);
+        auto tmp = game_.rendering_system().get_texture_manager().load(name);
         if (tmp) {
             diffuse_texture_ = tmp;
         }

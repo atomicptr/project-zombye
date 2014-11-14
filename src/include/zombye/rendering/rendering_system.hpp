@@ -51,19 +51,19 @@ namespace zombye {
 
         void set_clear_color(float red, float green, float blue, float alpha);
 
-        auto& mesh_manager() {
+        auto& get_mesh_manager() {
             return mesh_manager_;
         }
 
-        auto& shader_manager() {
+        auto& get_shader_manager() {
             return shader_manager_;
         }
 
-        auto& texture_manager() {
+        auto& get_texture_manager() {
             return texture_manager_;
         }
 
-        auto& vertex_layout() {
+        auto& get_vertex_layout() {
             return vertex_layout_;
         }
 

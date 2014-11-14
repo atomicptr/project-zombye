@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <mesh_converter/mesh_converter.hpp>
 
 int main(int argc, char* argv[]) {

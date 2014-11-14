@@ -7,7 +7,7 @@ namespace zombye {
     : vertex_count_{*reinterpret_cast<const size_t*>(data.data())},
     vbo_{new vertex_buffer{vertex_count_ * sizeof(vertex),
     reinterpret_cast<const vertex*>(data.data() + sizeof(size_t)), GL_STATIC_DRAW}} {
-        rendering_system.vertex_layout().setup_layout(vao_, &vbo_);
+        rendering_system.get_vertex_layout().setup_layout(vao_, &vbo_);
     }
 
     void mesh::draw() const {

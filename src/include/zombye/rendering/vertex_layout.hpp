@@ -21,7 +21,7 @@ namespace zombye {
     class vertex_layout {
         std::vector<vertex_attribute> vertex_attributes_;
     public:
-        vertex_layout() noexcept = default;
+        vertex_layout() = default;
         vertex_layout(const vertex_layout& other) = delete;
         vertex_layout(vertex_layout&& other) = delete;
 

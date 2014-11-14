@@ -12,7 +12,7 @@ namespace zombye {
     class texture_manager : public cached_resource_manager<const texture, texture_manager> {
         friend class cached_resource_manager<const texture, texture_manager>;
     public:
-        texture_manager() noexcept = default;
+        texture_manager() = default;
         ~texture_manager() noexcept = default;
     protected:
         texture_ptr load_new(const std::string& name);
