@@ -3,10 +3,14 @@
 
 #include <unordered_map>
 #include <utility>
+#include <memory>
 
 #include <json/json.h>
 
 #include <zombye/assets/asset_manager.hpp>
+#include <zombye/assets/asset.hpp>
+
+#include <zombye/utils/os.h>
 
 namespace zombye {
     class config_system {
@@ -17,6 +21,8 @@ namespace zombye {
 
     private:
         std::unordered_map<std::string, Json::Value> configs_;
+
+        void register_config(std::string, zombye::asset*);
     };
 }
 

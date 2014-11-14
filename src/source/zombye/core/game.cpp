@@ -2,13 +2,13 @@
 #include <zombye/ecs/rtti_manager.hpp>
 
 zombye::game::game(std::string title) : title_(title), running_(false) {
+    zombye::log("init game with OS: " + std::string(OS_NAME));
+
     config_system_ = std::unique_ptr<zombye::config_system>(new zombye::config_system());
 
     width_ = config_system_->get("main", "width").asInt();
     height_ = config_system_->get("main", "height").asInt();
     fullscreen_ = config_system_->get("main", "fullscreen").asBool();
-
-    zombye::log("init game with OS: " + std::string(OS_NAME));
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
