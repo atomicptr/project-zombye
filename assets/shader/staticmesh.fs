@@ -4,8 +4,8 @@ in vec2 out_texel;
 
 out vec4 fragcolor;
 
-uniform sampler2D diffuse;
+uniform sampler2D color_texture;
 
 void main() {
-    fragcolor = texture(diffuse, out_texel);
+    fragcolor = texture(color_texture, out_texel);
 }

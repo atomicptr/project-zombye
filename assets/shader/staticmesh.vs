@@ -6,9 +6,9 @@ in vec2 in_texel;
 
 out vec2 out_texel;
 
-uniform mat4 vp;
+uniform mat4 mvp;
 
 void main() {
     out_texel = in_texel;
-    gl_Position = vp * vec4(in_position, 1.0);
+    gl_Position = mvp * vec4(in_position, 1.0);
 }

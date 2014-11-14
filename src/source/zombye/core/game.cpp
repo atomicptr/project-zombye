@@ -57,6 +57,8 @@ void zombye::game::run() {
                 width_ = event.window.data1;
                 height_ = event.window.data2;
 
+                rendering_system_->resize_projection(width_, height_);
+
                 zombye::log("resized window to { width: " + std::to_string(width_) + ", height: " +
                     std::to_string(height_) + " }");
             }

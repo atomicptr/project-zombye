@@ -14,7 +14,7 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_(game), window_(window), mesh_manager_{*this} {
+    : game_(game), window_(window), mesh_manager_{*this}, active_camera_{0}, perspective_projection_{1} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -69,6 +69,12 @@ namespace zombye {
 
         vertex_layout_.setup_program(*staticmesh_program_, "fragcolor");
         staticmesh_program_->link();
+
+        fovy_ = 90.0f * 3.14f / 180.0f;
+        auto aspect_ratio = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
+        near_plane_ = 0.01f;
+        far_plane_ = 1000.0f;
+        perspective_projection_ = glm::perspective(fovy_, aspect_ratio, near_plane_, far_plane_);
     }
 
     rendering_system::~rendering_system() noexcept {
@@ -78,15 +84,17 @@ namespace zombye {
 
     void rendering_system::update(float delta_time) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        game_.entity_manager().emplace("dummy", glm::vec3{}, glm::quat{}, glm::vec3{});
-        // TODO: fancy rendering
-        auto p = glm::perspective(90.0f * 3.14f / 180.0f, 800.0f / 600.0f, 0.01f, 1000.0f);
-        auto v = glm::lookAt(glm::vec3{-2.f, 2.f, -3.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
-        auto vp = p * v;
+
+        auto view = glm::mat4{1.0f};
+        auto camera = camera_components_.find(active_camera_);
+        if (camera != camera_components_.end()) {
+            view = camera->second->transform();
+        }
+        auto vp = perspective_projection_ * view;
         staticmesh_program_->use();
-        staticmesh_program_->uniform("vp", 1, GL_FALSE, vp);
-        staticmesh_program_->uniform("diffuse", 0);
+        staticmesh_program_->uniform("color_texture", 0);
         for (auto& sm : staticmesh_components_) {
+            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * sm->owner().transform());
             sm->diffuse_texture()->bind(0);
             sm->mesh()->draw();
         }
@@ -96,6 +104,12 @@ namespace zombye {
 
     void rendering_system::set_clear_color(float red, float green, float blue, float alpha) {
         glClearColor(red, green, blue, alpha);
+    }
+
+    void rendering_system::resize_projection(float width, float height) noexcept {
+        auto aspect_ratio = width / height;
+        perspective_projection_ = glm::perspective(fovy_, aspect_ratio, near_plane_, far_plane_);
+        glViewport(0, 0, width, height);
     }
 
     void rendering_system::register_component(staticmesh_component* component) {
@@ -109,5 +123,16 @@ namespace zombye {
             *it = std::move(*last);
         }
         staticmesh_components_.pop_back();
+    }
+
+    void rendering_system::register_component(camera_component* component) {
+        camera_components_.emplace(std::make_pair(component->owner().id(), component));
+    }
+
+    void rendering_system::unregister_component(camera_component* component) {
+        auto it = camera_components_.find(component->owner().id());
+        if (it != camera_components_.end()) {
+            camera_components_.erase(it);
+        }
     }
 }

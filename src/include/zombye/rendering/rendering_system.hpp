@@ -2,10 +2,12 @@
 #define __ZOMBYE_RENDERING_SYSTEM_HPP__
 
 #include <vector>
+#include <unordered_map>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
+#include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/shader_manager.hpp>
 #include <zombye/rendering/shader_program.hpp>
@@ -17,6 +19,7 @@ namespace zombye {
     class game;
     class rendering_system {
         friend class staticmesh_component;
+        friend class camera_component;
 
         game& game_;
         SDL_Window* window_;
@@ -27,9 +30,17 @@ namespace zombye {
         vertex_layout vertex_layout_;
         std::unique_ptr<shader_program> staticmesh_program_;
         std::vector<staticmesh_component*> staticmesh_components_;
+        std::unordered_map<unsigned long, camera_component*> camera_components_;
+        unsigned long active_camera_;
+        glm::mat4 perspective_projection_;
+        float fovy_;
+        float near_plane_;
+        float far_plane_;
 
         void register_component(staticmesh_component* component);
         void unregister_component(staticmesh_component* component);
+        void register_component(camera_component* component);
+        void unregister_component(camera_component* component);
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
@@ -55,6 +66,18 @@ namespace zombye {
         auto& vertex_layout() {
             return vertex_layout_;
         }
+
+        void activate_camera(unsigned long owner_id) {
+            if (camera_components_.find(owner_id) != camera_components_.end()) {
+                active_camera_ = owner_id;
+            }
+        }
+
+        unsigned long active_camera() {
+            return active_camera_;
+        }
+
+        void resize_projection(float width, float height) noexcept;
 
         rendering_system& operator=(const rendering_system& other) = delete;
         rendering_system& operator=(rendering_system&& other) = delete;
