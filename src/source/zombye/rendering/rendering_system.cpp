@@ -20,12 +20,6 @@ namespace zombye {
     static std::unique_ptr<vertex_layout> vl;
     static std::unique_ptr<mesh> m_;
 
-    /*
-    struct vertex {
-        glm::vec3 pos;
-        glm::vec4 col;
-    };
-    */
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_(game), window_(window), shader_manager_() {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -65,26 +59,13 @@ namespace zombye {
         vs = shader_manager_.load("shader/color.vs", GL_VERTEX_SHADER);
         fs = shader_manager_.load("shader/color.fs", GL_FRAGMENT_SHADER);
         sp = std::unique_ptr<shader_program>{new shader_program{}};
-        //vb = std::unique_ptr<vertex_buffer>{new vertex_buffer{0, GL_STATIC_DRAW}};
-        //va = std::unique_ptr<vertex_array>{new vertex_array{}};
-        //vl = std::unique_ptr<vertex_layout>{new vertex_layout{}};
         vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
         vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
         sp->attach_shader(vs);
         sp->attach_shader(fs);
-        //vl->setup_layout(*va, &vb);
         vertex_layout_.setup_program(*sp, "fragcolor");
         sp->link();
-        /*
-        vertex vertex[3] = {
-            {glm::vec3{0.f, 0.5f, 0.f}, glm::vec4{1.f, 0.f, 0.f, 1.f}},
-            {glm::vec3{0.5f, -0.5f, 0.f}, glm::vec4{0.f, 1.f, 0.f, 1.f}},
-            {glm::vec3{-0.5f, -0.5f, 0.f}, glm::vec4{0.f, 0.f, 1.f, 1.f}}
-        };
-
-        vb->data(3 * sizeof(vertex), vertex);
-        */
         static asset_manager am;
         auto asset = am.load("meshes/Suzanne.msh");
         if (!asset) {
