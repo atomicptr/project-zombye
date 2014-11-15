@@ -23,7 +23,7 @@ namespace zombye {
 
         context_ = SDL_GL_CreateContext(window);
         auto error = std::string{SDL_GetError()};
-        if (error == "\0") {
+        if (error != "\0") {
             throw std::runtime_error("could not create OpenGL context with version 3.3: " + error);
         }
         SDL_ClearError();
