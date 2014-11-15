@@ -5,7 +5,7 @@ zombye::joystick::joystick(int id, SDL_Joystick *joystick, zombye::config_system
 
     if(config->has("gamepad")) {
         auto profile = config->get("gamepad", "config");
-        auto hats_as_buttons = config->get("gamepad", "hats_are_buttons").asBool();
+        auto hats_are_buttons = config->get("gamepad", "hats_are_buttons").asBool();
 
         auto p = [&](std::string name) -> int {
             return profile[name].asInt();
@@ -14,7 +14,7 @@ zombye::joystick::joystick(int id, SDL_Joystick *joystick, zombye::config_system
         enable_profile(
             p("LS_X"), p("LS_Y"), p("RS_X"), p("RS_Y"), p("RT"), p("LT"), p("A"), p("B"),
             p("X"), p("Y"), p("LB"), p("RB"), p("LS"), p("RS"), p("START"), p("SELECT"),
-            p("DPADUP"), p("DPADDOWN"), p("DPADLEFT"), p("DPADRIGHT"), hats_as_buttons
+            p("DPADUP"), p("DPADDOWN"), p("DPADLEFT"), p("DPADRIGHT"), hats_are_buttons
         );
     }
 }
@@ -27,7 +27,7 @@ zombye::joystick::~joystick() {
 
 void zombye::joystick::enable_profile(int leftx, int lefty, int rightx, int righty, int rtrigger,
         int ltrigger, int a, int b, int x, int y, int lb, int rb, int ls, int rs, int start,
-        int select, int up, int down, int left, int right, bool hats_as_buttons) {
+        int select, int up, int down, int left, int right, bool hats_are_buttons) {
     leftx_ = leftx;
     lefty_ = lefty;
     rightx_ = rightx;
@@ -48,7 +48,7 @@ void zombye::joystick::enable_profile(int leftx, int lefty, int rightx, int righ
     dpad_down_ = down;
     dpad_left_ = left;
     dpad_right_ = right;
-    hats_as_buttons_ = hats_as_buttons;
+    hats_are_buttons_ = hats_are_buttons;
 }
 
 void zombye::joystick::reset() {
@@ -122,13 +122,13 @@ void zombye::joystick::update(SDL_Event &event) {
             button_START_.key_down();
         } else if(button == select_) {
             button_SELECT_.key_down();
-        } else if(button == dpad_up_) {
+        } else if(hats_are_buttons_ && button == dpad_up_) {
             button_dpad_up_.key_down();
-        } else if(button == dpad_down_) {
+        } else if(hats_are_buttons_ && button == dpad_down_) {
             button_dpad_down_.key_down();
-        } else if(button == dpad_left_) {
+        } else if(hats_are_buttons_ && button == dpad_left_) {
             button_dpad_left_.key_down();
-        } else if(button == dpad_right_) {
+        } else if(hats_are_buttons_ && button == dpad_right_) {
             button_dpad_right_.key_down();
         }
     }
@@ -156,14 +156,37 @@ void zombye::joystick::update(SDL_Event &event) {
             button_START_.key_up();
         } else if(button == select_) {
             button_SELECT_.key_up();
-        } else if(button == dpad_up_) {
+        } else if(hats_are_buttons_ && button == dpad_up_) {
             button_dpad_up_.key_up();
-        } else if(button == dpad_down_) {
+        } else if(hats_are_buttons_ && button == dpad_down_) {
             button_dpad_down_.key_up();
-        } else if(button == dpad_left_) {
+        } else if(hats_are_buttons_ && button == dpad_left_) {
             button_dpad_left_.key_up();
-        } else if(button == dpad_right_) {
+        } else if(hats_are_buttons_ && button == dpad_right_) {
             button_dpad_right_.key_up();
+        }
+    }
+
+    if(event.type == SDL_JOYHATMOTION && !hats_are_buttons_) {
+        auto hat = event.jhat.hat;
+        auto hvalue = int{event.jhat.value};
+
+        static auto handle_button = [](button &b, int val) {
+            if(val > 0) {
+                b.key_down();
+            } else {
+                b.key_up();
+            }
+        };
+
+        if(hat == dpad_up_) {
+            handle_button(button_dpad_up_, hvalue);
+        } else if(hat == dpad_down_) {
+            handle_button(button_dpad_down_, hvalue);
+        } else if(hat == dpad_left_) {
+            handle_button(button_dpad_left_, hvalue);
+        } else if(hat == dpad_right_) {
+            handle_button(button_dpad_right_, hvalue);
         }
     }
 }
