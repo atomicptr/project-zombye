@@ -12,6 +12,7 @@
 #include <zombye/rendering/vertex_layout.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/utils/logger.hpp>
+#include <zombye/utils/os.h>
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
@@ -40,12 +41,21 @@ namespace zombye {
         set_clear_color(0.5f, 0.5f, 0.5f, 1.0f);
 
         if (GLEW_KHR_debug) {
+#ifdef __APPLE__
+            glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
+            GLsizei length, const GLchar *message, const void *userParam) {
+                log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
+                    + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
+                    + " servity: " + std::to_string(severity));
+            }, nullptr);
+#else
             glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
             GLsizei length, const GLchar *message, void *userParam) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
                     + " servity: " + std::to_string(severity));
             }, nullptr);
+#endif
         } else {
             log(LOG_ERROR, "no OpenGL debug log available");
         }
