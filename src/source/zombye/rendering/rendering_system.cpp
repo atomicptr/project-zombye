@@ -40,7 +40,7 @@ namespace zombye {
         set_clear_color(0.5f, 0.5f, 0.5f, 1.0f);
 
         if (GLEW_KHR_debug) {
-            glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity,
+            glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
             GLsizei length, const GLchar *message, void *userParam) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
