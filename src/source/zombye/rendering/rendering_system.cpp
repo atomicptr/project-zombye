@@ -61,7 +61,7 @@ namespace zombye {
         }
 
         vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        vertex_layout_.emplace("in_normals", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
 
         auto vs = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
