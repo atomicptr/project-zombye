@@ -20,7 +20,7 @@ namespace zombye {
         std::unique_ptr<vertex_buffer> vbo_;
         vertex_array vao_;
     public:
-        mesh(rendering_system& rendering_system, const std::vector<char> data);
+        mesh(rendering_system& rendering_system, const std::vector<char>& data);
         mesh(const mesh& other) = delete;
         mesh(mesh&& other) = delete;
         ~mesh() noexcept = default;
