@@ -47,6 +47,7 @@ namespace zombye {
             throw std::runtime_error("an error occured during linking of program "
                 + std::to_string(name_) + ": " + std::string{log_buffer.begin(), log_buffer.end()});
         }
+        /* causing some erros on apple machines if no vao is bound
         glValidateProgram(name_);
         glGetProgramiv(name_, GL_INFO_LOG_LENGTH, &length);
         if (length > 1) {
@@ -61,6 +62,7 @@ namespace zombye {
             throw std::runtime_error("program " + std::to_string(name_) + " is not valid: "
                 + std::string{log_buffer.begin(), log_buffer.end()});
         }
+        */
     }
 
     void shader_program::use() const noexcept {
