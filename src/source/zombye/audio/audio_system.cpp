@@ -6,10 +6,12 @@ zombye::audio_system::audio_system() {
     if(Mix_Init(MIX_INIT_OGG) != MIX_INIT_OGG) {
         zombye::log(LOG_ERROR, "Error while trying to init SDL_mixer: " + std::string(Mix_GetError()));
     }
+    SDL_ClearError();
 
     if(Mix_OpenAudio(AUDIO_FREQUENCY, MIX_DEFAULT_FORMAT, AUDIO_CHANNELS, AUDIO_CHUNKSIZE)) {
         zombye::log(LOG_ERROR, "Error while trying to open audio: " + std::string(Mix_GetError()));
     }
+    SDL_ClearError();
 
     Mix_AllocateChannels(AUDIO_NUM_CHANNELS);
 
@@ -56,6 +58,7 @@ void zombye::audio_system::play_music(std::string name, int loop, int fade_in, i
     } else {
         music_playing_ = true;
     }
+    SDL_ClearError();
 }
 
 void zombye::audio_system::stop_music() {
@@ -71,6 +74,7 @@ int zombye::audio_system::play_sound(std::string name, int fade_in) {
     if(channel == -1) {
         zombye::log(LOG_ERROR, "Could not play sound: " + std::string(Mix_GetError()));
     }
+    SDL_ClearError();
 
     return channel;
 }
