@@ -1,11 +1,14 @@
 #include <zombye/assets/asset_manager.hpp>
+#include <zombye/core/game.hpp>
 #include <zombye/rendering/texture_manager.hpp>
 #include <zombye/utils/load_dds.hpp>
 
 namespace zombye {
+    texture_manager::texture_manager(game& game)
+    : game_{game} { }
+
     texture_ptr texture_manager::load_new(const std::string& name) {
-        static zombye::asset_manager asset_manager{};
-        auto asset = asset_manager.load(name);
+        auto asset = game_.asset_manager().load(name);
         if (!asset) {
             return nullptr;
         }

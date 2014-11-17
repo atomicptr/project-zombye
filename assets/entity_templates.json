@@ -1,8 +1,7 @@
 {
     "dummy": {
         "staticmesh_component": {
-            "mesh": "meshes/Cube.msh",
-            "diffuse": "texture/dummy.dds"
+            "mesh": "meshes/Cube.msh"
         }
     }
 }

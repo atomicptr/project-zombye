@@ -37,6 +37,8 @@ namespace devtools {
         auto line = std::string{};
         auto dump = std::string{};
         std::getline(is_, line);
+        auto material = line;
+        submeshes_.insert(std::make_pair(material, std::vector<vertex>{}));
         auto i = int{0};
         while (line != "end") {
             is_ >> dump;
@@ -49,38 +51,65 @@ namespace devtools {
             is_ >> v.nor[2];
             is_ >> v.tex[0];
             is_ >> v.tex[1];
-            vertices_.push_back(v);
+            submeshes_[material].push_back(v);
             std::getline(is_, line);
             ++i;
             if (i > 2) {
                 std::getline(is_, line);
-                i = 0;
+                if (line != "end") {
+                    material = line;
+                    if (submeshes_.find(material) == submeshes_.end()) {
+                        submeshes_.insert(std::make_pair(material, std::vector<vertex>{}));
+                    }
+                    i = 0;
+                }
             }
         }
     }
 
     void mesh_converter::serialize() {
-        auto vec_size = vertices_.size();
-        auto count = reinterpret_cast<char*>(&vec_size);
-        os_.write(count, sizeof(size_t));
-        for (auto& v : vertices_) {
-            auto size = sizeof(float);
-            auto value = reinterpret_cast<char*>(&v.pos[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.pos[1]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.pos[2]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[1]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[2]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.tex[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.tex[1]);
-            os_.write(value, size);
+        auto vec_size = size_t{0};
+        for (auto& m : submeshes_) {
+            vec_size += m.second.size();
+        }
+        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
+        for (auto& s : submeshes_) {
+            for (auto& v : s.second) {
+                auto size = sizeof(float);
+                auto value = reinterpret_cast<char*>(&v.pos[0]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.pos[1]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.pos[2]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.nor[0]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.nor[1]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.nor[2]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.tex[0]);
+                os_.write(value, size);
+                value = reinterpret_cast<char*>(&v.tex[1]);
+                os_.write(value, size);
+            }
+        }
+        vec_size = submeshes_.size();
+        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
+        auto offset = size_t{0};
+        for (auto& s : submeshes_) {
+            os_.write(reinterpret_cast<char*>(&offset), sizeof(size_t));
+            auto vertex_count = s.second.size();
+            os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
+            offset = vertex_count;
+        }
+        vec_size = submeshes_.size();
+        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
+        for (auto& s : submeshes_) {
+            auto str_size = s.first.length();
+            os_.write(reinterpret_cast<char*>(&str_size), sizeof(size_t));
+            std::cout << s.first << std::endl;
+            os_.write(s.first.c_str(), str_size);
         }
     }
 }

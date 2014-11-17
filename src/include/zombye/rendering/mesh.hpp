@@ -14,9 +14,14 @@ namespace zombye {
         glm::vec3 nor;
         glm::vec2 tex;
     };
+    struct submesh {
+        size_t offset;
+        size_t vertex_count;
+    };
     class rendering_system;
     class mesh {
         size_t vertex_count_;
+        std::vector<submesh> submeshes_;
         std::unique_ptr<vertex_buffer> vbo_;
         vertex_array vao_;
     public:
@@ -25,7 +30,19 @@ namespace zombye {
         mesh(mesh&& other) = delete;
         ~mesh() noexcept = default;
 
-        void draw() const;
+        void draw(int submesh_index) const;
+
+        auto begin() const {
+            return submeshes_.begin();
+        }
+
+        auto end() const {
+            return submeshes_.end();
+        }
+
+        auto& vao() const {
+            return vao_;
+        }
 
         mesh& operator=(const mesh& other) = delete;
         mesh& operator=(mesh&& other) = delete;

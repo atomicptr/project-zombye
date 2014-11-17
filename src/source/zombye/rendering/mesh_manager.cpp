@@ -1,16 +1,16 @@
 #include <zombye/assets/asset_manager.hpp>
+#include <zombye/core/game.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 
 namespace zombye {
-    mesh_manager::mesh_manager(rendering_system& rendering_system) noexcept
-    : rendering_system_{rendering_system} { }
+    mesh_manager::mesh_manager(game& game) noexcept
+    : game_{game} { }
 
     mesh_ptr mesh_manager::load_new(const std::string& name) {
-        static zombye::asset_manager asset_manager{};
-        auto asset = asset_manager.load(name);
+        auto asset = game_.asset_manager().load(name);
         if (!asset) {
             return nullptr;
         }
-        return std::make_shared<const mesh>(rendering_system_, asset->content());
+        return std::make_shared<const mesh>(game_.rendering_system(), asset->content());
     }
 }

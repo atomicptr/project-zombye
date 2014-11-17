@@ -1,10 +1,10 @@
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     void staticmesh_component::register_reflection() {
         register_property<std::string>("mesh", nullptr, &staticmesh_component::set_mesh);
-        register_property<std::string>("diffuse", nullptr, &staticmesh_component::set_diffuse_texture);
     }
 
     staticmesh_component::staticmesh_component(game& game, entity& owner) noexcept
@@ -21,9 +21,29 @@ namespace zombye {
         if (!mesh_) {
             throw std::runtime_error("could not load mesh from file " + mesh);
         }
-        diffuse_texture_ = rendering_system.get_texture_manager().load(diffuse_texture);
-        if (!diffuse_texture_) {
-            throw std::runtime_error("coudl not load texture from file " + diffuse_texture);
+        auto asset = game_.asset_manager().load(mesh);
+        auto data_ptr = asset->content().data();
+        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(vertex);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(submesh);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        auto material_count = *reinterpret_cast<const size_t*>(data_ptr);
+        data_ptr += sizeof(size_t);
+        auto& texture_manager = rendering_system.get_texture_manager();
+        for (auto i = 0; i < material_count; ++i) {
+            size = *reinterpret_cast<const size_t*>(data_ptr);
+            data_ptr += sizeof(size_t);
+            auto name = std::string{data_ptr, size};
+            data_ptr += size;
+            material m;
+            auto color = texture_manager.load("texture/" + name + "_color.dds");
+            if (!color) {
+                throw std::runtime_error("could not load texture " + name + "_color.dds");
+            }
+            m.color = color;
+            materials_.emplace_back(m);
         }
     }
 
@@ -31,17 +51,46 @@ namespace zombye {
         game_.rendering_system().unregister_component(this);
     }
 
-    void staticmesh_component::set_mesh(const std::string& name) {
-        auto tmp = game_.rendering_system().get_mesh_manager().load(name);
-        if (tmp) {
-            mesh_ = tmp;
+    void staticmesh_component::draw() const {
+        mesh_->vao().bind();
+        for (auto i = 0; i < materials_.size(); ++i) {
+            materials_[i].color->bind(0);
+            mesh_->draw(i);
         }
     }
 
-    void staticmesh_component::set_diffuse_texture(const std::string& name) {
-        auto tmp = game_.rendering_system().get_texture_manager().load(name);
+    void staticmesh_component::set_mesh(const std::string& name) {
+        auto& rendering_system = game_.rendering_system();
+        auto tmp = rendering_system.get_mesh_manager().load(name);
         if (tmp) {
-            diffuse_texture_ = tmp;
+            mesh_ = tmp;
+        }
+        auto asset = game_.asset_manager().load(name);
+        if (!asset) {
+            throw std::runtime_error("could not load asset " + name);
+        }
+        auto data_ptr = asset->content().data();
+        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(vertex);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(submesh);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        auto material_count = *reinterpret_cast<const size_t*>(data_ptr);
+        data_ptr += sizeof(size_t);
+        auto& texture_manager = rendering_system.get_texture_manager();
+        for (auto i = 0; i < material_count; ++i) {
+            size = *reinterpret_cast<const size_t*>(data_ptr);
+            data_ptr += sizeof(size_t);
+            auto name = std::string{data_ptr, size};
+            data_ptr += size;
+            material m;
+            auto color = texture_manager.load("texture/" + name + "_color.dds");
+            if (!color) {
+                throw std::runtime_error("could not load texture " + name + "_color.dds");
+            }
+            m.color = color;
+            materials_.emplace_back(m);
         }
     }
 }

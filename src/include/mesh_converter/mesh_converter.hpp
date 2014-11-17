@@ -2,6 +2,8 @@
 #define __DEVTOOLS_MESH_CONVERTER_HPP__
 
 #include <fstream>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -14,7 +16,7 @@ namespace devtools {
     };
 
     class mesh_converter {
-        std::vector<vertex> vertices_;
+        std::unordered_map<std::string, std::vector<vertex>> submeshes_;
         std::ifstream is_;
         std::ofstream os_;
     public:

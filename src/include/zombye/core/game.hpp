@@ -6,6 +6,7 @@
 
 #include <SDL2/SDL.h>
 
+#include <zombye/assets/asset_manager.hpp>
 #include <zombye/input/input_system.hpp>
 #include <zombye/audio/audio_system.hpp>
 #include <zombye/config/config_system.hpp>
@@ -35,6 +36,10 @@ namespace zombye {
         int width() const;
         int height() const;
 
+        auto& asset_manager() noexcept {
+            return *asset_manager_;
+        }
+
         auto& entity_manager() noexcept {
             return *entity_manager_;
         }
@@ -55,6 +60,7 @@ namespace zombye {
         bool running_;
         bool fullscreen_;
 
+        std::unique_ptr<zombye::asset_manager> asset_manager_;
         std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window_;
         std::unique_ptr<zombye::config_system> config_system_;
         std::unique_ptr<zombye::rendering_system> rendering_system_;

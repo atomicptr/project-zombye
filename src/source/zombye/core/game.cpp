@@ -5,6 +5,7 @@
 zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
     zombye::log("init game with OS: " + std::string(OS_NAME));
 
+    asset_manager_ = std::unique_ptr<zombye::asset_manager>{new zombye::asset_manager{}};
     config_system_ = std::unique_ptr<zombye::config_system>(new zombye::config_system());
 
     width_ = config_system_->get("main", "width").asInt();

@@ -10,12 +10,12 @@
 namespace zombye {
     using mesh_ptr = std::shared_ptr<const mesh>;
 
-    class rendering_system;
+    class game;
     class mesh_manager : public cached_resource_manager<const mesh, mesh_manager> {
         friend class cached_resource_manager<const mesh, mesh_manager>;
-        rendering_system& rendering_system_;
+        game& game_;
     public:
-        mesh_manager(rendering_system& rendering_system) noexcept;
+        mesh_manager(game& game) noexcept;
         ~mesh_manager() noexcept = default;
     protected:
         mesh_ptr load_new(const std::string& name);
