@@ -33,10 +33,10 @@ zombye::joystick* zombye::input_system::first_joystick() {
     return nullptr;
 }
 
-zombye::input_manager* zombye::input_system::create_maanger() const {
-    auto it = managers_.emplace(new zombye::input_manager(this));
+zombye::input_manager* zombye::input_system::create_manager() {
+    managers_.emplace_back(new input_manager(this));
 
-    return (*it).get();
+    return managers_.back().get();
 }
 
 std::vector<int> zombye::input_system::joystick_ids() const {

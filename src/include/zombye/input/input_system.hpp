@@ -31,7 +31,7 @@ namespace zombye {
 
         zombye::joystick* first_joystick();
 
-        input_manager* create_manager() const;
+        input_manager* create_manager();
 
         void update(SDL_Event&);
     private:
