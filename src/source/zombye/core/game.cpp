@@ -57,7 +57,7 @@ void zombye::game::run() {
                 quit();
             }
 
-            if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            if(event.window.event == SDL_WINDOWEVENT_RESIZED && event.type != SDL_JOYAXISMOTION) {
                 width_ = event.window.data1;
                 height_ = event.window.data2;
 
