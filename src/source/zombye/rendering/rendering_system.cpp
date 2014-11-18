@@ -31,6 +31,7 @@ namespace zombye {
 
         SDL_GL_SetSwapInterval(1);
 
+        glewExperimental = GL_TRUE;
         if (glewInit() != GLEW_OK) {
             throw std::runtime_error("could not initialize glew");
         }
