@@ -57,10 +57,7 @@ void zombye::game::run() {
                 quit();
             }
 
-            // because bugs in SDL
-            auto crappy_joyevents = event.type != SDL_JOYAXISMOTION || event.type != SDL_JOYBUTTONDOWN || event.type != SDL_JOYBUTTONUP;
-
-            if(event.window.event == SDL_WINDOWEVENT_RESIZED && !crappy_joyevents) {
+            if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
                 width_ = event.window.data1;
                 height_ = event.window.data2;
 

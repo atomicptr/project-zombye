@@ -15,8 +15,13 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 
     input_->register_command("FIRE", new test_command());
 
-    input_->register_event("FIRE", input->first_joystick()->button_A());
-    input_->register_event("FIRE", input->first_joystick()->button_B());
+    auto first_joystick = input->first_joystick();
+
+    if(first_joystick) {
+        input_->register_event("FIRE", first_joystick->button_A());
+        input_->register_event("FIRE", first_joystick->button_B());
+    }
+
     input_->register_event("FIRE", input->mouse()->left_button());
     input_->register_keyboard_event("FIRE", "space");
 }
