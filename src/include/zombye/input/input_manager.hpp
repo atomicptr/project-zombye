@@ -19,6 +19,7 @@ namespace zombye {
 
         void register_event(std::string, button&);
         void register_keyboard_event(std::string, std::string);
+
         void register_command(std::string, command*);
 
     private:
