@@ -20,6 +20,12 @@ bool zombye::keyboard::just_pressed(std::string key_str) {
     return false;
 }
 
+void zombye::keyboard::register_keydown_listener(std::string key, std::function<void()> listener) {
+    auto code = SDL_GetScancodeFromName(key.c_str());
+
+    listeners_.insert(std::make_pair(code, listener));
+}
+
 void zombye::keyboard::update(SDL_Event &event) {
     auto code = event.key.keysym.scancode;
 
@@ -32,6 +38,12 @@ void zombye::keyboard::update(SDL_Event &event) {
 
     if(event.key.state == SDL_PRESSED) {
         was_pressed_[code] = true;
+
+        auto it = listeners_.find(code);
+
+        if(it != listeners_.end()) {
+            (*it).second();
+        }
     } else if(event.key.state == SDL_RELEASED) {
         was_pressed_[code] = false;
         was_just_pressed_[code] = false;

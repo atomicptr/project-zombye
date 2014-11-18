@@ -15,13 +15,14 @@ namespace zombye {
 
     class input_manager {
     public:
-        input_manager(const input_system*);
+        input_manager(input_system*);
 
         void register_event(std::string, button&);
+        void register_keyboard_event(std::string, std::string);
         void register_command(std::string, command*);
 
     private:
-        const input_system *input_;
+        input_system *input_;
 
         std::unordered_map<std::string, command*> commands_;
     };

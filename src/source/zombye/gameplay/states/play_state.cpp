@@ -17,6 +17,7 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 
     input_->register_event("FIRE", input->first_joystick()->button_A());
     input_->register_event("FIRE", input->first_joystick()->button_B());
+    input_->register_keyboard_event("FIRE", "space");
 }
 
 void zombye::play_state::enter() {
