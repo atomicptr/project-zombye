@@ -12,22 +12,6 @@ namespace zombye {
     public:
         input_manager(input_system*);
 
-        float axis_x() const;
-        float axis_y() const;
-
-        // game specific input
-        bool fire() const;
-        bool reload() const;
-
-        // menu specific input
-        bool up() const;
-        bool down() const;
-        bool left() const;
-        bool right() const;
-
-        bool confirm() const;
-        bool cancel() const;
-
     private:
         input_system *input_;
     };
