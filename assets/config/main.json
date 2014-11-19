@@ -1,5 +1,5 @@
 {
-    "width": 800,
-    "height": 600,
-    "fullscreen": false
+   "fullscreen" : false,
+   "height" : 600,
+   "width" : 1024
 }

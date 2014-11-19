@@ -22,14 +22,22 @@ zombye::config_system::config_system() {
     }
 }
 
-Json::Value zombye::config_system::get(std::string file, std::string value) {
+Json::Value zombye::config_system::get(std::string file, std::string ident) {
     auto it = configs_.find(file);
 
     if(it != configs_.end()) {
-        return configs_.at(file)[value];
+        return configs_.at(file)[ident];
     }
 
     return Json::Value();
+}
+
+void zombye::config_system::set(std::string file, std::string ident, Json::Value value) {
+    auto it = configs_.find(file);
+
+    if(it != configs_.end()) {
+        configs_.at(file)[ident] = value;
+    }
 }
 
 bool zombye::config_system::has(std::string file) {
@@ -38,10 +46,38 @@ bool zombye::config_system::has(std::string file) {
     return it != configs_.end();
 }
 
+void zombye::config_system::commit() {
+    for(auto &c : configs_) {
+        commit(c.first);
+    }
+}
+
+void zombye::config_system::commit(std::string file) {
+    auto it = configs_.find(file);
+
+    if(it != configs_.end()) {
+        auto ident = (*it).first;
+        auto json = (*it).second;
+
+        auto str = json.toStyledString();
+
+        auto path = paths_.at(ident);
+
+        std::ofstream file;
+
+        file.open(std::string{"assets/"} + path, std::ios::out | std::ios::trunc);
+
+        file << str;
+
+        file.close();
+    }
+}
+
 void zombye::config_system::register_config(std::string name, zombye::asset *asset) {
     Json::Reader reader;
 
     configs_.insert(std::make_pair(name, Json::Value()));
+    paths_.insert(std::make_pair(name, asset->path()));
 
     reader.parse(&(*asset->content().begin()), &(*asset->content().end()), configs_.at(name));
 }
