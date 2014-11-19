@@ -35,4 +35,9 @@ void zombye::play_state::leave() {
 }
 
 void zombye::play_state::update(float delta_time) {
+    auto command = input_->handle_input();
+
+    if(command != nullptr) {
+        command->execute();
+    }
 }

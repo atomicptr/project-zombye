@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <string>
+#include <queue>
 
 #include <zombye/input/input_system.hpp>
 #include <zombye/input/button.hpp>
@@ -22,10 +23,13 @@ namespace zombye {
 
         void register_command(std::string, command*);
 
+        command* handle_input();
+
     private:
         input_system *input_;
 
         std::unordered_map<std::string, command*> commands_;
+        std::queue<command*> event_queue_;
     };
 }
 
