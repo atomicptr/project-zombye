@@ -5,7 +5,7 @@ solution "project-zombye"
     includedirs { "deps/include", "src/include", "deps/bullet3" }
 
     configuration "debug"
-        flags {"Symbols", "FatalWarnings"}
+        flags {"Symbols"}
         optimize "Off"
 
     configuration "release"
@@ -52,6 +52,9 @@ solution "project-zombye"
                 links "c++"
             end
 
+        configuration "debug"
+            flags {"FatalWarnings"}
+
     project "zombye"
         kind "WindowedApp"
 
@@ -71,3 +74,6 @@ solution "project-zombye"
 
         configuration {"gmake", "macosx"}
             links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps" }
+
+        configuration "debug"
+            flags {"FatalWarnings"}
