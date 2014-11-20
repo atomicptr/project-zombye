@@ -7,11 +7,19 @@ solution "project-zombye"
     configuration "not windows"
         defines "ZOMBYE_NOT_WINDOOF"
 
-    includedirs { "deps/include", "src/include" }
-    buildoptions "-std=c++1y"
+    includedirs { "deps/include", "src/include", "deps/bullet3" }
+
+    configuration "debug"
+        flags {"Symbols", "FatalWarnings"}
+        optimize "Off"
+
+    configuration "release"
+        optimize "Full"
 
     project "deps"
         kind "StaticLib"
+
+        buildoptions "-std=c++1y"
 
         files "deps/source/**.cpp"
 
@@ -22,8 +30,18 @@ solution "project-zombye"
                 links "c++"
             end
 
+    project "bullet3"
+        kind "SharedLib"
+
+        files {"deps/bullet3/**.cpp", "deps/bullet3/**.c"}
+
+        configuration {"gmake", "macosx"}
+            linkoptions "-framework OpenCL"
+
     project "mesh_converter"
         kind "ConsoleApp"
+
+        buildoptions "-std=c++1y"
 
         files "src/source/mesh_converter/**.cpp"
 
@@ -38,15 +56,10 @@ solution "project-zombye"
 
         configuration {"gmake", "macosx"}
 
-        configuration "debug"
-            flags {"Symbols", "FatalWarnings"}
-            optimize "Off"
-
-        configuration "release"
-            optimize "Full"
-
     project "zombye"
         kind "WindowedApp"
+
+        buildoptions "-std=c++1y"
 
         files "src/source/zombye/**.cpp"
 
@@ -62,10 +75,3 @@ solution "project-zombye"
 
         configuration {"gmake", "macosx"}
             links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps" }
-
-        configuration "debug"
-            flags {"Symbols", "FatalWarnings"}
-            optimize "Off"
-
-        configuration "release"
-            optimize "Full"
