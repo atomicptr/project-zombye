@@ -2,11 +2,6 @@ solution "project-zombye"
     configurations { "debug", "release"}
     language "C++"
 
-    configuration "windows"
-        defines "ZOMBYE_WINDOOF"
-    configuration "not windows"
-        defines "ZOMBYE_NOT_WINDOOF"
-
     includedirs { "deps/include", "src/include", "deps/bullet3" }
 
     configuration "debug"
@@ -35,6 +30,9 @@ solution "project-zombye"
 
         files {"deps/bullet3/**.cpp", "deps/bullet3/**.c"}
 
+        configuration {"gmake", "linux"}
+            links "OpenCL"
+
         configuration {"gmake", "macosx"}
             linkoptions "-framework OpenCL"
 
@@ -53,8 +51,6 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-
-        configuration {"gmake", "macosx"}
 
     project "zombye"
         kind "WindowedApp"
