@@ -3,12 +3,18 @@
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
-    mesh::mesh(rendering_system& rendering_system, const std::vector<char>& data) {
+    mesh::mesh(rendering_system& rendering_system, const std::vector<char>& data)
+    : ibo_{0, GL_STATIC_DRAW} {
         auto data_ptr = data.data();
         vertex_count_ = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
         auto size = vertex_count_ * sizeof(vertex);
         vbo_ = std::unique_ptr<vertex_buffer>{new vertex_buffer{size, data_ptr, GL_STATIC_DRAW}};
+        data_ptr += size;
+        auto index_count_= *reinterpret_cast<const size_t*>(data_ptr);
+        data_ptr += sizeof(size_t);
+        size = index_count_ * sizeof(unsigned int);
+        ibo_.data(size, data_ptr);
         data_ptr += size;
         auto submesh_count = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
@@ -17,10 +23,12 @@ namespace zombye {
             submeshes_.emplace_back(submesh);
             data_ptr += sizeof(submesh);
         }
+        vao_.bind_index_buffer(ibo_);
         rendering_system.get_vertex_layout().setup_layout(vao_, &vbo_);
     }
 
     void mesh::draw(int submesh_index) const {
-        glDrawArrays(GL_TRIANGLES, submeshes_[submesh_index].offset, submeshes_[submesh_index].vertex_count);
+        glDrawElements(GL_TRIANGLES, submeshes_[submesh_index].index_count, GL_UNSIGNED_INT,
+            reinterpret_cast<GLvoid*>(submeshes_[submesh_index].offset * sizeof(unsigned int)));
     }
 }

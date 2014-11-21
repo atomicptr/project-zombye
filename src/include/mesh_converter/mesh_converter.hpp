@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <assimp/Importer.hpp>
 
 namespace devtools {
     struct vertex {
@@ -15,10 +16,14 @@ namespace devtools {
         glm::vec2 tex;
     };
 
+    using index = unsigned int;
+
     class mesh_converter {
-        std::unordered_map<std::string, std::vector<vertex>> submeshes_;
-        std::ifstream is_;
+        std::vector<vertex> vertices_;
+        std::unordered_map<std::string, std::vector<index>> submeshes_;
+        Assimp::Importer is_;
         std::ofstream os_;
+        const aiScene* scene_;
     public:
         mesh_converter(const std::string& in, const std::string& out);
         mesh_converter(const mesh_converter& other) = delete;

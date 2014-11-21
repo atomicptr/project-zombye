@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include <zombye/rendering/index_buffer.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_buffer.hpp>
 
@@ -16,13 +17,14 @@ namespace zombye {
     };
     struct submesh {
         size_t offset;
-        size_t vertex_count;
+        size_t index_count;
     };
     class rendering_system;
     class mesh {
         size_t vertex_count_;
         std::vector<submesh> submeshes_;
         std::unique_ptr<vertex_buffer> vbo_;
+        index_buffer ibo_;
         vertex_array vao_;
     public:
         mesh(rendering_system& rendering_system, const std::vector<char>& data);

@@ -26,6 +26,9 @@ namespace zombye {
         auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(vertex);
         data_ptr += sizeof(size_t);
         data_ptr += size;
+        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(unsigned int);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
         size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(submesh);
         data_ptr += sizeof(size_t);
         data_ptr += size;
@@ -71,6 +74,9 @@ namespace zombye {
         }
         auto data_ptr = asset->content().data();
         auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(vertex);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(unsigned int);
         data_ptr += sizeof(size_t);
         data_ptr += size;
         size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(submesh);
