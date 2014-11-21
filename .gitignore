@@ -1,6 +1,7 @@
 *.log
 /zombye
 /mesh_converter
+/animation_converter
 
 # Created by https://www.gitignore.io
 
