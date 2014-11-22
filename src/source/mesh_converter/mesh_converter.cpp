@@ -37,6 +37,13 @@ namespace devtools {
         } else {
             for (auto i = 0; i < scene_->mNumMeshes; ++i) {
                 auto mesh = scene_->mMeshes[i];
+
+                submesh submesh;
+                submesh.index_count = mesh->mNumFaces * 3;
+                submesh.offset = indices_.size();
+                submesh.base_vertex = vertices_.size();
+                submeshes_.emplace_back(submesh);
+
                 for (auto k = 0; k < mesh->mNumVertices; ++k) {
                     auto pos = mesh->mVertices[k];
                     auto nor = mesh->mNormals[k];
@@ -52,69 +59,46 @@ namespace devtools {
                     v.tex[1] = tex.y;
                     vertices_.emplace_back(v);
                 }
+
+                for (auto j = 0; j < mesh->mNumFaces; ++j) {
+                    auto face = mesh->mFaces[j];
+                    for (auto l = 0; l < 3; ++l) {
+                        indices_.emplace_back(face.mIndices[l]);
+                    }
+                }
+
                 auto material = scene_->mMaterials[mesh->mMaterialIndex];
                 aiString ai_name;
                 material->Get(AI_MATKEY_NAME, ai_name);
                 auto mangled_name = std::string{ai_name.C_Str()};
                 auto name = mangled_name.substr(0, mangled_name.size() - 9);
-                submeshes_.insert(std::make_pair(name, std::vector<index>{}));
-                for (auto j = 0; j < mesh->mNumFaces; ++j) {
-                    auto face = mesh->mFaces[j];
-                    for (auto l = 0; l < face.mNumIndices; ++l) {
-                        submeshes_[name].emplace_back(face.mIndices[l]);
-                    }
-                }
+                materials_.emplace_back(name);
             }
         }
     }
 
     void mesh_converter::serialize() {
-        auto vec_size = vertices_.size();
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
+        auto vertex_count = vertices_.size();
+        os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
         for (auto& v : vertices_) {
-            auto size = sizeof(float);
-            auto value = reinterpret_cast<char*>(&v.pos[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.pos[1]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.pos[2]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[1]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.nor[2]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.tex[0]);
-            os_.write(value, size);
-            value = reinterpret_cast<char*>(&v.tex[1]);
-            os_.write(value, size);
+            os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
         }
-        auto index_count = size_t{0};
-        for (auto& s : submeshes_) {
-            index_count += s.second.size();
-        }
+        auto index_count = indices_.size();
         os_.write(reinterpret_cast<char*>(&index_count), sizeof(size_t));
-        for (auto& s : submeshes_) {
-            for (auto i : s.second) {
-                os_.write(reinterpret_cast<char*>(&i), sizeof(unsigned int));
-            }
+        for (auto i : indices_) {
+            os_.write(reinterpret_cast<char*>(&i), sizeof(index));
         }
-        vec_size = submeshes_.size();
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
-        auto offset = size_t{0};
+        auto submesh_count = submeshes_.size();
+        os_.write(reinterpret_cast<char*>(&submesh_count), sizeof(size_t));
         for (auto& s : submeshes_) {
-            os_.write(reinterpret_cast<char*>(&offset), sizeof(size_t));
-            index_count = s.second.size();
-            os_.write(reinterpret_cast<char*>(&index_count), sizeof(size_t));
-            offset = index_count;
+            os_.write(reinterpret_cast<char*>(&s), sizeof(submesh));
         }
-        vec_size = submeshes_.size();
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
-        for (auto& s : submeshes_) {
-            auto str_size = s.first.length();
+        auto material_count = materials_.size();
+        os_.write(reinterpret_cast<char*>(&material_count), sizeof(size_t));
+        for (auto& m : materials_) {
+            auto str_size = m.length();
             os_.write(reinterpret_cast<char*>(&str_size), sizeof(size_t));
-            os_.write(s.first.c_str(), str_size);
+            os_.write(m.c_str(), str_size);
         }
     }
 }

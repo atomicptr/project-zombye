@@ -16,11 +16,20 @@ namespace devtools {
         glm::vec2 tex;
     };
 
+    struct submesh {
+        size_t index_count;
+        size_t offset;
+        size_t base_vertex;
+    };
+
     using index = unsigned int;
+    using material = std::string;
 
     class mesh_converter {
+        std::vector<submesh> submeshes_;
         std::vector<vertex> vertices_;
-        std::unordered_map<std::string, std::vector<index>> submeshes_;
+        std::vector<index> indices_;
+        std::vector<material> materials_;
         Assimp::Importer is_;
         std::ofstream os_;
         const aiScene* scene_;

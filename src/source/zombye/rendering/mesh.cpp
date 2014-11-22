@@ -28,7 +28,8 @@ namespace zombye {
     }
 
     void mesh::draw(int submesh_index) const {
-        glDrawElements(GL_TRIANGLES, submeshes_[submesh_index].index_count, GL_UNSIGNED_INT,
-            reinterpret_cast<GLvoid*>(submeshes_[submesh_index].offset * sizeof(unsigned int)));
+        glDrawElementsBaseVertex(GL_TRIANGLES, submeshes_[submesh_index].index_count, GL_UNSIGNED_INT,
+            reinterpret_cast<void*>(submeshes_[submesh_index].offset * sizeof(unsigned int)),
+            submeshes_[submesh_index].base_vertex);
     }
 }
