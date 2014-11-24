@@ -80,7 +80,7 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
 
-        physics_system_->update();
+        physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
         rendering_system_->update(delta_time);
         entity_manager_->clear();
@@ -120,6 +120,10 @@ zombye::gameplay_system* zombye::game::gameplay() {
 
 zombye::config_system* zombye::game::config() {
     return config_system_.get();
+}
+
+zombye::physics_system* zombye::game::physics() {
+    return physics_system_.get();
 }
 
 int glCreateGame(const char* name) {

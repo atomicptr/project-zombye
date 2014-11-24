@@ -70,10 +70,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
 
         configuration "debug"
             flags {"FatalWarnings"}

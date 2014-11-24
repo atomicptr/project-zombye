@@ -21,6 +21,7 @@
 
 namespace zombye {
     class gameplay_system;
+    class physics_system;
 }
 
 namespace zombye {
@@ -53,6 +54,7 @@ namespace zombye {
         audio_system* audio();
         gameplay_system* gameplay();
         config_system* config();
+        physics_system* physics();
     private:
         std::string title_;
         int width_;
