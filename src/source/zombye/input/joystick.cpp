@@ -53,7 +53,7 @@ void zombye::joystick::enable_profile(int leftx, int lefty, int rightx, int righ
 
 void zombye::joystick::reset() {
 }
-#include <string>
+
 void zombye::joystick::update(SDL_Event &event) {
     auto value = 0.f;
 
@@ -210,42 +210,55 @@ float zombye::joystick::right_trigger() {
 zombye::button& zombye::joystick::button_A() {
     return button_A_;
 }
+
 zombye::button& zombye::joystick::button_B() {
     return button_B_;
 }
+
 zombye::button& zombye::joystick::button_X() {
     return button_X_;
 }
+
 zombye::button& zombye::joystick::button_Y() {
     return button_Y_;
 }
+
 zombye::button& zombye::joystick::button_LB() {
     return button_LB_;
 }
+
 zombye::button& zombye::joystick::button_RB() {
     return button_RB_;
 }
+
 zombye::button& zombye::joystick::button_LS() {
     return button_LS_;
 }
+
 zombye::button& zombye::joystick::button_RS() {
     return button_RS_;
 }
+
 zombye::button& zombye::joystick::button_START() {
     return button_START_;
 }
+
 zombye::button& zombye::joystick::button_SELECT() {
     return button_SELECT_;
 }
+
 zombye::button& zombye::joystick::dpad_up() {
     return button_dpad_up_;
 }
+
 zombye::button& zombye::joystick::dpad_down() {
     return button_dpad_down_;
 }
+
 zombye::button& zombye::joystick::dpad_left() {
     return button_dpad_left_;
 }
+
 zombye::button& zombye::joystick::dpad_right() {
     return button_dpad_right_;
 }

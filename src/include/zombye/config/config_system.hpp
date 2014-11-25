@@ -18,10 +18,14 @@ namespace zombye {
         config_system();
 
         Json::Value get(std::string, std::string);
+        void set(std::string, std::string, Json::Value);
         bool has(std::string);
 
+        void commit();
+        void commit(std::string);
     private:
         std::unordered_map<std::string, Json::Value> configs_;
+        std::unordered_map<std::string, std::string> paths_;
 
         void register_config(std::string, zombye::asset*);
     };

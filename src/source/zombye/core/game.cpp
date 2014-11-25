@@ -18,15 +18,20 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     register_components();
 
     auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+
     window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
         height_, mask);
-    auto error = std::string{SDL_GetError()};
+
+    auto error = std::string{ SDL_GetError() };
+
     if (!window_) {
         throw std::runtime_error("could not create window: " + error);
     }
+
     SDL_ClearError();
 
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
+    physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(
@@ -58,7 +63,7 @@ void zombye::game::run() {
                 quit();
             }
 
-            if(event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
                 width_ = event.window.data1;
                 height_ = event.window.data2;
 
@@ -76,6 +81,7 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
 
+        physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
         rendering_system_->update(delta_time);
         entity_manager_->clear();
@@ -116,6 +122,10 @@ zombye::gameplay_system* zombye::game::gameplay() {
 
 zombye::config_system* zombye::game::config() {
     return config_system_.get();
+}
+
+zombye::physics_system* zombye::game::physics() {
+    return physics_system_.get();
 }
 
 int glCreateGame(const char* name) {

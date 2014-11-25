@@ -2,8 +2,14 @@
 #define __ZOMBYE_INPUT_MANAGER_HPP__
 
 #include <cmath>
+#include <unordered_map>
+#include <utility>
+#include <string>
+#include <queue>
 
 #include <zombye/input/input_system.hpp>
+#include <zombye/input/button.hpp>
+#include <zombye/gameplay/command.hpp>
 
 namespace zombye {
     class input_system;
@@ -12,24 +18,18 @@ namespace zombye {
     public:
         input_manager(input_system*);
 
-        float axis_x() const;
-        float axis_y() const;
+        void register_event(std::string, button&);
+        void register_keyboard_event(std::string, std::string);
 
-        // game specific input
-        bool fire() const;
-        bool reload() const;
+        void register_command(std::string, command*);
 
-        // menu specific input
-        bool up() const;
-        bool down() const;
-        bool left() const;
-        bool right() const;
-
-        bool confirm() const;
-        bool cancel() const;
+        command* handle_input();
 
     private:
         input_system *input_;
+
+        std::unordered_map<std::string, command*> commands_;
+        std::queue<command*> event_queue_;
     };
 }
 

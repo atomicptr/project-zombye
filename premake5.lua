@@ -2,16 +2,19 @@ solution "project-zombye"
     configurations { "debug", "release"}
     language "C++"
 
-    configuration "windows"
-        defines "ZOMBYE_WINDOOF"
-    configuration "not windows"
-        defines "ZOMBYE_NOT_WINDOOF"
+    includedirs { "deps/include", "src/include", "deps/bullet3" }
 
-    includedirs { "deps/include", "src/include" }
-    buildoptions "-std=c++1y"
+    configuration "debug"
+        flags {"Symbols"}
+        optimize "Off"
+
+    configuration "release"
+        optimize "Full"
 
     project "deps"
         kind "StaticLib"
+
+        buildoptions "-std=c++1y"
 
         files "deps/source/**.cpp"
 
@@ -22,8 +25,21 @@ solution "project-zombye"
                 links "c++"
             end
 
+    project "bullet3"
+        kind "StaticLib"
+
+        files {"deps/bullet3/**.cpp", "deps/bullet3/**.c"}
+
+        configuration {"gmake", "linux"}
+            links "OpenCL"
+
+        configuration {"gmake", "macosx"}
+            linkoptions "-framework OpenCL"
+
     project "mesh_converter"
         kind "ConsoleApp"
+
+        buildoptions "-std=c++1y"
 
         files "src/source/mesh_converter/**.cpp"
 
@@ -50,6 +66,8 @@ solution "project-zombye"
     project "animation_converter"
         kind "ConsoleApp"
 
+        buildoptions "-std=c++1y"
+
         files "src/source/animation_converter/**.cpp"
 
         defines "GLM_FORCE_RADIANS"
@@ -66,14 +84,12 @@ solution "project-zombye"
             links "assimp"
 
         configuration "debug"
-            flags {"Symbols", "FatalWarnings"}
-            optimize "Off"
-
-        configuration "release"
-            optimize "Full"
+            flags {"FatalWarnings"}
 
     project "zombye"
         kind "WindowedApp"
+
+        buildoptions "-std=c++1y"
 
         files "src/source/zombye/**.cpp"
 
@@ -85,14 +101,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
 
         configuration "debug"
-            flags {"Symbols", "FatalWarnings"}
-            optimize "Off"
-
-        configuration "release"
-            optimize "Full"
+            flags {"FatalWarnings"}

@@ -3,6 +3,9 @@
 
 #include <zombye/utils/state.hpp>
 #include <zombye/utils/state_machine.hpp>
+#include <zombye/input/input_manager.hpp>
+
+#include <zombye/gameplay/command.hpp>
 
 #include <zombye/utils/logger.hpp>
 
@@ -16,7 +19,8 @@ namespace zombye {
         void update(float);
 
     private:
-        zombye::state_machine *sm_;
+        state_machine *sm_;
+        input_manager *input_;
     };
 }
 

@@ -31,15 +31,16 @@ namespace zombye {
 
         zombye::joystick* first_joystick();
 
-        input_manager* manager() const;
+        input_manager* create_manager();
 
         void update(SDL_Event&);
     private:
         std::map<int, std::shared_ptr<zombye::joystick>> joysticks_;
         std::unique_ptr<zombye::mouse> mouse_;
         std::unique_ptr<zombye::keyboard> keyboard_;
-        std::unique_ptr<zombye::input_manager> manager_;
         config_system *config_system_;
+
+        std::vector<std::unique_ptr<input_manager>> managers_;
 
         void detect_joysticks();
     };
