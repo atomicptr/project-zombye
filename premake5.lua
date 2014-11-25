@@ -72,16 +72,14 @@ solution "project-zombye"
 
         defines "GLM_FORCE_RADIANS"
 
+        links {"assimp"}
+
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
                 toolset "clang"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links "assimp"
-
-        configuration {"gmake", "macosx"}
-            links "assimp"
 
         configuration "debug"
             flags {"FatalWarnings"}
