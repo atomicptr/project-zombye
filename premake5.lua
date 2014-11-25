@@ -26,7 +26,7 @@ solution "project-zombye"
             end
 
     project "bullet3"
-        kind "SharedLib"
+        kind "StaticLib"
 
         files {"deps/bullet3/**.cpp", "deps/bullet3/**.c"}
 
