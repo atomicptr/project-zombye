@@ -1,11 +1,18 @@
 #include <iostream>
+#include <stdexcept>
+
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include <animation_converter/animation_converter.hpp>
 
 namespace devtools {
     animation_converter::animation_converter(const std::string& in, const std::string& out) {
-        is_.open(in);
-        if (!is_.is_open()) {
+        scene_ = is_.ReadFile(in,
+            aiProcess_CalcTangentSpace |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_Triangulate);
+        if (!scene_) {
             throw std::runtime_error{"could not open input file " + in};
         }
         os_.open(out, std::ios::trunc | std::ios::binary);
@@ -15,203 +22,183 @@ namespace devtools {
     }
 
     animation_converter::~animation_converter() noexcept {
-        if (is_.is_open()) {
-            is_.close();
+        if (scene_) {
+            is_.FreeScene();
         }
         if (os_.is_open()) {
             os_.close();
         }
     }
 
-    void animation_converter::parse() {
-        auto version = std::string{};
-        std::getline(is_, version);
-        if (version != "version 1") {
-            throw std::invalid_argument{"file format is not supported"};
-        }
-        auto line = std::string{};
-        auto dump = std::string{};
-        std::getline(is_, line);
-        if (line != "nodes") {
-            throw std::invalid_argument("no rig defined");
-        }
-        while (is_.peek() != 'e') {
-            bone b;
-            is_ >> b.id;
-            is_ >> dump;
-            is_ >> b.parent;
-            bones_.push_back(b);
-            std::getline(is_, line);
-        }
-        std::getline(is_, line);
-        std::getline(is_, line);
-        if (line != "skeleton") {
-            throw std::invalid_argument("no animation data provided");
-        }
-        std::getline(is_, line);
-        while (line != "end") {
-            if (line.substr(0, 4) == "time") {
-                frames_.emplace_back(frame{});
-            }
-            bone_pose bp;
-            is_ >> bp.id;
-            is_ >> bp.loc_trans[0];
-            is_ >> bp.loc_trans[1];
-            is_ >> bp.loc_trans[2];
-            float rx;
-            float ry;
-            float rz;
-            is_ >> rx;
-            is_ >> ry;
-            is_ >> rz;
-            float alpha = rx;
-            float x = 1.f;
-            float y = ry / alpha;
-            float z = rz / alpha;
-            auto rot = glm::quat{alpha, glm::vec3{x, y , z}};
-            rot = glm::normalize(rot);
-            bp.loc_rot = rot;
-            frames_.back().emplace_back(bp);
-            std::getline(is_, line);
-            if (is_.peek() == 't' || is_.peek() == 'e') {
-                std::getline(is_, line);
-            }
-        }
-        if (frames_.size() != 1) {
-            return;
-        }
-        auto triangles = std::string{};
-        while (triangles != "triangles") {
-            std::getline(is_, triangles);
-        }
-        std::getline(is_, line);
-        auto material = line;
-        submeshes_.insert(std::make_pair(material, std::vector<vertex>{}));
-        auto i = int{0};
-        while (line != "end") {
-            auto v = vertex{};
-            is_ >> v.parent_bone;
-            is_ >> v.pos[0];
-            is_ >> v.pos[1];
-            is_ >> v.pos[2];
-            is_ >> v.nor[0];
-            is_ >> v.nor[1];
-            is_ >> v.nor[2];
-            is_ >> v.tex[0];
-            is_ >> v.tex[1];
-            is_ >> v.link_count;
-            if (v.link_count > 4) {
-                throw std::invalid_argument("vertex affected by more than four bones");
-            }
-            for (auto i = 0; i < 4; ++i) {
-                if (i < v.link_count) {
-                    is_ >> v.links[i].bone;
-                    is_ >> v.links[i].weight;
+    void animation_converter::parse(const std::string& name) {
+        if (scene_->HasMeshes()) {
+            for (auto i = 0; i < scene_->mNumMeshes; ++i) {
+                auto mesh = scene_->mMeshes[i];
+
+                submesh submesh;
+                submesh.index_count = mesh->mNumFaces * 3;
+                submesh.offset = indices_.size();
+                submesh.base_vertex = vertices_.size();
+                submeshes_.emplace_back(submesh);
+
+                for (auto k = 0; k < mesh->mNumVertices; ++k) {
+                    auto pos = mesh->mVertices[k];
+                    auto nor = mesh->mNormals[k];
+                    auto tex = mesh->mTextureCoords[0][k];
+                    vertex v;
+                    v.pos[0] = pos.x;
+                    v.pos[1] = pos.y;
+                    v.pos[2] = pos.z;
+                    v.nor[0] = nor.x;
+                    v.nor[1] = nor.y;
+                    v.nor[2] = nor.z;
+                    v.tex[0] = tex.x;
+                    v.tex[1] = tex.y;
+                    vertices_.emplace_back(v);
                 }
-                v.links[i].bone = -1;
-                v.links[i].weight = 0.f;
-            }
-            submeshes_[material].push_back(v);
-            std::getline(is_, line);
-            ++i;
-            if (i > 2) {
-                std::getline(is_, line);
-                if (line != "end") {
-                    material = line;
-                    if (submeshes_.find(material) == submeshes_.end()) {
-                        submeshes_.insert(std::make_pair(material, std::vector<vertex>{}));
+
+                if (mesh->HasBones()) {
+                    for (auto j = 0; j < mesh->mNumBones; ++j) {
+                        auto ai_bone = mesh->mBones[j];
+                        bone b;
+                        b.id = bone_ids_.size();
+                        b.transformation = *reinterpret_cast<glm::mat4*>(&ai_bone->mOffsetMatrix);
+                        bones_.emplace_back(b);
+                        std::string bone_name{ai_bone->mName.C_Str()};
+                        bone_ids_.insert(std::make_pair(bone_name, bone_ids_.size()));
+
+                        for (auto k = 0; k < ai_bone->mNumWeights; ++k) {
+                            auto& weight = ai_bone->mWeights[k];
+                            auto& v = vertices_[submesh.base_vertex + weight.mVertexId];
+                            if (v.link_count == 4) {
+                                throw std::runtime_error("too many bones affecting vertex");
+                            }
+                            link l;
+                            l.bone = b.id;
+                            l.weight = weight.mWeight;
+                            v.links[v.link_count] = l;
+                            ++v.link_count;
+                        }
                     }
-                    i = 0;
+                } else {
+                    throw std::runtime_error("model has no rig");
                 }
+
+                for (auto j = 0; j < mesh->mNumFaces; ++j) {
+                    auto face = mesh->mFaces[j];
+                    for (auto l = 0; l < 3; ++l) {
+                        indices_.emplace_back(face.mIndices[l]);
+                    }
+                }
+
+                auto material = scene_->mMaterials[mesh->mMaterialIndex];
+                aiString ai_name;
+                material->Get(AI_MATKEY_NAME, ai_name);
+                auto mangled_name = std::string{ai_name.C_Str()};
+                auto name = mangled_name.substr(0, mangled_name.size() - 9);
+                materials_.emplace_back(name);
+            }
+        } else if (scene_->HasAnimations()) {
+            auto ai_anim = scene_->mAnimations[0];
+            animation_.name = name;
+            animation_.duration = ai_anim->mDuration;
+            animation_.tps = ai_anim->mTicksPerSecond;
+
+            for (auto j = 0; j < ai_anim->mNumChannels; ++j) {
+                auto ai_node = ai_anim->mChannels[j];
+                auto node_name = std::string{ai_node->mNodeName.C_Str()};
+                node anim_node;
+                anim_node.bone = bone_ids_[node_name];
+
+                for (auto k = 0; k < ai_node->mNumPositionKeys; ++k) {
+                    auto ai_key = ai_node->mPositionKeys[k];
+                    vector_key key;
+                    key.time = ai_key.mTime;
+                    key.value = *reinterpret_cast<glm::vec3*>(&ai_key.mValue);
+                    anim_node.position_keys.emplace_back(key);
+                }
+
+                for (auto k = 0; k < ai_node->mNumRotationKeys; ++k) {
+                    auto ai_key = ai_node->mRotationKeys[k];
+                    quaternion_key key;
+                    key.time = ai_key.mTime;
+                    key.value = *reinterpret_cast<glm::quat*>(&ai_key.mValue);
+                    anim_node.rotation_keys.emplace_back(key);
+                }
+
+                for (auto k = 0; k < ai_node->mNumScalingKeys; ++k) {
+                    auto ai_key = ai_node->mScalingKeys[k];
+                    vector_key key;
+                    key.time = ai_key.mTime;
+                    key.value = *reinterpret_cast<glm::vec3*>(&ai_key.mValue);
+                    anim_node.scaling_keys.emplace_back(key);
+                }
+
+                animation_.nodes.emplace_back(anim_node);
             }
         }
     }
 
     void animation_converter::serialize() {
-        if (frames_.size() != 1) {
-            auto size = frames_.size();
-            os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-            for (auto& f : frames_) {
-                size = f.size();
-                os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-                for (auto& b : f) {
-                    int id = b.id;
-                    os_.write(reinterpret_cast<char*>(&id), sizeof(int));
-                    auto value = reinterpret_cast<char*>(&b.loc_trans[0]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_trans[1]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_trans[2]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_rot[0]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_rot[1]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_rot[2]);
-                    os_.write(value,  sizeof(float));
-                    value = reinterpret_cast<char*>(&b.loc_rot[3]);
-                    os_.write(value,  sizeof(float));
-                }
+        if (scene_->HasMeshes()) {
+            auto bone_count = bones_.size();
+            os_.write(reinterpret_cast<char*>(&bone_count), sizeof(size_t));
+            for (auto& b : bones_) {
+                os_.write(reinterpret_cast<char*>(&b), sizeof(bone));
             }
-            return;
-        }
-        auto bone_count = bones_.size();
-        os_.write(reinterpret_cast<char*>(&bone_count), sizeof(size_t));
-        for (auto& b : bones_) {
-            os_.write(reinterpret_cast<char*>(&b.id), sizeof(int));
-            os_.write(reinterpret_cast<char*>(&b.parent), sizeof(int));
-        }
-        auto vec_size = size_t{0};
-        for (auto& m : submeshes_) {
-            vec_size += m.second.size();
-        }
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
-        for (auto& s : submeshes_) {
-            for (auto& v : s.second) {
-                auto size = sizeof(float);
-                auto value = reinterpret_cast<char*>(&v.pos[0]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.pos[1]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.pos[2]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.nor[0]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.nor[1]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.nor[2]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.tex[0]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.tex[1]);
-                os_.write(value, size);
-                value = reinterpret_cast<char*>(&v.parent_bone);
-                os_.write(value, sizeof(int));
-                value = reinterpret_cast<char*>(&v.link_count);
-                os_.write(value, sizeof(int));
-                for (auto i = 0; i < 4; ++i) {
-                    value = reinterpret_cast<char*>(&v.links[i].bone);
-                    os_.write(value, sizeof(int));
-                    value = reinterpret_cast<char*>(&v.links[i].weight);
-                    os_.write(value, size);
-                }
-            }
-        }
-        vec_size = submeshes_.size();
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
-        auto offset = size_t{0};
-        for (auto& s : submeshes_) {
-            os_.write(reinterpret_cast<char*>(&offset), sizeof(size_t));
-            auto vertex_count = s.second.size();
+
+            auto vertex_count = vertices_.size();
             os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
-            offset = vertex_count;
-        }
-        vec_size = submeshes_.size();
-        os_.write(reinterpret_cast<char*>(&vec_size), sizeof(size_t));
-        for (auto& s : submeshes_) {
-            auto str_size = s.first.length();
-            os_.write(reinterpret_cast<char*>(&str_size), sizeof(size_t));
-            os_.write(s.first.c_str(), str_size);
+            for (auto& v : vertices_) {
+                os_.write(reinterpret_cast<char*>(&v), sizeof(vertex) - sizeof(unsigned int));
+            }
+
+            auto index_count = indices_.size();
+            os_.write(reinterpret_cast<char*>(&index_count), sizeof(size_t));
+            for (auto i : indices_) {
+                os_.write(reinterpret_cast<char*>(&i), sizeof(index));
+            }
+
+            auto submesh_count = submeshes_.size();
+            os_.write(reinterpret_cast<char*>(&submesh_count), sizeof(size_t));
+            for (auto& s : submeshes_) {
+                os_.write(reinterpret_cast<char*>(&s), sizeof(submesh));
+            }
+
+            auto material_count = materials_.size();
+            os_.write(reinterpret_cast<char*>(&material_count), sizeof(size_t));
+            for (auto& m : materials_) {
+                auto str_size = m.length();
+                os_.write(reinterpret_cast<char*>(&str_size), sizeof(size_t));
+                os_.write(m.c_str(), str_size);
+            }
+        } else if (scene_->HasAnimations()) {
+            auto size = animation_.name.size();
+            os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+            os_.write(animation_.name.c_str(), animation_.name.size());
+            os_.write(reinterpret_cast<char*>(&animation_.duration), sizeof(float));
+            os_.write(reinterpret_cast<char*>(&animation_.tps), sizeof(float));
+            for (auto& n : animation_.nodes) {
+                os_.write(reinterpret_cast<char*>(&n.bone), sizeof(float));
+
+                size = n.position_keys.size();
+                os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+                for (auto& pk : n.position_keys) {
+                    os_.write(reinterpret_cast<char*>(&pk), sizeof(vector_key));
+                }
+
+                size = n.rotation_keys.size();
+                os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+                for (auto& rk : n.rotation_keys) {
+                    os_.write(reinterpret_cast<char*>(&rk), sizeof(quaternion_key));
+                }
+
+                size = n.scaling_keys.size();
+                os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
+                for (auto& sk : n.scaling_keys) {
+                    os_.write(reinterpret_cast<char*>(&sk), sizeof(vector_key));
+                }
+            }
         }
     }
 }

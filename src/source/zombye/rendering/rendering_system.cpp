@@ -104,6 +104,7 @@ namespace zombye {
             view = camera->second->transform();
         }
         auto vp = perspective_projection_ * view;
+
         staticmesh_program_->use();
         staticmesh_program_->uniform("color_texture", 0);
         for (auto& sm : staticmesh_components_) {

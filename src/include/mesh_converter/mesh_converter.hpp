@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <glm/glm.hpp>
 #include <assimp/Importer.hpp>
+#include <glm/glm.hpp>
 
 namespace devtools {
     struct vertex {

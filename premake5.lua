@@ -60,8 +60,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
+            links "assimp"
 
         configuration {"gmake", "macosx"}
+            links "assimp"
 
         configuration "debug"
             flags {"Symbols", "FatalWarnings"}
