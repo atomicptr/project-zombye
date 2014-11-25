@@ -23,8 +23,7 @@ namespace zombye {
         static void register_reflection();
         staticmesh_component(game& game, entity& owner) noexcept;
     public:
-        staticmesh_component(game& game, entity& owner, const std::string& mesh,
-        const std::string& diffuse_texture);
+        staticmesh_component(game& game, entity& owner, const std::string& mesh);
         ~staticmesh_component() noexcept;
 
         void draw() const;

@@ -1,27 +1,27 @@
 #include <zombye/core/game.hpp>
-#include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/rendering/animation_component.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
-    void staticmesh_component::register_reflection() {
-        register_property<std::string>("mesh", nullptr, &staticmesh_component::set_mesh);
+    void animation_component::register_reflection() {
+        register_property<std::string>("rigged_mesh", nullptr, &animation_component::set_rigged_mesh);
     }
 
-    staticmesh_component::staticmesh_component(game& game, entity& owner) noexcept
+    animation_component::animation_component(game& game, entity& owner) noexcept
     : reflective{game, owner} {
         game_.rendering_system().register_component(this);
     }
 
-    staticmesh_component::staticmesh_component(game& game, entity& owner, const std::string& mesh)
+    animation_component::animation_component(game& game, entity& owner, const std::string& mesh)
     : reflective{game, owner} {
-        set_mesh(mesh);
+        set_rigged_mesh(mesh);
     }
 
-    staticmesh_component::~staticmesh_component() noexcept {
+    animation_component::~animation_component() noexcept {
         game_.rendering_system().unregister_component(this);
     }
 
-    void staticmesh_component::draw() const {
+    void animation_component::draw() const {
         mesh_->vao().bind();
         for (auto i = 0; i < materials_.size(); ++i) {
             materials_[i].color->bind(0);
@@ -29,9 +29,9 @@ namespace zombye {
         }
     }
 
-    void staticmesh_component::set_mesh(const std::string& name) {
+    void animation_component::set_rigged_mesh(const std::string& name) {
         auto& rendering_system = game_.rendering_system();
-        auto tmp = rendering_system.get_mesh_manager().load(name);
+        auto tmp = rendering_system.get_rigged_mesh_manager().load(name);
         if (tmp) {
             mesh_ = tmp;
         }
@@ -40,7 +40,10 @@ namespace zombye {
             throw std::runtime_error("could not load asset " + name);
         }
         auto data_ptr = asset->content().data();
-        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(vertex);
+        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(bone);
+        data_ptr += sizeof(size_t);
+        data_ptr += size;
+        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(skinned_vertex);
         data_ptr += sizeof(size_t);
         data_ptr += size;
         size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(unsigned int);

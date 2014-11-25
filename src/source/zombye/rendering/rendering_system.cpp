@@ -16,8 +16,8 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_(game), window_(window), mesh_manager_{game_}, texture_manager_{game_},
-    shader_manager_{game_}, active_camera_{0}, perspective_projection_{1} {
+    : game_(game), window_(window), mesh_manager_{game_}, rigged_mesh_manager_{game_},
+    texture_manager_{game_}, shader_manager_{game_}, active_camera_{0}, perspective_projection_{1} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -66,6 +66,10 @@ namespace zombye {
         vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
 
+        skinned_vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+        skinned_vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
+        skinned_vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
+
         auto vs = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
         if (!vs) {
             throw std::runtime_error("could not load shader from file shader/staticmesh.vs");
@@ -112,6 +116,11 @@ namespace zombye {
             sm->draw();
         }
 
+        for (auto& a : animation_components_) {
+            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
+            a->draw();
+        }
+
         SDL_GL_SwapWindow(window_);
     }
 
@@ -123,6 +132,19 @@ namespace zombye {
         auto aspect_ratio = width / height;
         perspective_projection_ = glm::perspective(fovy_, aspect_ratio, near_plane_, far_plane_);
         glViewport(0, 0, width, height);
+    }
+
+    void rendering_system::register_component(animation_component* component) {
+        animation_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(animation_component* component) {
+        auto it = std::find(animation_components_.begin(), animation_components_.end() ,component);
+        auto last = animation_components_.end() - 1;
+        if (it != last) {
+            *it = std::move(*last);
+        }
+        animation_components_.pop_back();
     }
 
     void rendering_system::register_component(staticmesh_component* component) {
