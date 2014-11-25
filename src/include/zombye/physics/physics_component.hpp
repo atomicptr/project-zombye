@@ -2,8 +2,10 @@
 #define __ZOMBYE_PHYSICS_COMPONENT_HPP__
 
 #include <memory>
+#include <math.h>
 
 #include <glm/glm.hpp>
+#include <btBulletDynamicsCommon.h>
 
 #include <zombye/core/game.hpp>
 
@@ -25,8 +27,8 @@ namespace zombye {
         physics_system* physics_;
         btDiscreteDynamicsWorld* world_;
 
-        std::unique_ptr<btDefaultMotionState> motion_state_;
         std::unique_ptr<btRigidBody> body_;
+        std::unique_ptr<btDefaultMotionState> motion_state_;
     };
 }
 

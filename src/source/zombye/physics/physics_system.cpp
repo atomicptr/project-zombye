@@ -1,23 +1,18 @@
 #include <zombye/physics/physics_system.hpp>
 
 zombye::physics_system::physics_system() {
-    broadphase_ = std::unique_ptr<btDbvtBroadphase>(
-        new btDbvtBroadphase());
-    collision_config_ = std::unique_ptr<btDefaultCollisionConfiguration>(
-        new btDefaultCollisionConfiguration());
-    dispatcher_ = std::unique_ptr<btCollisionDispatcher>(
-        new btCollisionDispatcher(collision_config_.get()));
-    solver_ = std::unique_ptr<btSequentialImpulseConstraintSolver>(
-        new btSequentialImpulseConstraintSolver());
+    broadphase_ = std::make_unique<btDbvtBroadphase>();
+    collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
+    dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
+    solver_ = std::make_unique<btSequentialImpulseConstraintSolver>();
 
-    world_ = std::unique_ptr<btDiscreteDynamicsWorld>(
-        new btDiscreteDynamicsWorld(
-            dispatcher_.get(),
-            broadphase_.get(),
-            solver_.get(),
-            collision_config_.get()));
+    world_ = std::make_unique<btDiscreteDynamicsWorld>(
+        dispatcher_.get(),
+        broadphase_.get(),
+        solver_.get(),
+        collision_config_.get());
 
-    world_->setGravity(btVector3(0, -10, 0));
+    world_->setGravity(btVector3(0, -9.81, 0));
 }
 
 zombye::physics_system::~physics_system() {
