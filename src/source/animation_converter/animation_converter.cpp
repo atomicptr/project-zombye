@@ -73,10 +73,8 @@ namespace devtools {
                             if (v.link_count == 4) {
                                 throw std::runtime_error("too many bones affecting vertex");
                             }
-                            link l;
-                            l.bone = b.id;
-                            l.weight = weight.mWeight;
-                            v.links[v.link_count] = l;
+                            v.index[v.link_count] = b.id;
+                            v.weight[v.link_count] = weight.mWeight;
                             ++v.link_count;
                         }
                     }

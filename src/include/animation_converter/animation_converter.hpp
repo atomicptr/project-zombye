@@ -17,16 +17,12 @@ namespace devtools {
         glm::mat4 transformation;
     };
 
-    struct link {
-        unsigned int bone = 0;
-        float weight = 0.f;
-    };
-
     struct vertex {
         glm::vec3 pos;
         glm::vec3 nor;
         glm::vec2 tex;
-        link links[4];
+        glm::ivec4 index;
+        glm::vec4 weight;
         unsigned int link_count = 0;
     };
 

@@ -66,10 +66,6 @@ namespace zombye {
         vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
 
-        skinned_vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
-        skinned_vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
-        skinned_vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
-
         auto vs = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
         if (!vs) {
             throw std::runtime_error("could not load shader from file shader/staticmesh.vs");
@@ -86,6 +82,29 @@ namespace zombye {
 
         vertex_layout_.setup_program(*staticmesh_program_, "fragcolor");
         staticmesh_program_->link();
+
+        skinned_vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+        skinned_vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
+        skinned_vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
+        skinned_vertex_layout_.emplace("in_bone_index", 4, GL_UNSIGNED_INT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::ivec4));
+        skinned_vertex_layout_.emplace("in_weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec4));
+
+        vs = shader_manager_.load("shader/riggedmesh.vs", GL_VERTEX_SHADER);
+        if (!vs) {
+            throw std::runtime_error("could not load shader from file shader/riggedmesh.vs");
+        }
+        fs = shader_manager_.load("shader/riggedmesh.fs", GL_FRAGMENT_SHADER);
+        if (!fs) {
+            throw std::runtime_error("could not load shader from file shader/riggedmesh.fs");
+        }
+
+        riggedmesh_program_ = std::unique_ptr<shader_program>{new shader_program{}};
+
+        riggedmesh_program_->attach_shader(vs);
+        riggedmesh_program_->attach_shader(fs);
+
+        skinned_vertex_layout_.setup_program(*riggedmesh_program_, "fragcolor");
+        riggedmesh_program_->link();
 
         fovy_ = 90.0f * 3.14f / 180.0f;
         auto aspect_ratio = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
@@ -116,8 +135,10 @@ namespace zombye {
             sm->draw();
         }
 
+        riggedmesh_program_->use();
+        riggedmesh_program_->uniform("color_texture", 0);
         for (auto& a : animation_components_) {
-            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
+            riggedmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
             a->draw();
         }
 

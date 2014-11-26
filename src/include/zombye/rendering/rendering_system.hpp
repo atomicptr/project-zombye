@@ -34,6 +34,7 @@ namespace zombye {
         vertex_layout vertex_layout_;
         vertex_layout skinned_vertex_layout_;
         std::unique_ptr<shader_program> staticmesh_program_;
+        std::unique_ptr<shader_program> riggedmesh_program_;
         std::vector<animation_component*> animation_components_;
         std::vector<staticmesh_component*> staticmesh_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;

@@ -3,5 +3,11 @@
         "staticmesh_component": {
             "mesh": "meshes/dummy.msh"
         }
+    },
+
+    "animated": {
+        "animation_component": {
+            "rigged_mesh": "meshes/anim_test.sklt"
+        }
     }
 }
