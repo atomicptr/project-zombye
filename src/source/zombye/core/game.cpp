@@ -3,6 +3,8 @@
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 
+#include <zombye/utils/fps_counter.hpp>
+
 zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
     zombye::log("init game with OS: " + std::string(OS_NAME));
 
@@ -57,6 +59,8 @@ void zombye::game::run() {
     // start menu state
     gameplay_system_->use(GAME_STATE_MENU);
 
+    auto fps = fps_counter{};
+
     while(running_) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
@@ -85,7 +89,16 @@ void zombye::game::run() {
         gameplay_system_->update(delta_time);
         rendering_system_->update(delta_time);
         entity_manager_->clear();
+
+        fps.update();
+
+#ifdef ZOMBYE_DEBUG
+        auto ntitle = title_ + " [ FPS: " + std::to_string(fps.fps()) + " ]";
+        SDL_SetWindowTitle(window_.get(), ntitle.c_str());
+#endif
     }
+
+    log("Average FPS: " + std::to_string(fps.fps()));
 
     // to ensure that the last game state "leaves" before SDL_Quit
     gameplay_system_->dispose_current();
