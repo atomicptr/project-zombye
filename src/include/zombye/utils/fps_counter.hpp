@@ -17,7 +17,6 @@ namespace zombye {
         float fps() const;
 
     private:
-        float frames_per_second_;
         unsigned int framecount_;
         unsigned int last_frame_time_;
 

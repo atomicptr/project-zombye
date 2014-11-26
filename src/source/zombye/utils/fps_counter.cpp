@@ -1,6 +1,6 @@
 #include <zombye/utils/fps_counter.hpp>
 
-zombye::fps_counter::fps_counter() : frames_per_second_(0.f), framecount_(0) {
+zombye::fps_counter::fps_counter() : framecount_(0) {
     last_frame_time_ = SDL_GetTicks();
 }
 
