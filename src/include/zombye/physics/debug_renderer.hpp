@@ -8,11 +8,11 @@ namespace zombye {
     public:
         virtual ~debug_renderer() {}
 
-        // from, to, r, g, b
-        virtual void draw_line(glm::vec3, glm::vec3, float, float, float) = 0;
+        // from, to, color
+        virtual void draw_line(glm::vec3&, glm::vec3&, glm::vec3&) = 0;
 
-        // pointOnB, normalOnB, distance, lifetime, r, g, b
-        virtual void draw_contact_point(glm::vec3, glm::vec3, float, int, float, float, float) = 0;
+        // pointOnB, normalOnB, distance, lifetime, color
+        virtual void draw_contact_point(glm::vec3&, glm::vec3&, float, int, glm::vec3&) = 0;
     };
 }
 
