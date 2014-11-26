@@ -106,3 +106,4 @@ solution "project-zombye"
 
         configuration "debug"
             flags {"FatalWarnings"}
+            defines "ZOMBYE_DEBUG"

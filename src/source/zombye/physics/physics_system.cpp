@@ -13,6 +13,16 @@ zombye::physics_system::physics_system() {
         collision_config_.get());
 
     world_->setGravity(btVector3(0, -9.81, 0));
+
+#ifdef ZOMBYE_DEBUG
+    // TODO: HERE WORK TO DO :D
+    /*debug_drawer_ = std::make_unique<CHILD_OF_DEBUG_RENDERER>(); // TODO: change this
+    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(debug_drawer_.get());
+
+    bt_debug_drawer_->setDebugMode(1);
+
+    world_->setDebugDrawer(debug_drawer_.get());*/
+#endif
 }
 
 zombye::physics_system::~physics_system() {
@@ -23,15 +33,18 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
     return world_.get();
 }
 
-void zombye::physics_system::init() {
-}
-
 void zombye::physics_system::update(float delta_time) {
     world_->stepSimulation(delta_time);
 
     for(auto comp : components_) {
         comp->sync();
     }
+}
+
+void zombye::physics_system::debug_draw() {
+#ifdef ZOMBYE_DEBUG
+    world_->debugDrawWorld();
+#endif
 }
 
 void zombye::physics_system::register_component(physics_component* comp) {
