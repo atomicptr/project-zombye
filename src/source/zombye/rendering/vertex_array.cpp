@@ -1,4 +1,5 @@
 #include <zombye/rendering/vertex_array.hpp>
+#include <iostream>
 
 namespace zombye {
     vertex_array::vertex_array() noexcept

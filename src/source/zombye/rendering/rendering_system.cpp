@@ -16,8 +16,9 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_(game), window_(window), mesh_manager_{game_}, rigged_mesh_manager_{game_},
-    texture_manager_{game_}, shader_manager_{game_}, active_camera_{0}, perspective_projection_{1} {
+    : game_(game), window_(window), animation_manager_{game_}, mesh_manager_{game_},
+    rigged_mesh_manager_{game_}, texture_manager_{game_}, shader_manager_{game_}, active_camera_{0},
+    perspective_projection_{1} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

@@ -7,7 +7,8 @@
 
     "animated": {
         "animation_component": {
-            "rigged_mesh": "meshes/anim_test.sklt"
+            "rigged_mesh": "meshes/anim_test.sklt",
+            "animation": "anims/anim_test.anim"
         }
     }
 }

@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/animation_component.hpp>
+#include <zombye/rendering/animation_manager.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/rigged_mesh_manager.hpp>
@@ -27,6 +28,7 @@ namespace zombye {
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
+        animation_manager animation_manager_;
         mesh_manager mesh_manager_;
         rigged_mesh_manager rigged_mesh_manager_;
         shader_manager shader_manager_;
@@ -60,12 +62,16 @@ namespace zombye {
 
         void set_clear_color(float red, float green, float blue, float alpha);
 
-        auto& get_rigged_mesh_manager() {
-            return rigged_mesh_manager_;
+        auto& get_animation_manager() {
+            return animation_manager_;
         }
 
         auto& get_mesh_manager() {
             return mesh_manager_;
+        }
+
+        auto& get_rigged_mesh_manager() {
+            return rigged_mesh_manager_;
         }
 
         auto& get_shader_manager() {

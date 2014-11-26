@@ -173,11 +173,13 @@ namespace devtools {
         } else if (scene_->HasAnimations()) {
             auto size = animation_.name.size();
             os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-            os_.write(animation_.name.c_str(), animation_.name.size());
+            os_.write(animation_.name.c_str(), size);
             os_.write(reinterpret_cast<char*>(&animation_.duration), sizeof(float));
             os_.write(reinterpret_cast<char*>(&animation_.tps), sizeof(float));
+            size = animation_.nodes.size();
+            os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
             for (auto& n : animation_.nodes) {
-                os_.write(reinterpret_cast<char*>(&n.bone), sizeof(float));
+                os_.write(reinterpret_cast<char*>(&n.bone), sizeof(unsigned int));
 
                 size = n.position_keys.size();
                 os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));

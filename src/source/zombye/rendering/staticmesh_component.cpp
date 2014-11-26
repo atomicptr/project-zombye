@@ -14,6 +14,7 @@ namespace zombye {
 
     staticmesh_component::staticmesh_component(game& game, entity& owner, const std::string& mesh)
     : reflective{game, owner} {
+        game_.rendering_system().register_component(this);
         set_mesh(mesh);
     }
 

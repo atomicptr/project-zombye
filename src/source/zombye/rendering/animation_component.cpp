@@ -5,6 +5,7 @@
 namespace zombye {
     void animation_component::register_reflection() {
         register_property<std::string>("rigged_mesh", nullptr, &animation_component::set_rigged_mesh);
+        register_property<std::string>("animation", nullptr, &animation_component::set_animation);
     }
 
     animation_component::animation_component(game& game, entity& owner) noexcept
@@ -14,6 +15,7 @@ namespace zombye {
 
     animation_component::animation_component(game& game, entity& owner, const std::string& mesh)
     : reflective{game, owner} {
+        game_.rendering_system().register_component(this);
         set_rigged_mesh(mesh);
     }
 
@@ -31,9 +33,9 @@ namespace zombye {
 
     void animation_component::set_rigged_mesh(const std::string& name) {
         auto& rendering_system = game_.rendering_system();
-        auto tmp = rendering_system.get_rigged_mesh_manager().load(name);
-        if (tmp) {
-            mesh_ = tmp;
+        mesh_ = rendering_system.get_rigged_mesh_manager().load(name);
+        if (!mesh_) {
+            throw std::runtime_error("could not load rigged mesh from file " + name);
         }
         auto asset = game_.asset_manager().load(name);
         if (!asset) {
@@ -67,6 +69,14 @@ namespace zombye {
             }
             m.color = color;
             materials_.emplace_back(m);
+        }
+    }
+
+    void animation_component::set_animation(const std::string& name) {
+        auto& rendering_system = game_.rendering_system();
+        animation_ = rendering_system.get_animation_manager().load(name);
+        if (!animation_) {
+            throw std::runtime_error("could not load animation from file " + name);
         }
     }
 }
