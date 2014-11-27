@@ -22,6 +22,10 @@ namespace zombye {
         void update(float);
         void debug_draw();
 
+        void toggle_debug();
+        void enable_debug();
+        void disable_debug();
+
     private:
         game& game_;
         std::unique_ptr<btDbvtBroadphase> broadphase_;

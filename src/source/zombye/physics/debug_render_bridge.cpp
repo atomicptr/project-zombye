@@ -21,7 +21,9 @@ void zombye::debug_render_bridge::drawLine(const btVector3 &btfrom, const btVect
     color.y = btcolor.y();
     color.z = btcolor.z();
 
-    renderer_->draw_line(from, to, color);
+    if(debug_mode_ == 1) {
+        renderer_->draw_line(from, to, color);
+    }
 }
 
 void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, const btVector3 &btnormal, btScalar btdistance, int lifetime, const btVector3 &btcolor) {
@@ -43,7 +45,9 @@ void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, con
     color.y = btcolor.y();
     color.z = btcolor.z();
 
-    renderer_->draw_contact_point(point, normal, distance, lifetime, color);
+    if(debug_mode_ == 1) {
+        renderer_->draw_contact_point(point, normal, distance, lifetime, color);
+    }
 }
 
 
@@ -68,7 +72,9 @@ void zombye::debug_render_bridge::drawTransform(const btTransform &bttransform, 
 
     auto ortho_len = float{btortho_len};
 
-    renderer_->draw_transform(pos, rot, ortho_len);
+    if(debug_mode_ == 1) {
+        renderer_->draw_transform(pos, rot, ortho_len);
+    }
 }
 
 void zombye::debug_render_bridge::reportErrorWarning(const char *msg) {
