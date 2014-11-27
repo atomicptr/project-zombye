@@ -29,11 +29,11 @@ namespace zombye {
 
     public:
         debug_renderer(game& game);
-        // from, to, color
-        void draw_line(const glm::vec3&, const glm::vec3&, const glm::vec3&);
 
-        // pointOnB, normalOnB, distance, lifetime, color
+        void draw_line(const glm::vec3&, const glm::vec3&, const glm::vec3&);
         void draw_contact_point(const glm::vec3&, const glm::vec3&, float, int, const glm::vec3&);
+        void draw_transform(glm::vec3&, glm::quat&, float);
+
     };
 }
 

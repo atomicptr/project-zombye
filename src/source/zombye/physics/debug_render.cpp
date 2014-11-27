@@ -60,4 +60,8 @@ namespace zombye {
         vao_.bind();
         glDrawArrays(GL_POINTS, 0, 1);
     }
+
+    void debug_renderer::draw_transform(glm::vec3 &pos, glm::quat &rotation, float ortho_length) {
+
+    }
 }

@@ -2,6 +2,8 @@
 #define __ZOMBYE_DEBUG_RENDER_BRIDGE_HPP__
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btIDebugDraw.h>
 
@@ -16,10 +18,9 @@ namespace zombye {
         ~debug_render_bridge();
 
         void drawLine(const btVector3&, const btVector3&, const btVector3&);
-
         void drawContactPoint(const btVector3&, const btVector3&, btScalar, int, const btVector3&);
-
         void draw3dText(const btVector3&, const char*);
+        void drawTransform(const btTransform&, btScalar);
 
         void reportErrorWarning(const char*);
 

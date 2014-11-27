@@ -46,8 +46,29 @@ void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, con
     renderer_->draw_contact_point(point, normal, distance, lifetime, color);
 }
 
-void zombye::debug_render_bridge::draw3dText(const btVector3&, const char*) {
 
+void zombye::debug_render_bridge::draw3dText(const btVector3&, const char*) {
+}
+
+void zombye::debug_render_bridge::drawTransform(const btTransform &bttransform, btScalar btortho_len) {
+    static auto pos = glm::vec3{};
+    static auto rot = glm::quat{};
+
+    auto origin = bttransform.getOrigin();
+    auto rotation = bttransform.getRotation();
+
+    pos.x = origin.x();
+    pos.y = origin.y();
+    pos.z = origin.z();
+
+    rot.x = rotation.getAxis().x();
+    rot.y = rotation.getAxis().y();
+    rot.z = rotation.getAxis().z();
+    rot.w = rotation.getAngle();
+
+    auto ortho_len = float{btortho_len};
+
+    renderer_->draw_transform(pos, rot, ortho_len);
 }
 
 void zombye::debug_render_bridge::reportErrorWarning(const char *msg) {
