@@ -29,6 +29,18 @@ solution "project-zombye"
 
         warnings "Off"
 
+        configuration {"gmake", "windows"}
+            includedirs { "$(AMDAPPSDKROOT)/include" }
+            libdirs { "$(AMDAPPSDKROOT)/lib/x64" }
+
+            linkoptions {"-lmingw32 -lOpenCL"}
+
+            defines {"WINVER=0x0601", "_WIN32_WINNT=0x0601"}
+
+            buildoptions "-fpermissive"
+
+        links "OpenCL"
+
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
                 toolset "clang"
@@ -41,54 +53,6 @@ solution "project-zombye"
         configuration {"gmake", "macosx"}
             linkoptions "-framework OpenCL"
 
-    project "mesh_converter"
-        kind "ConsoleApp"
-
-        buildoptions "-std=c++1y"
-
-        files "src/source/mesh_converter/**.cpp"
-
-        defines "GLM_FORCE_RADIANS"
-
-        configuration {"gmake", "linux"}
-            if _OPTIONS["cc"] == "clang" then
-                toolset "clang"
-                buildoptions "-stdlib=libc++"
-                links "c++"
-            end
-            links "assimp"
-
-        configuration {"gmake", "macosx"}
-            links "assimp"
-
-        configuration "debug"
-            flags {"Symbols", "FatalWarnings"}
-            optimize "Off"
-
-        configuration "release"
-            optimize "Full"
-
-    project "animation_converter"
-        kind "ConsoleApp"
-
-        buildoptions "-std=c++1y"
-
-        files "src/source/animation_converter/**.cpp"
-
-        defines "GLM_FORCE_RADIANS"
-
-        links {"assimp"}
-
-        configuration {"gmake", "linux"}
-            if _OPTIONS["cc"] == "clang" then
-                toolset "clang"
-                buildoptions "-stdlib=libc++"
-                links "c++"
-            end
-
-        configuration "debug"
-            flags {"FatalWarnings"}
-
     project "zombye"
         kind "WindowedApp"
 
@@ -97,6 +61,26 @@ solution "project-zombye"
         files "src/source/zombye/**.cpp"
 
         defines "GLM_FORCE_RADIANS"
+
+        configuration {"gmake", "windows"}
+            buildoptions "-std=gnu++1y"
+
+            includedirs {
+                "deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/include",
+                "deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/include/SDL2",
+                "deps/mingw/SDL2_mixer-2.0.0/x86_64-w64-mingw32/include",
+                "deps/mingw/glew/include"
+            }
+
+            libdirs {
+                "deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/lib",
+                "deps/mingw/SDL2_mixer-2.0.0/x86_64-w64-mingw32/lib",
+                "deps/mingw/glew/lib/x64"
+            }
+
+            linkoptions {"-lmingw32 -lOpenCL -lopengl32 -lSDL2main -lSDL2 -lSDL2_mixer"}
+
+            links {"deps"}
 
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
