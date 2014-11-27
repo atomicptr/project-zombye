@@ -21,7 +21,7 @@ void zombye::debug_render_bridge::drawLine(const btVector3 &btfrom, const btVect
     color.y = btcolor.y();
     color.z = btcolor.z();
 
-    if(debug_mode_ == 1) {
+    if(debug_mode_ != 0) {
         renderer_->draw_line(from, to, color);
     }
 }
@@ -45,36 +45,20 @@ void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, con
     color.y = btcolor.y();
     color.z = btcolor.z();
 
-    if(debug_mode_ == 1) {
+    if(debug_mode_ != 0) {
         renderer_->draw_contact_point(point, normal, distance, lifetime, color);
     }
 }
 
+void zombye::debug_render_bridge::drawTransform(const btTransform &transform, btScalar ortho_length) {
+    auto start = transform.getOrigin();
 
-void zombye::debug_render_bridge::draw3dText(const btVector3&, const char*) {
+    drawLine(start, start + transform.getBasis() * btVector3(ortho_length, 0, 0), btVector3(0.7f, 0, 0));
+    drawLine(start, start + transform.getBasis() * btVector3(0, ortho_length, 0), btVector3(0, 0.7f, 0));
+    drawLine(start, start + transform.getBasis() * btVector3(0, 0, ortho_length), btVector3(0, 0, 0.7f));
 }
 
-void zombye::debug_render_bridge::drawTransform(const btTransform &bttransform, btScalar btortho_len) {
-    static auto pos = glm::vec3{};
-    static auto rot = glm::quat{};
-
-    auto origin = bttransform.getOrigin();
-    auto rotation = bttransform.getRotation();
-
-    pos.x = origin.x();
-    pos.y = origin.y();
-    pos.z = origin.z();
-
-    rot.x = rotation.getX();
-    rot.y = rotation.getY();
-    rot.z = rotation.getZ();
-    rot.w = rotation.getW();
-
-    auto ortho_len = float{btortho_len};
-
-    if(debug_mode_ == 1) {
-        renderer_->draw_transform(pos, rot, ortho_len);
-    }
+void zombye::debug_render_bridge::draw3dText(const btVector3&, const char*) {
 }
 
 void zombye::debug_render_bridge::reportErrorWarning(const char *msg) {

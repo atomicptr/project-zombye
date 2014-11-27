@@ -1,6 +1,15 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/physics_system.hpp>
 
+#define ZDBG_DRAW_WIREFRAME 1
+#define ZDBG_DRAW_AAB 2
+#define ZDBG_DRAW_CONTACT_POINTS 8
+#define ZDBG_DRAW_CONSTRAINTS 2048
+#define ZDBG_DRAW_CONSTRAINTS_LIMITS 4096
+#define ZDBG_DRAW_NORMALS 16384
+
+#define DEBUG_DRAW_CONFIG (ZDBG_DRAW_WIREFRAME | ZDBG_DRAW_AAB | ZDBG_DRAW_CONTACT_POINTS | ZDBG_DRAW_CONSTRAINTS | ZDBG_DRAW_CONSTRAINTS_LIMITS | ZDBG_DRAW_NORMALS)
+
 zombye::physics_system::physics_system(game& game)
 : game_{game} {
     broadphase_ = std::make_unique<btDbvtBroadphase>();
@@ -22,7 +31,7 @@ zombye::physics_system::physics_system(game& game)
     world_->setDebugDrawer(bt_debug_drawer_.get());
 
 #ifdef ZOMBYE_DEBUG
-    bt_debug_drawer_->setDebugMode(1);
+    bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
 #endif
 }
 
@@ -47,7 +56,7 @@ void zombye::physics_system::debug_draw() {
 }
 
 void zombye::physics_system::toggle_debug() {
-    if(bt_debug_drawer_->getDebugMode() == 1) {
+    if(bt_debug_drawer_->getDebugMode() != 0) {
         disable_debug();
     } else {
         enable_debug();
@@ -55,7 +64,7 @@ void zombye::physics_system::toggle_debug() {
 }
 
 void zombye::physics_system::enable_debug() {
-    bt_debug_drawer_->setDebugMode(1);
+    bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
 }
 
 void zombye::physics_system::disable_debug() {
