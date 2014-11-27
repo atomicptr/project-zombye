@@ -2,7 +2,13 @@ solution "project-zombye"
     configurations { "debug", "release"}
     language "C++"
 
-    includedirs { "deps/include", "src/include", "deps/bullet3" }
+    includedirs {
+        "deps/bullet3",
+        "deps/jsoncpp/include",
+        "deps/gli/include",
+        "deps/glm/include",
+        "src/include"
+    }
 
     configuration "debug"
         flags {"Symbols"}
@@ -14,9 +20,14 @@ solution "project-zombye"
     project "deps"
         kind "StaticLib"
 
-        buildoptions "-std=c++1y"
+        buildoptions {"-x c++", "-std=c++1y"}
 
-        files "deps/source/**.cpp"
+        files {
+            "deps/**.cpp",
+            "deps/**.c"
+        }
+
+        warnings "Off"
 
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
@@ -25,12 +36,6 @@ solution "project-zombye"
                 links "c++"
             end
 
-    project "bullet3"
-        kind "StaticLib"
-
-        files {"deps/bullet3/**.cpp", "deps/bullet3/**.c"}
-
-        configuration {"gmake", "linux"}
             links "OpenCL"
 
         configuration {"gmake", "macosx"}
@@ -99,10 +104,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "deps" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps", "bullet3" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "deps" }
 
         configuration "debug"
             flags {"FatalWarnings"}
