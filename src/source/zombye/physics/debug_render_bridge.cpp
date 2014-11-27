@@ -46,6 +46,10 @@ void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, con
     renderer_->draw_contact_point(point, normal, distance, lifetime, color);
 }
 
+void zombye::debug_render_bridge::draw3dText(const btVector3&, const char*) {
+
+}
+
 void zombye::debug_render_bridge::reportErrorWarning(const char *msg) {
     log(LOG_ERROR, std::string{msg});
 }

@@ -19,6 +19,8 @@ namespace zombye {
 
         void drawContactPoint(const btVector3&, const btVector3&, btScalar, int, const btVector3&);
 
+        void draw3dText(const btVector3&, const char*);
+
         void reportErrorWarning(const char*);
 
         void setDebugMode(int);

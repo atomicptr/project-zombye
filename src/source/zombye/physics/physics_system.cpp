@@ -1,6 +1,8 @@
+#include <zombye/core/game.hpp>
 #include <zombye/physics/physics_system.hpp>
 
-zombye::physics_system::physics_system() {
+zombye::physics_system::physics_system(game& game)
+: game_{game} {
     broadphase_ = std::make_unique<btDbvtBroadphase>();
     collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
     dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
@@ -16,12 +18,12 @@ zombye::physics_system::physics_system() {
 
 #ifdef ZOMBYE_DEBUG
     // TODO: HERE WORK TO DO :D
-    /*debug_drawer_ = std::make_unique<CHILD_OF_DEBUG_RENDERER>(); // TODO: change this
+    debug_drawer_ = std::make_unique<debug_renderer>(game_); // TODO: change this
     bt_debug_drawer_ = std::make_unique<debug_render_bridge>(debug_drawer_.get());
 
     bt_debug_drawer_->setDebugMode(1);
 
-    world_->setDebugDrawer(debug_drawer_.get());*/
+    world_->setDebugDrawer(bt_debug_drawer_.get());
 #endif
 }
 

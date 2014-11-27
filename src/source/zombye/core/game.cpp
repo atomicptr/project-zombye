@@ -35,11 +35,11 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     SDL_ClearError();
 
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
-    physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(
         new zombye::rendering_system(*this, window_.get()));
+    physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
 
@@ -87,9 +87,11 @@ void zombye::game::run() {
 
         physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
-        rendering_system_->update(delta_time);
 
+        rendering_system_->begin_scene();
+        rendering_system_->update(delta_time);
         physics_system_->debug_draw();
+        rendering_system_->end_scene();
 
         entity_manager_->clear();
     }
