@@ -41,7 +41,7 @@ zombye::physics_component::~physics_component() {
 
 void zombye::physics_component::sync() const {
     static glm::vec3 pos{};
-    static glm::vec3 rot_axis{};
+    static glm::quat rot{};
 
     btTransform trans;
     body_->getMotionState()->getWorldTransform(trans);
@@ -53,15 +53,11 @@ void zombye::physics_component::sync() const {
     pos.y = origin.y();
     pos.z = origin.z();
 
-    auto axis = rotation.getAxis();
-    auto angle = rotation.getAngle();
-
-    rot_axis.x = axis.x();
-    rot_axis.y = axis.y();
-    rot_axis.z = axis.z();
-
-    auto quat = glm::angleAxis(angle, rot_axis);
+    rot.x = rotation.getX();
+    rot.y = rotation.getY();
+    rot.z = rotation.getZ();
+    rot.w = rotation.getW();
 
     owner().position(pos);
-    owner().rotation(quat);
+    owner().rotation(rot);
 }
