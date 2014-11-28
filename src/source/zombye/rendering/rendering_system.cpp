@@ -137,25 +137,25 @@ namespace zombye {
 
         staticmesh_program_->use();
         auto light = light_components_.front();
-        staticmesh_program_->uniform("light_position", 1, light->owner().position());
-        staticmesh_program_->uniform("light_color", 1, light->color());
+        staticmesh_program_->uniform("light_position", light->owner().position());
+        staticmesh_program_->uniform("light_color", light->color());
         staticmesh_program_->uniform("light_intensity", light->intensity());
         staticmesh_program_->uniform("color_texture", 0);
         staticmesh_program_->uniform("specular_texture", 1);
-        staticmesh_program_->uniform("view", 1, camera->second->owner().position());
+        staticmesh_program_->uniform("view", camera->second->owner().position());
         for (auto& sm : staticmesh_components_) {
             auto model_matrix = sm->owner().transform();
             auto model_matrix_it = glm::inverse(glm::transpose(model_matrix));
-            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * model_matrix);
-            staticmesh_program_->uniform("m", 1, GL_FALSE, model_matrix);
-            staticmesh_program_->uniform("mit", 1, GL_FALSE, model_matrix_it);
+            staticmesh_program_->uniform("mvp", GL_FALSE, vp * model_matrix);
+            staticmesh_program_->uniform("m", GL_FALSE, model_matrix);
+            staticmesh_program_->uniform("mit", GL_FALSE, model_matrix_it);
             sm->draw();
         }
 
         riggedmesh_program_->use();
         riggedmesh_program_->uniform("color_texture", 0);
         for (auto& a : animation_components_) {
-            riggedmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
+            riggedmesh_program_->uniform("mvp", GL_FALSE, vp * a->owner().transform());
             a->draw();
         }
     }

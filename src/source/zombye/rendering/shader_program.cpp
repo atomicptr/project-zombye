@@ -81,39 +81,88 @@ namespace zombye {
         glUniform1ui(glGetUniformLocation(name_, name.c_str()), value);
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::vec2& value) noexcept {
-        glUniform2fv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::vec2& value) noexcept {
+        glUniform2fv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::vec3& value) noexcept {
-        glUniform3fv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::vec3& value) noexcept {
+        glUniform3fv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::vec4& value) noexcept {
-        glUniform4fv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::vec4& value) noexcept {
+        glUniform4fv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::ivec2& value) noexcept {
-        glUniform2iv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::ivec2& value) noexcept {
+        glUniform2iv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::ivec3& value) noexcept {
-        glUniform3iv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::ivec3& value) noexcept {
+        glUniform3iv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, const glm::ivec4& value) noexcept {
-        glUniform4iv(glGetUniformLocation(name_, name.c_str()), count, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, const glm::ivec4& value) noexcept {
+        glUniform4iv(glGetUniformLocation(name_, name.c_str()), 1, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const glm::mat2& value) noexcept {
-        glUniformMatrix2fv(glGetUniformLocation(name_, name.c_str()), count, transpose, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, bool transpose, const glm::mat2& value) noexcept {
+        glUniformMatrix2fv(glGetUniformLocation(name_, name.c_str()), 1, transpose, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const glm::mat3& value) noexcept {
-        glUniformMatrix3fv(glGetUniformLocation(name_, name.c_str()), count, transpose, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, bool transpose, const glm::mat3& value) noexcept {
+        glUniformMatrix3fv(glGetUniformLocation(name_, name.c_str()), 1, transpose, glm::value_ptr(value));
     }
 
-    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const glm::mat4& value) noexcept {
-        glUniformMatrix4fv(glGetUniformLocation(name_, name.c_str()), count, transpose, glm::value_ptr(value));
+    void shader_program::uniform(const std::string& name, bool transpose, const glm::mat4& value) noexcept {
+        glUniformMatrix4fv(glGetUniformLocation(name_, name.c_str()), 1, transpose, glm::value_ptr(value));
     }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<float>& values) noexcept {
+        glUniform1fv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<int32_t>& values) noexcept {
+        glUniform1iv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const int32_t*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<uint32_t>& values) noexcept {
+        glUniform1uiv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const uint32_t*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::vec2>& values) noexcept {
+        glUniform2fv(glGetUniformLocation(name_, name.c_str()), count,reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::vec3>& values) noexcept {
+        glUniform3fv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::vec4>& values) noexcept {
+        glUniform4fv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::ivec2>& values) noexcept {
+        glUniform2iv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const int32_t*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::ivec3>& values) noexcept {
+        glUniform3iv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const int32_t*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, const std::vector<glm::ivec4>& values) noexcept {
+        glUniform4iv(glGetUniformLocation(name_, name.c_str()), count, reinterpret_cast<const int32_t*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat2>& values) noexcept {
+        glUniformMatrix2fv(glGetUniformLocation(name_, name.c_str()), count, transpose, reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat3>& values) noexcept {
+        glUniformMatrix3fv(glGetUniformLocation(name_, name.c_str()), count, transpose, reinterpret_cast<const float*>(values.data()));
+    }
+
+    void shader_program::uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat4>& values) noexcept {
+        glUniformMatrix4fv(glGetUniformLocation(name_, name.c_str()), count, transpose, reinterpret_cast<const float*>(values.data()));
+    }
+
 }

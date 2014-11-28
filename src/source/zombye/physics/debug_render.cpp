@@ -44,7 +44,7 @@ namespace zombye {
         v[1].col = color;
         vbo_->data(2 * sizeof(debug_vertex), v);
         physics_debug_program_.use();
-        physics_debug_program_.uniform("vp", 1, GL_FALSE, rs_.perspective_projection() * rs_.view());
+        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
         vao_.bind();
         glDrawArrays(GL_LINES, 0, 2);
     }
@@ -56,7 +56,7 @@ namespace zombye {
         v.col = color;
         vbo_->data(sizeof(debug_vertex), &v);
         physics_debug_program_.use();
-        physics_debug_program_.uniform("vp", 1, GL_FALSE, rs_.perspective_projection() * rs_.view());
+        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
         vao_.bind();
         glDrawArrays(GL_POINTS, 0, 1);
     }
