@@ -53,13 +53,10 @@ void zombye::physics_component::sync() const {
     pos.y = origin.y();
     pos.z = origin.z();
 
-    auto axis = rotation.getAxis();
-    auto angle = rotation.getAngle();
-
-    rot.x = axis.x();
-    rot.y = axis.y();
-    rot.z = axis.z();
-    rot.w = angle;
+    rot.x = rotation.getX();
+    rot.y = rotation.getY();
+    rot.z = rotation.getZ();
+    rot.w = rotation.getW();
 
     owner().position(pos);
     owner().rotation(rot);

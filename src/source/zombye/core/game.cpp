@@ -6,7 +6,11 @@
 #include <zombye/utils/fps_counter.hpp>
 
 zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
-    zombye::log("init game with OS: " + std::string(OS_NAME));
+#ifdef ZOMBYE_DEBUG
+    log("DEBUG BUILD");
+#endif
+
+    log("init game with OS: " + std::string(OS_NAME));
 
     asset_manager_ = std::unique_ptr<zombye::asset_manager>{new zombye::asset_manager{}};
     config_system_ = std::unique_ptr<zombye::config_system>(new zombye::config_system());
@@ -33,16 +37,16 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     SDL_ClearError();
 
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
-    physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system());
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(
         new zombye::rendering_system(*this, window_.get()));
+    physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
 
 zombye::game::~game() {
-    zombye::log("quit game");
+    log("quit game");
 
     SDL_Quit();
 }
@@ -73,7 +77,7 @@ void zombye::game::run() {
 
                 rendering_system_->resize_projection(width_, height_);
 
-                zombye::log("resized window to { width: " + std::to_string(width_) + ", height: " +
+                log("resized window to { width: " + std::to_string(width_) + ", height: " +
                     std::to_string(height_) + " }");
             }
 
@@ -87,7 +91,12 @@ void zombye::game::run() {
 
         physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
+
+        rendering_system_->begin_scene();
         rendering_system_->update(delta_time);
+        physics_system_->debug_draw();
+        rendering_system_->end_scene();
+
         entity_manager_->clear();
 
         fps.update();

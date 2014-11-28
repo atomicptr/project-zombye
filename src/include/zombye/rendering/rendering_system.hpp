@@ -58,6 +58,10 @@ namespace zombye {
         rendering_system(rendering_system&& other) = delete;
         ~rendering_system() noexcept;
 
+        void begin_scene();
+
+        void end_scene();
+
         void update(float delta_time);
 
         void set_clear_color(float red, float green, float blue, float alpha);
@@ -101,6 +105,19 @@ namespace zombye {
         }
 
         void resize_projection(float width, float height) noexcept;
+
+        auto& perspective_projection() {
+            return perspective_projection_;
+        }
+
+        auto view() {
+            auto view = glm::mat4{1.0f};
+            auto camera = camera_components_.find(active_camera_);
+            if (camera != camera_components_.end()) {
+                view = camera->second->transform();
+            }
+            return view;
+        }
 
         rendering_system& operator=(const rendering_system& other) = delete;
         rendering_system& operator=(rendering_system&& other) = delete;

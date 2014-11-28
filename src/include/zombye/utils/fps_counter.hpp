@@ -1,7 +1,7 @@
 #ifndef __ZOMBYE_FPS_COUNTER_HPP__
 #define __ZOMBYE_FPS_COUNTER_HPP__
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include <array>
 

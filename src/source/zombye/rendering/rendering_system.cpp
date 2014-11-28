@@ -119,9 +119,15 @@ namespace zombye {
         SDL_GL_DeleteContext(context_);
     }
 
-    void rendering_system::update(float delta_time) {
+    void rendering_system::begin_scene() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
+    void rendering_system::end_scene() {
+        SDL_GL_SwapWindow(window_);
+    }
+
+    void rendering_system::update(float delta_time) {
         auto view = glm::mat4{1.0f};
         auto camera = camera_components_.find(active_camera_);
         if (camera != camera_components_.end()) {
@@ -142,8 +148,6 @@ namespace zombye {
             riggedmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
             a->draw();
         }
-
-        SDL_GL_SwapWindow(window_);
     }
 
     void rendering_system::set_clear_color(float red, float green, float blue, float alpha) {
