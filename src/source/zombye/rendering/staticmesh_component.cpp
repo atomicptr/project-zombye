@@ -64,6 +64,10 @@ namespace zombye {
                 throw std::runtime_error("could not load texture " + name + "_color.dds");
             }
             m.color = color;
+            auto specular = texture_manager.load("texture/" + name + "_specular.dds");
+            if (!color) {
+                throw std::runtime_error("could not load texture " + name + "_specular.dds");
+            }
             materials_.emplace_back(m);
         }
     }

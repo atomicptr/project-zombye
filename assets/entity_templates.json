@@ -10,5 +10,24 @@
             "rigged_mesh": "meshes/anim_test.sklt",
             "animation": "anims/anim_test.anim"
         }
+    },
+
+    "point_light": {
+        "light_component": {
+            "color": ["f", 1.0, 1.0, 1.0],
+            "intensity": 1.0
+        }
+    },
+
+    "sphere": {
+        "staticmesh_component": {
+            "mesh": "meshes/sphere.msh"
+        }
+    },
+
+    "suzanne": {
+        "staticmesh_component": {
+            "mesh": "meshes/Suzanne.msh"
+        }
     }
 }

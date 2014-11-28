@@ -2,6 +2,7 @@
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/rendering/light_component.hpp>
 
 #include <zombye/utils/fps_counter.hpp>
 
@@ -120,6 +121,7 @@ void zombye::game::quit() {
 void zombye::game::register_components() {
     rtti_manager::register_type(animation_component::type_rtti());
     rtti_manager::register_type(staticmesh_component::type_rtti());
+    rtti_manager::register_type(light_component::type_rtti());
 }
 
 int zombye::game::width() const {

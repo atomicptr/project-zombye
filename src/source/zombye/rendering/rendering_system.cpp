@@ -136,9 +136,19 @@ namespace zombye {
         auto vp = perspective_projection_ * view;
 
         staticmesh_program_->use();
+        auto light = light_components_.front();
+        staticmesh_program_->uniform("light_position", 1, light->owner().position());
+        staticmesh_program_->uniform("light_color", 1, light->color());
+        staticmesh_program_->uniform("light_intensity", light->intensity());
         staticmesh_program_->uniform("color_texture", 0);
+        staticmesh_program_->uniform("specular_texture", 1);
+        staticmesh_program_->uniform("view", 1, camera->second->owner().position());
         for (auto& sm : staticmesh_components_) {
-            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * sm->owner().transform());
+            auto model_matrix = sm->owner().transform();
+            auto model_matrix_it = glm::inverse(glm::transpose(model_matrix));
+            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * model_matrix);
+            staticmesh_program_->uniform("m", 1, GL_FALSE, model_matrix);
+            staticmesh_program_->uniform("mit", 1, GL_FALSE, model_matrix_it);
             sm->draw();
         }
 
@@ -195,5 +205,18 @@ namespace zombye {
         if (it != camera_components_.end()) {
             camera_components_.erase(it);
         }
+    }
+
+    void rendering_system::register_component(light_component* component) {
+        light_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(light_component* component) {
+        auto it = std::find(light_components_.begin(), light_components_.end() ,component);
+        auto last = light_components_.end() - 1;
+        if (it != last) {
+            *it = std::move(*last);
+        }
+        light_components_.pop_back();
     }
 }
