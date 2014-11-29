@@ -19,11 +19,11 @@ void zombye::menu_state::enter() {
     camera.emplace<camera_component>(glm::vec3{}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
-    auto& dummy = sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{1, 20, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
-    auto& dummy2 = sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{0, -1, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
+    auto& dummy = sm_->get_game()->entity_manager().emplace("suzanne", glm::vec3{1, 20, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
+    auto& dummy2 = sm_->get_game()->entity_manager().emplace("suzanne", glm::vec3{0, -3, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
 
-    dummy.emplace<physics_component>(new box_shape(1, 1, 1));
-    dummy2.emplace<physics_component>(new box_shape(1, 1, 1), true);
+    dummy.emplace<physics_component>(new box_shape(1, 1.7, 1));
+    dummy2.emplace<physics_component>(new box_shape(1, 1.7, 1), true);
 }
 
 void zombye::menu_state::leave() {

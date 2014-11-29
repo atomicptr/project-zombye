@@ -3,5 +3,11 @@
         "staticmesh_component": {
             "mesh": "meshes/dummy.msh"
         }
+    },
+
+    "suzanne": {
+        "staticmesh_component": {
+            "mesh": "meshes/Suzanne.msh"
+        }
     }
 }
