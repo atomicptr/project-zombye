@@ -21,8 +21,8 @@ void zombye::menu_state::enter() {
     camera.emplace<camera_component>(glm::vec3{}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
-    //auto& anim = em.emplace("animated", glm::vec3{0.f}, glm::quat{0.f, 0.f , 0.f , 1.f}, glm::vec3{1.f});
-    //auto& dummy = em.emplace("dummy", glm::vec3{0, 20, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
+    auto& anim = em.emplace("animated", glm::vec3{0.f}, glm::quat{0.f, 0.f , 0.f , 1.f}, glm::vec3{1.f});
+    //auto& dummy = em.emplace("dummy", glm::vec3{1, 20, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
     //auto& dummy2 = em.emplace("dummy", glm::vec3{0, -1, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
 
     //dummy.emplace<physics_component>(new btBoxShape(btVector3(1, 1, 1)));
@@ -35,7 +35,7 @@ void zombye::menu_state::enter() {
     auto& light3 = em.emplace("point_light", glm::vec3{1.f, 3.f, -4.f},
         glm::quat{0.f, 0.f , 0.f , 1.f}, glm::vec3{1.f});
     light3.component<light_component>()->set_color(glm::vec3{0.f, 0.f, 1.0f});
-    auto& sphere = em.emplace("sphere", glm::vec3{0.f}, glm::quat{0.f, 0.f, 0.f, 1.f}, glm::vec3{1.f});
+    //auto& sphere = em.emplace("sphere", glm::vec3{0.f}, glm::quat{0.f, 0.f, 0.f, 1.f}, glm::vec3{1.f});
 }
 
 void zombye::menu_state::leave() {

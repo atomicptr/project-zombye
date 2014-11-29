@@ -135,7 +135,6 @@ namespace zombye {
         }
         auto vp = perspective_projection_ * view;
 
-        staticmesh_program_->use();
         std::vector<glm::vec3> light_positions;
         std::vector<glm::vec3> light_colors;
         std::vector<float> light_intensities;
@@ -149,6 +148,8 @@ namespace zombye {
             light_intensities.emplace_back(light->intensity());
         }
         int size = light_positions.size();
+
+        staticmesh_program_->use();
         staticmesh_program_->uniform("light_count", size);
         staticmesh_program_->uniform("light_position", size, light_positions);
         staticmesh_program_->uniform("light_color", size, light_colors);
@@ -166,9 +167,19 @@ namespace zombye {
         }
 
         riggedmesh_program_->use();
+        riggedmesh_program_->uniform("light_count", size);
+        riggedmesh_program_->uniform("light_position", size, light_positions);
+        riggedmesh_program_->uniform("light_color", size, light_colors);
+        riggedmesh_program_->uniform("light_intensity", size, light_intensities);
         riggedmesh_program_->uniform("color_texture", 0);
+        riggedmesh_program_->uniform("specular_texture", 1);
+        riggedmesh_program_->uniform("view", camera->second->owner().position());
         for (auto& a : animation_components_) {
-            riggedmesh_program_->uniform("mvp", GL_FALSE, vp * a->owner().transform());
+            auto model_matrix = a->owner().transform();
+            auto model_matrix_it = glm::inverse(glm::transpose(model_matrix));
+            riggedmesh_program_->uniform("mvp", GL_FALSE, vp * model_matrix);
+            riggedmesh_program_->uniform("m", GL_FALSE, model_matrix);
+            riggedmesh_program_->uniform("mit", GL_FALSE, model_matrix_it);
             a->draw();
         }
     }
