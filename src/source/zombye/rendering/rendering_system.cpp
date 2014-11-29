@@ -136,10 +136,23 @@ namespace zombye {
         auto vp = perspective_projection_ * view;
 
         staticmesh_program_->use();
-        auto light = light_components_.front();
-        staticmesh_program_->uniform("light_position", light->owner().position());
-        staticmesh_program_->uniform("light_color", light->color());
-        staticmesh_program_->uniform("light_intensity", light->intensity());
+        std::vector<glm::vec3> light_positions;
+        std::vector<glm::vec3> light_colors;
+        std::vector<float> light_intensities;
+        for (auto i = 0; i < 16; ++i) {
+            if (i == light_components_.size()) {
+                break;
+            }
+            auto light = light_components_[i];
+            light_positions.emplace_back(light->owner().position());
+            light_colors.emplace_back(light->color());
+            light_intensities.emplace_back(light->intensity());
+        }
+        int size = light_positions.size();
+        staticmesh_program_->uniform("light_count", size);
+        staticmesh_program_->uniform("light_position", size, light_positions);
+        staticmesh_program_->uniform("light_color", size, light_colors);
+        staticmesh_program_->uniform("light_intensity", size, light_intensities);
         staticmesh_program_->uniform("color_texture", 0);
         staticmesh_program_->uniform("specular_texture", 1);
         staticmesh_program_->uniform("view", camera->second->owner().position());
