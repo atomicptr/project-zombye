@@ -2,10 +2,10 @@
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/physics/physics_component.hpp>
 
+#include <zombye/physics/shapes/box_shape.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
-
-#include <btBulletDynamicsCommon.h>
 
 using namespace std::string_literals;
 
@@ -22,8 +22,8 @@ void zombye::menu_state::enter() {
     auto& dummy = sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{1, 20, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
     auto& dummy2 = sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{0, -1, 0}, glm::quat{0, 0, 0, 1}, glm::vec3{1});
 
-    dummy.emplace<physics_component>(new btBoxShape(btVector3(1, 1, 1)));
-    dummy2.emplace<physics_component>(new btBoxShape(btVector3(1, 1, 1)), true);
+    dummy.emplace<physics_component>(new box_shape(1, 1, 1));
+    dummy2.emplace<physics_component>(new box_shape(1, 1, 1), true);
 }
 
 void zombye::menu_state::leave() {

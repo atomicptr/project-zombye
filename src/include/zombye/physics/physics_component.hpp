@@ -13,13 +13,14 @@
 #include <zombye/ecs/entity.hpp>
 
 #include <zombye/physics/physics_system.hpp>
+#include <zombye/physics/collision_shape.hpp>
 
 namespace zombye {
     class physics_system;
 
     class physics_component : public component {
     public:
-        physics_component(game&, entity&, btCollisionShape*, bool isstatic=false);
+        physics_component(game&, entity&, collision_shape*, bool isstatic=false);
         ~physics_component();
 
         void sync() const;
@@ -29,6 +30,7 @@ namespace zombye {
 
         std::unique_ptr<btRigidBody> body_;
         std::unique_ptr<btDefaultMotionState> motion_state_;
+        std::unique_ptr<collision_shape> colshape_;
     };
 }
 
