@@ -33,9 +33,9 @@ namespace zombye {
         size_t vertex_count_;
         std::vector<submesh> submeshes_;
         std::vector<bone> rigg_;
+        vertex_array vao_;
         std::unique_ptr<vertex_buffer> vbo_;
         index_buffer ibo_;
-        vertex_array vao_;
     public:
         rigged_mesh(rendering_system& rendering_system, const std::vector<char>& data);
         rigged_mesh(const rigged_mesh& other) = delete;

@@ -24,9 +24,9 @@ namespace zombye {
     class mesh {
         size_t vertex_count_;
         std::vector<submesh> submeshes_;
+        vertex_array vao_;
         std::unique_ptr<vertex_buffer> vbo_;
         index_buffer ibo_;
-        vertex_array vao_;
     public:
         mesh(rendering_system& rendering_system, const std::vector<char>& data);
         mesh(const mesh& other) = delete;

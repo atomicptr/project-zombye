@@ -32,6 +32,7 @@ namespace zombye {
             submeshes_.emplace_back(submesh);
             data_ptr += sizeof(submesh);
         }
+
         vao_.bind_index_buffer(ibo_);
         rendering_system.get_skinned_vertex_layout().setup_layout(vao_, &vbo_);
     }
