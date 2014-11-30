@@ -2,6 +2,7 @@
 #define __ZOMBYE_DEBUG_RENDERER_HPP__
 
 #include <memory>
+#include <vector>
 
 #include <glm/glm.hpp>
 
@@ -26,6 +27,7 @@ namespace zombye {
         std::unique_ptr<vertex_buffer> vbo_;
         vertex_array vao_;
         shader_program physics_debug_program_;
+        std::vector<debug_vertex> line_buffer_;
 
     public:
         debug_renderer(game& game);
@@ -34,6 +36,7 @@ namespace zombye {
         void draw_contact_point(const glm::vec3&, const glm::vec3&, float, int, const glm::vec3&);
         void draw_transform(glm::vec3&, glm::quat&, float);
 
+        void draw();
     };
 }
 

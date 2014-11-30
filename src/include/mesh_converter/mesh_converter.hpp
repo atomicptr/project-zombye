@@ -39,8 +39,8 @@ namespace devtools {
         mesh_converter(mesh_converter&& other) = delete;
         ~mesh_converter() noexcept;
 
-        void parse();
-        void serialize();
+        void parse(bool collison_geometry);
+        void serialize(bool collison_geometry);
 
         mesh_converter& operator=(const mesh_converter& other) = delete;
         mesh_converter& operator=(mesh_converter&& other) = delete;
