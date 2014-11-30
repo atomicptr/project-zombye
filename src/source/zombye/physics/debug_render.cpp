@@ -42,26 +42,25 @@ namespace zombye {
         v[0].col = color;
         v[1].pos = to;
         v[1].col = color;
-        vbo_->data(2 * sizeof(debug_vertex), v);
-        physics_debug_program_.use();
-        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
-        vao_.bind();
-        glDrawArrays(GL_LINES, 0, 2);
+        line_buffer_.emplace_back(v[0]);
+        line_buffer_.emplace_back(v[1]);
     }
 
     void debug_renderer::draw_contact_point(const glm::vec3& point, const glm::vec3& normal, float distance,
         int lifetime, const glm::vec3& color) {
-        debug_vertex v;
-        v.pos = point;
-        v.col = color;
-        vbo_->data(sizeof(debug_vertex), &v);
-        physics_debug_program_.use();
-        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
-        vao_.bind();
-        glDrawArrays(GL_POINTS, 0, 1);
+
     }
 
     void debug_renderer::draw_transform(glm::vec3 &pos, glm::quat &rotation, float ortho_length) {
 
+    }
+
+    void debug_renderer::draw() {
+        vbo_->data(line_buffer_.size() * sizeof(debug_vertex), line_buffer_.data());
+        vao_.bind();
+        physics_debug_program_.use();
+        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
+        glDrawArrays(GL_LINES, 0, line_buffer_.size());
+        line_buffer_.clear();
     }
 }

@@ -53,6 +53,7 @@ void zombye::physics_system::update(float delta_time) {
 
 void zombye::physics_system::debug_draw() {
     world_->debugDrawWorld();
+    debug_drawer_->draw();
 }
 
 void zombye::physics_system::toggle_debug() {
