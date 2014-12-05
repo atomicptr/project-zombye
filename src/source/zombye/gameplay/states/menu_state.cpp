@@ -27,7 +27,7 @@ void zombye::menu_state::enter() {
 
     //dummy.emplace<physics_component>(new btBoxShape(btVector3(1, 1, 1)));
     //dummy2.emplace<physics_component>(new btBoxShape(btVector3(1, 1, 1)), true);
-    auto& light = em.emplace("point_light", glm::vec3{0.f, 2.f, -4.f},
+    auto& light = em.emplace("point_light", glm::vec3{7.f, 2.f, -4.f},
         glm::quat{0.f, 0.f , 0.f , 1.f}, glm::vec3{1.f});
     auto& light2 = em.emplace("point_light", glm::vec3{0.f, 5.f, -2.f},
         glm::quat{0.f, 0.f , 0.f , 1.f}, glm::vec3{1.f});
