@@ -42,10 +42,7 @@ namespace zombye {
             throw std::runtime_error("could not load asset " + name);
         }
         auto data_ptr = asset->content().data();
-        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(bone);
-        data_ptr += sizeof(size_t);
-        data_ptr += size;
-        size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(skinned_vertex);
+        auto size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(skinned_vertex);
         data_ptr += sizeof(size_t);
         data_ptr += size;
         size = *reinterpret_cast<const size_t*>(data_ptr) * sizeof(unsigned int);

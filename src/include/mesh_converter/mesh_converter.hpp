@@ -16,6 +16,11 @@ namespace devtools {
         glm::vec2 tex;
     };
 
+    struct skin {
+        glm::ivec4 index{0};
+        glm::vec4 weight{0.f};
+    };
+
     struct submesh {
         size_t index_count;
         size_t offset;
@@ -27,6 +32,7 @@ namespace devtools {
     class mesh_converter {
         std::vector<submesh> submeshes_;
         std::vector<vertex> vertices_;
+        std::vector<skin> skin_;
         std::vector<index> indices_;
         std::vector<material> materials_;
         tinyxml2::XMLDocument is_;

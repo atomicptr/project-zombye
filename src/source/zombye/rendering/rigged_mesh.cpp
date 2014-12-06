@@ -6,12 +6,6 @@ namespace zombye {
     rigged_mesh::rigged_mesh(rendering_system& rendering_system, const std::vector<char>& data)
     : ibo_{0, GL_STATIC_DRAW} {
         auto data_ptr = data.data();
-        auto bone_count = *reinterpret_cast<const size_t*>(data_ptr);
-        data_ptr += sizeof(size_t);
-        for (auto i = 0; i < bone_count; ++i) {
-            rigg_.emplace_back(*reinterpret_cast<const bone*>(data_ptr));
-            data_ptr += sizeof(bone);
-        }
 
         vertex_count_ = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);

@@ -69,7 +69,32 @@ namespace devtools {
                 indices_.emplace_back(face->UnsignedAttribute("v3"));
                 face = face->NextSiblingElement();
             }
-            submesh = submesh->NextSiblingElement("submesh");
+            submesh = submesh->NextSiblingElement();
+        }
+
+        auto boneassignments = mesh->FirstChildElement("boneassignments");
+        if (boneassignments) {
+            auto vertexboneassignment = boneassignments->FirstChildElement("vertexboneassignment");
+            auto j = 0;
+            while (vertexboneassignment) {
+                skin s;
+                for (auto i = 0; i < 4; ++i) {
+                    ++j;
+                    s.index[i] = vertexboneassignment->UnsignedAttribute("boneindex");
+                    s.weight[i] = vertexboneassignment->FloatAttribute("weight");
+                    auto v1 = vertexboneassignment->UnsignedAttribute("vertexindex");
+                    vertexboneassignment = vertexboneassignment->NextSiblingElement();
+                    if (vertexboneassignment) {
+                        auto v2 = vertexboneassignment->UnsignedAttribute("vertexindex");
+                        if (v1 != v2) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                skin_.emplace_back(s);
+            }
         }
     }
 
@@ -77,8 +102,13 @@ namespace devtools {
         auto vertex_count = vertices_.size();
 
         os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
+        auto i = 0;
         for (auto& v : vertices_) {
             os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
+            if (skin_.size() > 0) {
+                auto& s = skin_[i];
+                os_.write(reinterpret_cast<char*>(&v), sizeof(skin));
+            }
         }
 
         auto index_count = indices_.size();
