@@ -56,10 +56,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links "assimp"
+            links "tinyxml2"
 
         configuration {"gmake", "macosx"}
-            links "assimp"
+            links "tinyxml2"
 
         configuration "debug"
             flags {"Symbols", "FatalWarnings"}

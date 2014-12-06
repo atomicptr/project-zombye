@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <assimp/Importer.hpp>
 #include <glm/glm.hpp>
+#include <tinyxml2.h>
 
 namespace devtools {
     struct vertex {
@@ -19,7 +19,6 @@ namespace devtools {
     struct submesh {
         size_t index_count;
         size_t offset;
-        size_t base_vertex;
     };
 
     using index = unsigned int;
@@ -30,9 +29,8 @@ namespace devtools {
         std::vector<vertex> vertices_;
         std::vector<index> indices_;
         std::vector<material> materials_;
-        Assimp::Importer is_;
+        tinyxml2::XMLDocument is_;
         std::ofstream os_;
-        const aiScene* scene_;
     public:
         mesh_converter(const std::string& in, const std::string& out);
         mesh_converter(const mesh_converter& other) = delete;

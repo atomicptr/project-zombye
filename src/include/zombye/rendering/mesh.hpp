@@ -18,7 +18,6 @@ namespace zombye {
     struct submesh {
         size_t index_count;
         size_t offset;
-        size_t base_vertex;
     };
     class rendering_system;
     class mesh {
