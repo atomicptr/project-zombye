@@ -2,6 +2,7 @@
 #define __ZOMBYE_RENDERING_MESH_HPP__
 
 #include <vector>
+#include <memory>
 
 #include <glm/glm.hpp>
 

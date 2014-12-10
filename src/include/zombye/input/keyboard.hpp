@@ -25,7 +25,7 @@ namespace zombye {
         std::map<SDL_Scancode, bool> was_pressed_;
         std::map<SDL_Scancode, bool> was_just_pressed_;
 
-        std::unordered_map<SDL_Scancode, std::function<void()>> listeners_;
+        std::map<SDL_Scancode, std::function<void()>> listeners_;
     };
 }
 
