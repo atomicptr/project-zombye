@@ -41,5 +41,5 @@ void main() {
         final_color += blinn_phong(nn, nl, nv, color.rgb, color.rgb, light_intensity[i], 1.0, 1.0, ks, 50);
     }
 
-    fragcolor = vec4(final_color, color.a);
+    gl_FragColor = vec4(final_color, color.a);
 }
