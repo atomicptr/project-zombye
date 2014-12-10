@@ -1,4 +1,4 @@
-#version 130
+#version 140
 
 in vec2 texel;
 in vec3 n;

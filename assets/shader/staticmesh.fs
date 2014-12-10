@@ -1,4 +1,4 @@
-#version 130
+#version 140
 
 in vec2 out_texel;
 in vec3 n;
