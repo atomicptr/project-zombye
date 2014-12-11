@@ -17,7 +17,7 @@
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_(game), window_(window), animation_manager_{game_}, mesh_manager_{game_},
-    rigged_mesh_manager_{game_}, texture_manager_{game_}, shader_manager_{game_}, active_camera_{0},
+    rigged_mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_}, active_camera_{0},
     perspective_projection_{1} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -46,14 +46,14 @@ namespace zombye {
         if (GLEW_KHR_debug) {
 #ifdef __APPLE__
             glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
-            GLsizei length, const GLchar *message, const void *userParam) {
+            GLsizei length, const GLchar* message, const void*) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
                     + " servity: " + std::to_string(severity));
             }, nullptr);
 #else
             glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
-            GLsizei length, const GLchar *message, void *userParam) {
+            GLsizei length, const GLchar* message, void*) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
                     + " servity: " + std::to_string(severity));
@@ -138,7 +138,7 @@ namespace zombye {
         std::vector<glm::vec3> light_positions;
         std::vector<glm::vec3> light_colors;
         std::vector<float> light_intensities;
-        for (auto i = 0; i < 16; ++i) {
+        for (auto i = 0u; i < 16; ++i) {
             if (i == light_components_.size()) {
                 break;
             }

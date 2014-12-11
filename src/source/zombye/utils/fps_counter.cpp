@@ -17,13 +17,13 @@ void zombye::fps_counter::update() {
 }
 
 float zombye::fps_counter::fps() const {
-    auto count = FRAME_NUM;
+    auto count = size_t{FRAME_NUM};
 
     if(framecount_ < FRAME_NUM) {
         count = framecount_;
     }
 
-    auto fps = 0;
+    auto fps = 0u;
 
     for(size_t i = 0; i < count; i++) {
         fps += frame_times_[i];

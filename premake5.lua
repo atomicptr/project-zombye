@@ -27,6 +27,8 @@ solution "project-zombye"
             "deps/**.c"
         }
 
+        defines "GLM_FORCE_RADIANS"
+
         warnings "Off"
 
         configuration {"gmake", "linux"}

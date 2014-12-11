@@ -18,7 +18,7 @@ namespace zombye {
         data_ptr += size;
         auto submesh_count = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
-        for (auto i = 0; i < submesh_count; ++i) {
+        for (auto i = 0u; i < submesh_count; ++i) {
             auto submesh = *reinterpret_cast<const zombye::submesh*>(data_ptr);
             submeshes_.emplace_back(submesh);
             data_ptr += sizeof(submesh);

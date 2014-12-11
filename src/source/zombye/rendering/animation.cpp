@@ -4,7 +4,7 @@
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
-    animation::animation(rendering_system& rendering_system, const std::vector<char>& data) {
+    animation::animation(rendering_system&, const std::vector<char>& data) {
         auto data_ptr = data.data();
         auto size = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
@@ -16,28 +16,28 @@ namespace zombye {
         data_ptr += sizeof(float);
         size = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
-        for (auto i = 0; i < size; ++i) {
+        for (auto i = 0u; i < size; ++i) {
             node n;
             n.bone = *reinterpret_cast<const unsigned int*>(data_ptr);
             data_ptr += sizeof(unsigned int);
 
             auto pk_size = *reinterpret_cast<const size_t*>(data_ptr);
             data_ptr += sizeof(size_t);
-            for (auto j = 0; j < pk_size; ++j) {
+            for (auto j = 0u; j < pk_size; ++j) {
                 n.position_keys.emplace_back(*reinterpret_cast<const vector_key*>(data_ptr));
                 data_ptr += sizeof(vector_key);
             }
 
             auto rk_size = *reinterpret_cast<const size_t*>(data_ptr);
             data_ptr += sizeof(size_t);
-            for (auto j = 0; j < rk_size; ++j) {
+            for (auto j = 0u; j < rk_size; ++j) {
                 n.rotation_keys.emplace_back(*reinterpret_cast<const quaternion_key*>(data_ptr));
                 data_ptr += sizeof(quaternion_key);
             }
 
             auto sk_size = *reinterpret_cast<const size_t*>(data_ptr);
             data_ptr += sizeof(size_t);
-            for (auto j = 0; j < sk_size; ++j) {
+            for (auto j = 0u; j < sk_size; ++j) {
                 n.scaling_keys.emplace_back(*reinterpret_cast<const vector_key*>(data_ptr));
                 data_ptr += sizeof(vector_key);
             }

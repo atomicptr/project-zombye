@@ -14,7 +14,7 @@ namespace zombye {
     class game;
     class nulltype {
     public:
-        nulltype(game& game, entity& owner) noexcept { }
+        nulltype(game&, entity&) noexcept { }
         static rtti* type_rtti() noexcept {
             return nullptr;
         }
