@@ -4,7 +4,6 @@
 #include <btBulletDynamicsCommon.h>
 
 #include <zombye/physics/physics_component.hpp>
-#include <zombye/physics/debug_renderer.hpp>
 #include <zombye/physics/debug_render_bridge.hpp>
 
 namespace zombye {
@@ -37,7 +36,6 @@ namespace zombye {
 
         std::vector<physics_component*> components_;
 
-        std::unique_ptr<debug_renderer> debug_drawer_; // TODO: change this
         std::unique_ptr<debug_render_bridge> bt_debug_drawer_;
 
         void register_component(physics_component*);

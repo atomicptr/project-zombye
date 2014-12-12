@@ -1,8 +1,5 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
-#include <zombye/rendering/animation_component.hpp>
-#include <zombye/rendering/staticmesh_component.hpp>
-#include <zombye/rendering/light_component.hpp>
 
 #include <zombye/utils/fps_counter.hpp>
 
@@ -40,8 +37,6 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
-    rendering_system_ = std::unique_ptr<zombye::rendering_system>(
-        new zombye::rendering_system(*this, window_.get()));
     physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
@@ -76,8 +71,6 @@ void zombye::game::run() {
                 width_ = event.window.data1;
                 height_ = event.window.data2;
 
-                rendering_system_->resize_projection(width_, height_);
-
                 log("resized window to { width: " + std::to_string(width_) + ", height: " +
                     std::to_string(height_) + " }");
             }
@@ -92,11 +85,6 @@ void zombye::game::run() {
 
         physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
-
-        rendering_system_->begin_scene();
-        rendering_system_->update(delta_time);
-        physics_system_->debug_draw();
-        rendering_system_->end_scene();
 
         entity_manager_->clear();
 
@@ -119,9 +107,6 @@ void zombye::game::quit() {
 }
 
 void zombye::game::register_components() {
-    rtti_manager::register_type(animation_component::type_rtti());
-    rtti_manager::register_type(staticmesh_component::type_rtti());
-    rtti_manager::register_type(light_component::type_rtti());
 }
 
 int zombye::game::width() const {
