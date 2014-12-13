@@ -14,6 +14,7 @@
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
 #include <zombye/physics/physics_system.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/sdlhelper.hpp>
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/os.h>
@@ -45,6 +46,10 @@ namespace zombye {
             return *entity_manager_;
         }
 
+        auto& rendering_system() noexcept {
+            return *rendering_system_;
+        }
+
         input_system* input();
         audio_system* audio();
         gameplay_system* gameplay();
@@ -65,6 +70,7 @@ namespace zombye {
         std::unique_ptr<input_system> input_system_;
         std::unique_ptr<audio_system> audio_system_;
         std::unique_ptr<physics_system> physics_system_;
+        std::unique_ptr<zombye::rendering_system> rendering_system_;
         std::unique_ptr<gameplay_system> gameplay_system_;
 
         // This MUST stay the last thing here, thank you :P
