@@ -8,6 +8,7 @@
 
 #include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/vertex_array.hpp>
+#include <zombye/rendering/vertex_layout.hpp>
 
 namespace zombye {
     class game;
@@ -22,6 +23,7 @@ namespace zombye {
         std::unique_ptr<vertex_buffer> quad_;
         std::unique_ptr<index_buffer> ibo_;
         std::unique_ptr<vertex_array> vao_;
+        vertex_layout layout_;
 
     public:
         rendering_system(game& game, SDL_Window* window);

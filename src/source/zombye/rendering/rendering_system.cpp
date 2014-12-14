@@ -50,8 +50,8 @@ namespace zombye {
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
         vao_ = std::make_unique<vertex_array>();
-        vao_->bind();
-        vao_->bind_vertex_attribute(*quad_, 0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, 0, 0);
+        layout_.setup_layout(*vao_, &quad_);
         vao_->bind_index_buffer(*ibo_);
     }
 

@@ -8,7 +8,6 @@
 namespace zombye {
     class vertex_array {
         friend class vertex_layout;
-        friend class rendering_system;
 
         GLuint id_;
     public:
@@ -20,10 +19,10 @@ namespace zombye {
         vertex_array& operator=(vertex_array&& other) = default;
 
         void bind() const noexcept;
+        void bind_index_buffer(const index_buffer& buffer);
     private:
         void bind_vertex_attribute(const vertex_buffer& buffer, uint32_t index, int32_t size, GLenum type,
         bool normalized, size_t stride, intptr_t offset) noexcept;
-        void bind_index_buffer(const index_buffer& buffer);
     };
 }
 
