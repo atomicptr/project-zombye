@@ -14,6 +14,7 @@
 namespace zombye {
     struct material {
         std::shared_ptr<const texture> color;
+        std::shared_ptr<const texture> specular;
     };
     class game;
     class staticmesh_component : public reflective<staticmesh_component, component> {

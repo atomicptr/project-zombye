@@ -1,5 +1,6 @@
 #include <zombye/gameplay/states/menu_state.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/light_component.hpp>
 #include <zombye/physics/physics_component.hpp>
 
 #include <zombye/physics/shapes.hpp>
@@ -15,7 +16,8 @@ zombye::menu_state::menu_state(zombye::state_machine *sm) : sm_(sm) {
 
 void zombye::menu_state::enter() {
     zombye::log("enter menu state");
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{-2.f, 2.f, -3.f}, glm::quat{}, glm::vec3{});
+    auto& em = sm_->get_game()->entity_manager();
+    auto& camera = em.emplace(glm::vec3{-2.f, 2.f, -3.f}, glm::quat{0.f, 0.f, 0.f, 1.f}, glm::vec3{1.f});
     camera.emplace<camera_component>(glm::vec3{}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 

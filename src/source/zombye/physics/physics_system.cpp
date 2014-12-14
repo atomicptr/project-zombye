@@ -1,5 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/physics_system.hpp>
+#include <algorithm>
 
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
@@ -77,7 +78,11 @@ void zombye::physics_system::register_component(physics_component* comp) {
 }
 
 void zombye::physics_system::unregister_component(physics_component* comp) {
-    auto it = std::find(components_.begin(), components_.end(), comp);
+    //auto it = std::find(components_.begin(), components_.end(), comp);
+
+    auto it = std::find_if(components_.begin(), components_.end(), [comp](auto other) {
+        return comp == other;
+    });
 
     if(it != components_.end()) {
         auto last = components_.end() - 1;

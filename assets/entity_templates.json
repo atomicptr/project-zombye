@@ -1,7 +1,33 @@
 {
     "dummy": {
         "staticmesh_component": {
-            "mesh": "meshes/dummy.msh"
+            "mesh": "meshes/dummy.mesh"
+        }
+    },
+
+    "animated": {
+        "animation_component": {
+            "rigged_mesh": "meshes/animated.mesh",
+            "animation": "anims/anim_test.anim"
+        }
+    },
+
+    "point_light": {
+        "light_component": {
+            "color": ["f", 1.0, 1.0, 1.0],
+            "intensity": 1.0
+        }
+    },
+
+    "sphere": {
+        "staticmesh_component": {
+            "mesh": "meshes/sphere.msh"
+        }
+    },
+
+    "suzanne": {
+        "staticmesh_component": {
+            "mesh": "meshes/Suzanne.msh"
         }
     },
 

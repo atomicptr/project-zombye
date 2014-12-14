@@ -27,6 +27,8 @@ solution "project-zombye"
             "deps/**.c"
         }
 
+        defines "GLM_FORCE_RADIANS"
+
         warnings "Off"
 
         configuration {"gmake", "linux"}
@@ -56,10 +58,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links "assimp"
+            links "tinyxml2"
 
         configuration {"gmake", "macosx"}
-            links "assimp"
+            links "tinyxml2"
 
         configuration "debug"
             flags {"Symbols", "FatalWarnings"}

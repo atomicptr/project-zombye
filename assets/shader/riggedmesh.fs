@@ -1,6 +1,6 @@
 #version 140
 
-in vec2 out_texel;
+in vec2 texel;
 in vec3 n;
 in vec3 v;
 in vec3 world_position;
@@ -28,8 +28,8 @@ float kd, float ks, float s) {
 }
 
 void main() {
-    vec4 color = texture(color_texture, out_texel);
-    float ks = texture(specular_texture, out_texel).r;
+    vec4 color = texture(color_texture, texel);
+    float ks = texture(specular_texture, texel).r;
 
     vec3 nn = normalize(n);
     vec3 nv = normalize(v);

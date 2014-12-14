@@ -16,10 +16,11 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_(game), window_(window), mesh_manager_{game_}, rigged_mesh_manager_{game_},
-    texture_manager_{game_}, shader_manager_{game_}, active_camera_{0}, perspective_projection_{1} {
+    : game_(game), window_(window), animation_manager_{game_}, mesh_manager_{game_},
+    rigged_mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_}, active_camera_{0},
+    perspective_projection_{1} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
         context_ = SDL_GL_CreateContext(window);
@@ -45,14 +46,14 @@ namespace zombye {
         if (GLEW_KHR_debug) {
 #ifdef __APPLE__
             glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
-            GLsizei length, const GLchar *message, const void *userParam) {
+            GLsizei length, const GLchar* message, const void*) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
                     + " servity: " + std::to_string(severity));
             }, nullptr);
 #else
             glDebugMessageCallback(+[](GLenum source, GLenum type, GLuint id, GLenum severity,
-            GLsizei length, const GLchar *message, void *userParam) {
+            GLsizei length, const GLchar* message, void*) {
                 log(LOG_ERROR, std::string(message, length) + " source: " + std::to_string(source)
                     + " type: " +  std::to_string(type) + " id: " + std::to_string(id)
                     + " servity: " + std::to_string(severity));
@@ -65,10 +66,6 @@ namespace zombye {
         vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
         vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
-
-        skinned_vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
-        skinned_vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
-        skinned_vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
 
         auto vs = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
         if (!vs) {
@@ -86,6 +83,29 @@ namespace zombye {
 
         vertex_layout_.setup_program(*staticmesh_program_, "fragcolor");
         staticmesh_program_->link();
+
+        skinned_vertex_layout_.emplace("in_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+        skinned_vertex_layout_.emplace("in_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
+        skinned_vertex_layout_.emplace("in_texel", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
+        skinned_vertex_layout_.emplace("in_bone_index", 4, GL_UNSIGNED_INT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::ivec4));
+        skinned_vertex_layout_.emplace("in_weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec4));
+
+        vs = shader_manager_.load("shader/riggedmesh.vs", GL_VERTEX_SHADER);
+        if (!vs) {
+            throw std::runtime_error("could not load shader from file shader/riggedmesh.vs");
+        }
+        fs = shader_manager_.load("shader/riggedmesh.fs", GL_FRAGMENT_SHADER);
+        if (!fs) {
+            throw std::runtime_error("could not load shader from file shader/riggedmesh.fs");
+        }
+
+        riggedmesh_program_ = std::unique_ptr<shader_program>{new shader_program{}};
+
+        riggedmesh_program_->attach_shader(vs);
+        riggedmesh_program_->attach_shader(fs);
+
+        skinned_vertex_layout_.setup_program(*riggedmesh_program_, "fragcolor");
+        riggedmesh_program_->link();
 
         fovy_ = 90.0f * 3.14f / 180.0f;
         auto aspect_ratio = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
@@ -115,15 +135,51 @@ namespace zombye {
         }
         auto vp = perspective_projection_ * view;
 
+        std::vector<glm::vec3> light_positions;
+        std::vector<glm::vec3> light_colors;
+        std::vector<float> light_intensities;
+        for (auto i = 0u; i < 16; ++i) {
+            if (i == light_components_.size()) {
+                break;
+            }
+            auto light = light_components_[i];
+            light_positions.emplace_back(light->owner().position());
+            light_colors.emplace_back(light->color());
+            light_intensities.emplace_back(light->intensity());
+        }
+        int size = light_positions.size();
+
         staticmesh_program_->use();
+        staticmesh_program_->uniform("light_count", size);
+        staticmesh_program_->uniform("light_position", size, light_positions);
+        staticmesh_program_->uniform("light_color", size, light_colors);
+        staticmesh_program_->uniform("light_intensity", size, light_intensities);
         staticmesh_program_->uniform("color_texture", 0);
+        staticmesh_program_->uniform("specular_texture", 1);
+        staticmesh_program_->uniform("view", camera->second->owner().position());
         for (auto& sm : staticmesh_components_) {
-            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * sm->owner().transform());
+            auto model_matrix = sm->owner().transform();
+            auto model_matrix_it = glm::inverse(glm::transpose(model_matrix));
+            staticmesh_program_->uniform("mvp", GL_FALSE, vp * model_matrix);
+            staticmesh_program_->uniform("m", GL_FALSE, model_matrix);
+            staticmesh_program_->uniform("mit", GL_FALSE, model_matrix_it);
             sm->draw();
         }
 
+        riggedmesh_program_->use();
+        riggedmesh_program_->uniform("light_count", size);
+        riggedmesh_program_->uniform("light_position", size, light_positions);
+        riggedmesh_program_->uniform("light_color", size, light_colors);
+        riggedmesh_program_->uniform("light_intensity", size, light_intensities);
+        riggedmesh_program_->uniform("color_texture", 0);
+        riggedmesh_program_->uniform("specular_texture", 1);
+        riggedmesh_program_->uniform("view", camera->second->owner().position());
         for (auto& a : animation_components_) {
-            staticmesh_program_->uniform("mvp", 1, GL_FALSE, vp * a->owner().transform());
+            auto model_matrix = a->owner().transform();
+            auto model_matrix_it = glm::inverse(glm::transpose(model_matrix));
+            riggedmesh_program_->uniform("mvp", GL_FALSE, vp * model_matrix);
+            riggedmesh_program_->uniform("m", GL_FALSE, model_matrix);
+            riggedmesh_program_->uniform("mit", GL_FALSE, model_matrix_it);
             a->draw();
         }
     }
@@ -173,5 +229,18 @@ namespace zombye {
         if (it != camera_components_.end()) {
             camera_components_.erase(it);
         }
+    }
+
+    void rendering_system::register_component(light_component* component) {
+        light_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(light_component* component) {
+        auto it = std::find(light_components_.begin(), light_components_.end() ,component);
+        auto last = light_components_.end() - 1;
+        if (it != last) {
+            *it = std::move(*last);
+        }
+        light_components_.pop_back();
     }
 }

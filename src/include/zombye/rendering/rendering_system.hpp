@@ -8,7 +8,9 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/animation_component.hpp>
+#include <zombye/rendering/animation_manager.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/rigged_mesh_manager.hpp>
 #include <zombye/rendering/shader_manager.hpp>
@@ -23,10 +25,12 @@ namespace zombye {
         friend class animation_component;
         friend class staticmesh_component;
         friend class camera_component;
+        friend class light_component;
 
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
+        animation_manager animation_manager_;
         mesh_manager mesh_manager_;
         rigged_mesh_manager rigged_mesh_manager_;
         shader_manager shader_manager_;
@@ -34,7 +38,9 @@ namespace zombye {
         vertex_layout vertex_layout_;
         vertex_layout skinned_vertex_layout_;
         std::unique_ptr<shader_program> staticmesh_program_;
+        std::unique_ptr<shader_program> riggedmesh_program_;
         std::vector<animation_component*> animation_components_;
+        std::vector<light_component*> light_components_;
         std::vector<staticmesh_component*> staticmesh_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;
         unsigned long active_camera_;
@@ -49,6 +55,8 @@ namespace zombye {
         void unregister_component(staticmesh_component* component);
         void register_component(camera_component* component);
         void unregister_component(camera_component* component);
+        void register_component(light_component* component);
+        void unregister_component(light_component* component);
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
@@ -63,12 +71,16 @@ namespace zombye {
 
         void set_clear_color(float red, float green, float blue, float alpha);
 
-        auto& get_rigged_mesh_manager() {
-            return rigged_mesh_manager_;
+        auto& get_animation_manager() {
+            return animation_manager_;
         }
 
         auto& get_mesh_manager() {
             return mesh_manager_;
+        }
+
+        auto& get_rigged_mesh_manager() {
+            return rigged_mesh_manager_;
         }
 
         auto& get_shader_manager() {

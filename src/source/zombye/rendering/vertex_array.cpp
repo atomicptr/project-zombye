@@ -1,9 +1,11 @@
 #include <zombye/rendering/vertex_array.hpp>
+#include <iostream>
 
 namespace zombye {
     vertex_array::vertex_array() noexcept
     : name_{0} {
         glGenVertexArrays(1, &name_);
+        glBindVertexArray(name_);
     }
 
     vertex_array::~vertex_array() noexcept {

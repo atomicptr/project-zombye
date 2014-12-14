@@ -14,6 +14,7 @@ namespace zombye {
 
     staticmesh_component::staticmesh_component(game& game, entity& owner, const std::string& mesh)
     : reflective{game, owner} {
+        game_.rendering_system().register_component(this);
         set_mesh(mesh);
     }
 
@@ -23,7 +24,7 @@ namespace zombye {
 
     void staticmesh_component::draw() const {
         mesh_->vao().bind();
-        for (auto i = 0; i < materials_.size(); ++i) {
+        for (auto i = 0u; i < materials_.size(); ++i) {
             materials_[i].color->bind(0);
             mesh_->draw(i);
         }
@@ -52,7 +53,7 @@ namespace zombye {
         auto material_count = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
         auto& texture_manager = rendering_system.get_texture_manager();
-        for (auto i = 0; i < material_count; ++i) {
+        for (auto i = 0u; i < material_count; ++i) {
             size = *reinterpret_cast<const size_t*>(data_ptr);
             data_ptr += sizeof(size_t);
             auto name = std::string{data_ptr, size};
@@ -63,6 +64,11 @@ namespace zombye {
                 throw std::runtime_error("could not load texture " + name + "_color.dds");
             }
             m.color = color;
+            auto specular = texture_manager.load("texture/" + name + "_specular.dds");
+            if (!color) {
+                throw std::runtime_error("could not load texture " + name + "_specular.dds");
+            }
+            m.specular = specular;
             materials_.emplace_back(m);
         }
     }

@@ -59,7 +59,7 @@ namespace zombye {
         vbo_->data(line_buffer_.size() * sizeof(debug_vertex), line_buffer_.data());
         vao_.bind();
         physics_debug_program_.use();
-        physics_debug_program_.uniform("vp", 1, GL_FALSE, rs_.perspective_projection() * rs_.view());
+        physics_debug_program_.uniform("vp", GL_FALSE, rs_.perspective_projection() * rs_.view());
         glDrawArrays(GL_LINES, 0, line_buffer_.size());
         line_buffer_.clear();
     }
