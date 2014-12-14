@@ -1,5 +1,7 @@
 #include <string>
 
+#include <glm/glm.hpp>
+
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
@@ -30,6 +32,22 @@ namespace zombye {
 
         glEnable(GL_DEPTH_TEST);
         clear_color(0.4, 0.5, 0.9, 1.0);
+
+        glm::vec3 vertices[4];
+        vertices[0] = glm::vec3{-0.5f, 0.5f, 0.0f};
+        vertices[1] = glm::vec3{-0.5f, -0.5f, 0.0f};
+        vertices[2] = glm::vec3{0.5f, -0.5f, 0.0f};
+        vertices[3] = glm::vec3{0.5f, 0.5f, 0.0f};
+        quad_ = std::make_unique<vertex_buffer>(4 * sizeof(glm::vec3), vertices, GL_STATIC_DRAW);
+
+        unsigned int indices[6];
+        indices[0] = 0;
+        indices[1] = 1;
+        indices[2] = 2;
+        indices[3] = 0;
+        indices[4] = 2;
+        indices[5] = 3;
+        ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
     }
 
     rendering_system::~rendering_system() {
@@ -46,7 +64,10 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
-
+        glEnableVertexAttribArray(0);
+        quad_->bind();
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {

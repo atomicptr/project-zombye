@@ -1,8 +1,12 @@
 #ifndef __ZOMBYE_RENDERING_SYSTEM_HPP__
 #define __ZOMBYE_RENDERING_SYSTEM_HPP__
 
+#include <memory>
+
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+
+#include <zombye/rendering/buffer.hpp>
 
 namespace zombye {
     class game;
@@ -13,6 +17,9 @@ namespace zombye {
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
+
+        std::unique_ptr<vertex_buffer> quad_;
+        std::unique_ptr<index_buffer> ibo_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
