@@ -48,6 +48,11 @@ namespace zombye {
         indices[4] = 2;
         indices[5] = 3;
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
+        vao_ = std::make_unique<vertex_array>();
+        vao_->bind();
+        vao_->bind_vertex_attribute(*quad_, 0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        vao_->bind_index_buffer(*ibo_);
     }
 
     rendering_system::~rendering_system() {
@@ -64,9 +69,7 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
-        glEnableVertexAttribArray(0);
-        quad_->bind();
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        vao_->bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
