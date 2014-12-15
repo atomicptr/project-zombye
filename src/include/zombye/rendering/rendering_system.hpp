@@ -10,6 +10,7 @@
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
+#include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 
@@ -31,6 +32,7 @@ namespace zombye {
         shader_ptr fragment_shader_;
         std::unique_ptr<program> program_;
         vertex_layout layout_;
+        std::shared_ptr<const texture> texture_;
 
         glm::mat4 projection_;
         glm::mat4 view_;

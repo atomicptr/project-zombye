@@ -1,7 +1,11 @@
 #version 140
 
+in vec2 f_texcoord;
+
 out vec4 fragcolor;
 
+uniform sampler2D diffuse;
+
 void main() {
-    fragcolor = vec4(1.0, 0.0, 0.0, 1.0);
+    fragcolor = texture2D(diffuse, f_texcoord);
 }

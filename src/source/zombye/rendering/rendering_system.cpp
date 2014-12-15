@@ -6,8 +6,14 @@
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
+#include <zombye/utils/load_dds.hpp>
 
 namespace zombye {
+    struct vertex {
+        glm::vec3 pos;
+        glm::vec2 tex;
+    };
+
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_{game}, window_{window}, shader_manager_{game_} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -34,12 +40,16 @@ namespace zombye {
         glEnable(GL_DEPTH_TEST);
         clear_color(0.4, 0.5, 0.9, 1.0);
 
-        glm::vec3 vertices[4];
-        vertices[0] = glm::vec3{-0.5f, 0.5f, 0.0f};
-        vertices[1] = glm::vec3{-0.5f, -0.5f, 0.0f};
-        vertices[2] = glm::vec3{0.5f, -0.5f, 0.0f};
-        vertices[3] = glm::vec3{0.5f, 0.5f, 0.0f};
-        quad_ = std::make_unique<vertex_buffer>(4 * sizeof(glm::vec3), vertices, GL_STATIC_DRAW);
+        vertex vertices[4];
+        vertices[0].pos = glm::vec3{-0.5f, 0.5f, 0.0f};
+        vertices[0].tex = glm::vec2{0.f, 0.f};
+        vertices[1].pos = glm::vec3{-0.5f, -0.5f, 0.0f};
+        vertices[1].tex = glm::vec2{0.f, 1.f};
+        vertices[2].pos = glm::vec3{0.5f, -0.5f, 0.0f};
+        vertices[2].tex = glm::vec2{1.f, 1.f};
+        vertices[3].pos = glm::vec3{0.5f, 0.5f, 0.0f};
+        vertices[3].tex = glm::vec2{1.f, 0.f};
+        quad_ = std::make_unique<vertex_buffer>(4 * sizeof(vertex), vertices, GL_STATIC_DRAW);
 
         unsigned int indices[6];
         indices[0] = 0;
@@ -58,12 +68,16 @@ namespace zombye {
         program_->attach_shader(fragment_shader_);
 
         vao_ = std::make_unique<vertex_array>();
-        layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, 0, 0);
+        layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+        layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         layout_.setup_layout(*vao_, &quad_);
         layout_.setup_program(*program_, "fragcolor");
         vao_->bind_index_buffer(*ibo_);
 
         program_->link();
+
+        auto asset = game_.asset_manager().load("texture/dummy.dds");
+        texture_ = std::make_shared<const texture>(gli::texture2D{gli::load_dds(asset->content())});
 
         float fovy = 90.f * 3.1415f / 180.f;
         float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
@@ -90,6 +104,8 @@ namespace zombye {
         program_->use();
         vao_->bind();
         program_->uniform("mvp", false, projection_ * view_);
+        program_->uniform("diffuse", 0);
+        texture_->bind(0);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
