@@ -17,4 +17,14 @@ namespace zombye {
             ++i;
         }
     }
+
+    void vertex_layout::setup_program(program& program, const std::string& fragcolor_name) noexcept {
+        auto i = uint32_t{0};
+        for (auto& attribute : vertex_attributes_) {
+            program.bind_attribute_location(attribute.name, i);
+            ++i;
+        }
+
+        program.bind_frag_data_location(fragcolor_name, 0);
+    }
 }

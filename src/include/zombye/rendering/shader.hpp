@@ -7,7 +7,7 @@
 
 namespace zombye {
     class shader {
-        friend class shader_program;
+        friend class program;
 
         GLuint id_;
     public:

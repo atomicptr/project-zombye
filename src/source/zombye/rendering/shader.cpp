@@ -14,9 +14,8 @@ namespace zombye {
 
         auto length = 0;
         glGetShaderiv(id_, GL_INFO_LOG_LENGTH, &length);
-        auto log_buffer = std::vector<char>{};
         if (length > 1) {
-            log_buffer.resize(length);
+            auto log_buffer = std::vector<char>(length);
             glGetShaderInfoLog(id_, length, nullptr, log_buffer.data());
             log("compilation log of " + name + ":");
             log(std::string{log_buffer.begin(), log_buffer.end()});

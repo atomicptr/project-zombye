@@ -50,15 +50,22 @@ namespace zombye {
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
         std::string vs_source = "#version 140\nin vec3 position;\nvoid main() {\ngl_Position = vec4(position, 1.0);\n}";
-        vertex_shader_ = std::make_unique<shader>("simple_vs", GL_VERTEX_SHADER, vs_source);
+        vertex_shader_ = std::make_shared<const shader>("simple_vs", GL_VERTEX_SHADER, vs_source);
 
         std::string fs_source = "#version 140\nout vec4 fragcolor;\nvoid main() {\nfragcolor = vec4(1.0, 0.0, 0.0, 1.0);\n}";
-        fragment_shader_ = std::make_unique<shader>("simple_fs", GL_FRAGMENT_SHADER, fs_source);
+        fragment_shader_ = std::make_shared<const shader>("simple_fs", GL_FRAGMENT_SHADER, fs_source);
+
+        program_ = std::make_unique<program>();
+        program_->attach_shader(vertex_shader_);
+        program_->attach_shader(fragment_shader_);
 
         vao_ = std::make_unique<vertex_array>();
         layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, 0, 0);
         layout_.setup_layout(*vao_, &quad_);
+        layout_.setup_program(*program_, "fragcolor");
         vao_->bind_index_buffer(*ibo_);
+
+        program_->link();
     }
 
     rendering_system::~rendering_system() {
@@ -75,6 +82,7 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
+        program_->use();
         vao_->bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }

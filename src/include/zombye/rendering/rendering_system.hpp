@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/buffer.hpp>
+#include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
@@ -24,8 +25,9 @@ namespace zombye {
         std::unique_ptr<vertex_buffer> quad_;
         std::unique_ptr<index_buffer> ibo_;
         std::unique_ptr<vertex_array> vao_;
-        std::unique_ptr<shader> vertex_shader_;
-        std::unique_ptr<shader> fragment_shader_;
+        shader_ptr vertex_shader_;
+        shader_ptr fragment_shader_;
+        std::unique_ptr<program> program_;
         vertex_layout layout_;
 
     public:

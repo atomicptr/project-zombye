@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 
 #include <zombye/rendering/buffer.hpp>
+#include <zombye/rendering/program.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 
 namespace zombye {
@@ -34,6 +35,7 @@ namespace zombye {
         void emplace_back(const std::string& name, uint32_t size, GLenum type, bool normalized, size_t stride,
         intptr_t offset, int index = 0);
         void setup_layout(vertex_array& vertex_array, const std::unique_ptr<vertex_buffer>* buffers) noexcept;
+        void setup_program(program& program, const std::string& fragcolor_name) noexcept;
     };
 }
 
