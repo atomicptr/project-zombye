@@ -49,6 +49,12 @@ namespace zombye {
         indices[5] = 3;
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
+        std::string vs_source = "#version 140\nin vec3 position;\nvoid main() {\ngl_Position = vec4(position, 1.0);\n}";
+        vertex_shader_ = std::make_unique<shader>("simple_vs", GL_VERTEX_SHADER, vs_source);
+
+        std::string fs_source = "#version 140\nout vec4 fragcolor;\nvoid main() {\nfragcolor = vec4(1.0, 0.0, 0.0, 1.0);\n}";
+        fragment_shader_ = std::make_unique<shader>("simple_fs", GL_FRAGMENT_SHADER, fs_source);
+
         vao_ = std::make_unique<vertex_array>();
         layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, 0, 0);
         layout_.setup_layout(*vao_, &quad_);
