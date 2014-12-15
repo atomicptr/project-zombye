@@ -2,7 +2,7 @@
 
 namespace zombye {
     texture::texture(const gli::texture2D& texture) noexcept
-    : width_{texture[0].dimensions().x}, height_{texture[0].dimensions().y} {
+    : width_{texture.dimensions().x}, height_{texture.dimensions().y} {
         glGenTextures(1, &id_);
         glBindTexture(GL_TEXTURE_2D, id_);
         // adapted from http://www.g-truc.net/project-0024.html
@@ -32,6 +32,9 @@ namespace zombye {
                 texture[level].data());
             }
         }
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     texture::~texture() {
