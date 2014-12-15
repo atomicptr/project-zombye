@@ -9,7 +9,7 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_{game}, window_{window} {
+    : game_{game}, window_{window}, shader_manager_{game_} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -50,11 +50,8 @@ namespace zombye {
         indices[5] = 3;
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-        std::string vs_source = "#version 140\nin vec3 position;\nuniform mat4 mvp;\nvoid main() {\ngl_Position = mvp * vec4(position, 1.0);\n}";
-        vertex_shader_ = std::make_shared<const shader>("simple_vs", GL_VERTEX_SHADER, vs_source);
-
-        std::string fs_source = "#version 140\nout vec4 fragcolor;\nvoid main() {\nfragcolor = vec4(1.0, 0.0, 0.0, 1.0);\n}";
-        fragment_shader_ = std::make_shared<const shader>("simple_fs", GL_FRAGMENT_SHADER, fs_source);
+        vertex_shader_ = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
+        fragment_shader_ = shader_manager_.load("shader/staticmesh.fs", GL_FRAGMENT_SHADER);
 
         program_ = std::make_unique<program>();
         program_->attach_shader(vertex_shader_);

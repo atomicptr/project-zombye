@@ -9,6 +9,7 @@
 #include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
+#include <zombye/rendering/shader_manager.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 
@@ -25,6 +26,7 @@ namespace zombye {
         std::unique_ptr<vertex_buffer> quad_;
         std::unique_ptr<index_buffer> ibo_;
         std::unique_ptr<vertex_array> vao_;
+        zombye::shader_manager shader_manager_;
         shader_ptr vertex_shader_;
         shader_ptr fragment_shader_;
         std::unique_ptr<program> program_;
@@ -45,6 +47,10 @@ namespace zombye {
         void end_scene();
         void update(float delta_time);
         void clear_color(float red, float green, float blue, float alpha);
+
+        zombye::shader_manager& shader_manager() noexcept {
+            return shader_manager_;
+        }
     };
 }
 
