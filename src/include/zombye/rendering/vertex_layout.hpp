@@ -35,6 +35,7 @@ namespace zombye {
         void emplace_back(const std::string& name, uint32_t size, GLenum type, bool normalized, size_t stride,
         intptr_t offset, int index = 0);
         void setup_layout(vertex_array& vertex_array, const std::unique_ptr<vertex_buffer>* buffers) noexcept;
+        void setup_layout(vertex_array& vertex_array, vertex_buffer* buffers) noexcept;
         void setup_program(program& program, const std::string& fragcolor_name) noexcept;
     };
 }

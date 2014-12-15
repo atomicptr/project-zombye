@@ -18,6 +18,17 @@ namespace zombye {
         }
     }
 
+    void vertex_layout::setup_layout(vertex_array& vertex_array, vertex_buffer* buffers) noexcept {
+        vertex_array.bind();
+        auto i = uint32_t{0};
+        for (auto& attribute : vertex_attributes_) {
+            buffers[attribute.index].bind();
+            vertex_array.bind_vertex_attribute(buffers[attribute.index], i, attribute.size, attribute.type,
+                attribute.normalized, attribute.stride, attribute.offset);
+            ++i;
+        }
+    }
+
     void vertex_layout::setup_program(program& program, const std::string& fragcolor_name) noexcept {
         auto i = uint32_t{0};
         for (auto& attribute : vertex_attributes_) {

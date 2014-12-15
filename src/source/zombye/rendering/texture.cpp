@@ -37,7 +37,7 @@ namespace zombye {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
-    texture::~texture() {
+    texture::~texture() noexcept {
         glDeleteTextures(1, &id_);
     }
 

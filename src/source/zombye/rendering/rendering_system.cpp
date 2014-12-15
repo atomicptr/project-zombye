@@ -4,16 +4,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <zombye/core/game.hpp>
+#include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/load_dds.hpp>
 
 namespace zombye {
-    struct vertex {
-        glm::vec3 pos;
-        glm::vec2 tex;
-    };
-
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_{game}, window_{window}, shader_manager_{game_}, texture_manager_{game_} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -68,10 +64,11 @@ namespace zombye {
         program_->attach_shader(fragment_shader_);
 
         vao_ = std::make_unique<vertex_array>();
-        layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
-        layout_.setup_layout(*vao_, &quad_);
-        layout_.setup_program(*program_, "fragcolor");
+        staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+        staticmesh_layout_.emplace_back("nomal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
+        staticmesh_layout_.setup_layout(*vao_, &quad_);
+        staticmesh_layout_.setup_program(*program_, "fragcolor");
         vao_->bind_index_buffer(*ibo_);
 
         program_->link();
@@ -83,7 +80,7 @@ namespace zombye {
         float near = 0.01f;
         float far = 1000.f;
         projection_ = glm::perspective(fovy, aspect, near, far);
-        view_ = glm::lookAt(glm::vec3{2.f, 2.f, 3.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
+        view_ = glm::lookAt(glm::vec3{1.f, 1.f, 2.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
     }
 
     rendering_system::~rendering_system() {
@@ -100,12 +97,13 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
+        static mesh dummy{*this, game_.asset_manager().load("meshes/Suzanne.mesh")->content()};
+
         program_->use();
-        vao_->bind();
         program_->uniform("mvp", false, projection_ * view_);
         program_->uniform("diffuse", 0);
         texture_->bind(0);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        dummy.draw(0);
     }
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {

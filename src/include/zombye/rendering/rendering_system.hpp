@@ -32,7 +32,7 @@ namespace zombye {
         shader_ptr vertex_shader_;
         shader_ptr fragment_shader_;
         std::unique_ptr<program> program_;
-        vertex_layout layout_;
+        vertex_layout staticmesh_layout_;
         std::shared_ptr<const texture> texture_;
         zombye::texture_manager texture_manager_;
 
@@ -52,11 +52,15 @@ namespace zombye {
         void update(float delta_time);
         void clear_color(float red, float green, float blue, float alpha);
 
-        zombye::shader_manager& shader_manager() noexcept {
+        auto& shader_manager() noexcept {
             return shader_manager_;
         }
 
-        zombye::texture_manager& texture_manager() noexcept {
+        auto& staticmesh_layout() noexcept {
+            return staticmesh_layout_;
+        }
+
+        auto& texture_manager() noexcept {
             return texture_manager_;
         }
     };

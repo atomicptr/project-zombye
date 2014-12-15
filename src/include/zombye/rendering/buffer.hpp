@@ -1,6 +1,8 @@
 #ifndef __ZOMBYE_BUFFER_HPP__
 #define __ZOMBYE_BUFFER_HPP__
 
+#include <GL/glew.h>
+
 namespace zombye {
     template <GLenum target>
     class buffer {
