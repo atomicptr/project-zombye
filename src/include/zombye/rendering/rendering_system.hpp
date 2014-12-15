@@ -11,6 +11,7 @@
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
 #include <zombye/rendering/texture.hpp>
+#include <zombye/rendering/texture_manager.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 
@@ -33,6 +34,7 @@ namespace zombye {
         std::unique_ptr<program> program_;
         vertex_layout layout_;
         std::shared_ptr<const texture> texture_;
+        zombye::texture_manager texture_manager_;
 
         glm::mat4 projection_;
         glm::mat4 view_;
@@ -52,6 +54,10 @@ namespace zombye {
 
         zombye::shader_manager& shader_manager() noexcept {
             return shader_manager_;
+        }
+
+        zombye::texture_manager& texture_manager() noexcept {
+            return texture_manager_;
         }
     };
 }

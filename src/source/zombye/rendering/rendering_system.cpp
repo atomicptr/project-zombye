@@ -15,7 +15,7 @@ namespace zombye {
     };
 
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_{game}, window_{window}, shader_manager_{game_} {
+    : game_{game}, window_{window}, shader_manager_{game_}, texture_manager_{game_} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -76,8 +76,7 @@ namespace zombye {
 
         program_->link();
 
-        auto asset = game_.asset_manager().load("texture/dummy.dds");
-        texture_ = std::make_shared<const texture>(gli::texture2D{gli::load_dds(asset->content())});
+        texture_ = texture_manager_.load("texture/plasma_color.dds");
 
         float fovy = 90.f * 3.1415f / 180.f;
         float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
