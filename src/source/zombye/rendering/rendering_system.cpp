@@ -1,6 +1,7 @@
 #include <string>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/rendering_system.hpp>
@@ -49,7 +50,7 @@ namespace zombye {
         indices[5] = 3;
         ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-        std::string vs_source = "#version 140\nin vec3 position;\nvoid main() {\ngl_Position = vec4(position, 1.0);\n}";
+        std::string vs_source = "#version 140\nin vec3 position;\nuniform mat4 mvp;\nvoid main() {\ngl_Position = mvp * vec4(position, 1.0);\n}";
         vertex_shader_ = std::make_shared<const shader>("simple_vs", GL_VERTEX_SHADER, vs_source);
 
         std::string fs_source = "#version 140\nout vec4 fragcolor;\nvoid main() {\nfragcolor = vec4(1.0, 0.0, 0.0, 1.0);\n}";
@@ -66,6 +67,13 @@ namespace zombye {
         vao_->bind_index_buffer(*ibo_);
 
         program_->link();
+
+        float fovy = 90.f * 3.1415f / 180.f;
+        float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
+        float near = 0.01f;
+        float far = 1000.f;
+        projection_ = glm::perspective(fovy, aspect, near, far);
+        view_ = glm::lookAt(glm::vec3{2.f, 2.f, 3.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
     }
 
     rendering_system::~rendering_system() {
@@ -84,6 +92,7 @@ namespace zombye {
     void rendering_system::update(float delta_time) {
         program_->use();
         vao_->bind();
+        program_->uniform("mvp", false, projection_ * view_);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 

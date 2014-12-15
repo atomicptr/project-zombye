@@ -30,6 +30,9 @@ namespace zombye {
         std::unique_ptr<program> program_;
         vertex_layout layout_;
 
+        glm::mat4 projection_;
+        glm::mat4 view_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
