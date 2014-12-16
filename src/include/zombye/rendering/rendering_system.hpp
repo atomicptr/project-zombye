@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/buffer.hpp>
+#include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
@@ -34,6 +35,7 @@ namespace zombye {
         std::unique_ptr<program> program_;
         vertex_layout staticmesh_layout_;
         std::shared_ptr<const texture> texture_;
+        zombye::mesh_manager mesh_manager_;
         zombye::texture_manager texture_manager_;
 
         glm::mat4 projection_;
@@ -51,6 +53,10 @@ namespace zombye {
         void end_scene();
         void update(float delta_time);
         void clear_color(float red, float green, float blue, float alpha);
+
+        auto& mesh_manager() noexcept {
+            return mesh_manager_;
+        }
 
         auto& shader_manager() noexcept {
             return shader_manager_;

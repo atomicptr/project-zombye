@@ -11,7 +11,7 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_{game}, window_{window}, shader_manager_{game_}, texture_manager_{game_} {
+    : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -97,13 +97,12 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
-        static mesh dummy{*this, game_.asset_manager().load("meshes/Suzanne.mesh")->content()};
-
+        static auto dummy = mesh_manager_.load("meshes/Suzanne.mesh");
         program_->use();
         program_->uniform("mvp", false, projection_ * view_);
         program_->uniform("diffuse", 0);
         texture_->bind(0);
-        dummy.draw(0);
+        dummy->draw(0);
     }
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {
