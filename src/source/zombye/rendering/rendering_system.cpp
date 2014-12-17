@@ -6,8 +6,8 @@
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/utils/component_helper.hpp>
 #include <zombye/utils/logger.hpp>
-#include <zombye/utils/load_dds.hpp>
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
@@ -36,26 +36,6 @@ namespace zombye {
         glEnable(GL_DEPTH_TEST);
         clear_color(0.4, 0.5, 0.9, 1.0);
 
-        vertex vertices[4];
-        vertices[0].pos = glm::vec3{-0.5f, 0.5f, 0.0f};
-        vertices[0].tex = glm::vec2{0.f, 0.f};
-        vertices[1].pos = glm::vec3{-0.5f, -0.5f, 0.0f};
-        vertices[1].tex = glm::vec2{0.f, 1.f};
-        vertices[2].pos = glm::vec3{0.5f, -0.5f, 0.0f};
-        vertices[2].tex = glm::vec2{1.f, 1.f};
-        vertices[3].pos = glm::vec3{0.5f, 0.5f, 0.0f};
-        vertices[3].tex = glm::vec2{1.f, 0.f};
-        quad_ = std::make_unique<vertex_buffer>(4 * sizeof(vertex), vertices, GL_STATIC_DRAW);
-
-        unsigned int indices[6];
-        indices[0] = 0;
-        indices[1] = 1;
-        indices[2] = 2;
-        indices[3] = 0;
-        indices[4] = 2;
-        indices[5] = 3;
-        ibo_ = std::make_unique<index_buffer>(6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-
         vertex_shader_ = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
         fragment_shader_ = shader_manager_.load("shader/staticmesh.fs", GL_FRAGMENT_SHADER);
 
@@ -63,17 +43,12 @@ namespace zombye {
         program_->attach_shader(vertex_shader_);
         program_->attach_shader(fragment_shader_);
 
-        vao_ = std::make_unique<vertex_array>();
         staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
         staticmesh_layout_.emplace_back("nomal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
-        staticmesh_layout_.setup_layout(*vao_, &quad_);
+
         staticmesh_layout_.setup_program(*program_, "fragcolor");
-        vao_->bind_index_buffer(*ibo_);
-
         program_->link();
-
-        texture_ = texture_manager_.load("texture/plasma_color.dds");
 
         float fovy = 90.f * 3.1415f / 180.f;
         float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
@@ -97,15 +72,24 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
-        static auto dummy = mesh_manager_.load("meshes/Suzanne.mesh");
         program_->use();
-        program_->uniform("mvp", false, projection_ * view_);
         program_->uniform("diffuse", 0);
-        texture_->bind(0);
-        dummy->draw(0);
+        for (auto& s : staticmesh_components_) {
+            auto model = s->owner().transform();
+            program_->uniform("mvp", false, projection_ * view_ * model);
+            s->draw();
+        }
     }
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {
         glClearColor(red, green, blue, alpha);
+    }
+
+    void rendering_system::register_component(staticmesh_component* component) {
+        staticmesh_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(staticmesh_component* component) {
+        remove(staticmesh_components_, component);
     }
 }

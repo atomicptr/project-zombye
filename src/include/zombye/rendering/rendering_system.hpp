@@ -2,6 +2,7 @@
 #define __ZOMBYE_RENDERING_SYSTEM_HPP__
 
 #include <memory>
+#include <vector>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -11,6 +12,7 @@
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
+#include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/texture_manager.hpp>
 #include <zombye/rendering/vertex_array.hpp>
@@ -22,21 +24,21 @@ namespace zombye {
 
 namespace zombye {
     class rendering_system {
+        friend class staticmesh_component;
+
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
 
-        std::unique_ptr<vertex_buffer> quad_;
-        std::unique_ptr<index_buffer> ibo_;
-        std::unique_ptr<vertex_array> vao_;
-        zombye::shader_manager shader_manager_;
+        std::vector<staticmesh_component*> staticmesh_components_;
+
         shader_ptr vertex_shader_;
         shader_ptr fragment_shader_;
         std::unique_ptr<program> program_;
         vertex_layout staticmesh_layout_;
-        std::shared_ptr<const texture> texture_;
         zombye::mesh_manager mesh_manager_;
         zombye::texture_manager texture_manager_;
+        zombye::shader_manager shader_manager_;
 
         glm::mat4 projection_;
         glm::mat4 view_;
@@ -69,6 +71,10 @@ namespace zombye {
         auto& texture_manager() noexcept {
             return texture_manager_;
         }
+
+    private:
+        void register_component(staticmesh_component* component);
+        void unregister_component(staticmesh_component* component);
     };
 }
 

@@ -1,4 +1,5 @@
 #include <zombye/gameplay/states/menu_state.hpp>
+#include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/physics/physics_component.hpp>
 
 #include <glm/glm.hpp>
@@ -14,6 +15,7 @@ zombye::menu_state::menu_state(zombye::state_machine *sm) : sm_(sm) {
 
 void zombye::menu_state::enter() {
     zombye::log("enter menu state");
+    sm_->get_game()->entity_manager().emplace("suzanne", glm::vec3{0.f}, glm::quat{0.f, 0.f, 0.f, 1.f}, glm::vec3{1.f});
 }
 
 void zombye::menu_state::leave() {

@@ -27,7 +27,7 @@
 
     "suzanne": {
         "staticmesh_component": {
-            "mesh": "meshes/Suzanne.msh"
+            "mesh": "meshes/Suzanne.mesh"
         }
     }
 }

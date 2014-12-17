@@ -1,6 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
-
+#include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/utils/fps_counter.hpp>
 
 zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
@@ -112,6 +112,7 @@ void zombye::game::quit() {
 }
 
 void zombye::game::register_components() {
+    rtti_manager::register_type(staticmesh_component::type_rtti());
 }
 
 int zombye::game::width() const {
