@@ -2,12 +2,14 @@
 #define __ZOMBYE_RENDERING_SYSTEM_HPP__
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
 #include <zombye/rendering/buffer.hpp>
+#include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
@@ -24,6 +26,7 @@ namespace zombye {
 
 namespace zombye {
     class rendering_system {
+        friend class camera_component;
         friend class staticmesh_component;
 
         game& game_;
@@ -31,6 +34,7 @@ namespace zombye {
         SDL_GLContext context_;
 
         std::vector<staticmesh_component*> staticmesh_components_;
+        std::unordered_map<unsigned long, camera_component*> camera_components_;
 
         shader_ptr vertex_shader_;
         shader_ptr fragment_shader_;
@@ -39,9 +43,9 @@ namespace zombye {
         zombye::mesh_manager mesh_manager_;
         zombye::texture_manager texture_manager_;
         zombye::shader_manager shader_manager_;
+        unsigned long active_camera_;
 
         glm::mat4 projection_;
-        glm::mat4 view_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
@@ -55,6 +59,16 @@ namespace zombye {
         void end_scene();
         void update(float delta_time);
         void clear_color(float red, float green, float blue, float alpha);
+
+        void activate_camera(unsigned long owner_id) {
+            if (camera_components_.find(owner_id) != camera_components_.end()) {
+                active_camera_ = owner_id;
+            }
+        }
+
+        unsigned long active_camera() {
+            return active_camera_;
+        }
 
         auto& mesh_manager() noexcept {
             return mesh_manager_;
@@ -75,6 +89,8 @@ namespace zombye {
     private:
         void register_component(staticmesh_component* component);
         void unregister_component(staticmesh_component* component);
+        void register_component(camera_component* component);
+        void unregister_component(camera_component* component);
     };
 }
 

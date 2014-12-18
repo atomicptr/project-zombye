@@ -11,7 +11,8 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_} {
+    : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_},
+    active_camera_{0} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -55,7 +56,6 @@ namespace zombye {
         float near = 0.01f;
         float far = 1000.f;
         projection_ = glm::perspective(fovy, aspect, near, far);
-        view_ = glm::lookAt(glm::vec3{1.f, 1.f, 2.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
     }
 
     rendering_system::~rendering_system() {
@@ -72,11 +72,17 @@ namespace zombye {
     }
 
     void rendering_system::update(float delta_time) {
+        auto camera = camera_components_.find(active_camera_);
+        auto view = glm::mat4{1.f};
+        if (camera != camera_components_.end()) {
+            view = camera->second->transform();
+        }
+
         program_->use();
         program_->uniform("diffuse", 0);
         for (auto& s : staticmesh_components_) {
             auto model = s->owner().transform();
-            program_->uniform("mvp", false, projection_ * view_ * model);
+            program_->uniform("mvp", false, projection_ * view * model);
             s->draw();
         }
     }
@@ -91,5 +97,16 @@ namespace zombye {
 
     void rendering_system::unregister_component(staticmesh_component* component) {
         remove(staticmesh_components_, component);
+    }
+
+    void rendering_system::register_component(camera_component* component) {
+        camera_components_.insert(std::make_pair(component->owner().id(), component));
+    }
+
+    void rendering_system::unregister_component(camera_component* component) {
+        auto it = camera_components_.find(component->owner().id());
+        if (it != camera_components_.end()) {
+            camera_components_.erase(it);
+        }
     }
 }
