@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/mesh.hpp>
@@ -74,14 +75,36 @@ namespace zombye {
     void rendering_system::update(float delta_time) {
         auto camera = camera_components_.find(active_camera_);
         auto view = glm::mat4{1.f};
+        auto camera_position = glm::vec3{0.f};
         if (camera != camera_components_.end()) {
             view = camera->second->transform();
+            camera_position = camera->second->owner().position();
         }
 
+        std::vector<glm::vec3> light_positions;
+        std::vector<glm::vec3> light_colors;
+        auto i = 0;
+        for (auto& l : light_components_) {
+            if (i > 15) {
+                break;
+            }
+            light_positions.emplace_back(l->owner().position());
+            light_colors.emplace_back(l->color());
+        }
+        int light_count = light_positions.size();
+
         program_->use();
-        program_->uniform("diffuse", 0);
+        program_->uniform("diffuse_sampler", 0);
+        program_->uniform("specular_sampler", 1);
+        program_->uniform("light_count", light_count);
+        program_->uniform("light_position", light_count, light_positions);
+        program_->uniform("light_color", light_count, light_colors);
+        program_->uniform("view", camera_position);
         for (auto& s : staticmesh_components_) {
             auto model = s->owner().transform();
+            auto model_it = glm::inverse(glm::transpose(model));
+            program_->uniform("m", false, model);
+            program_->uniform("mit", false, model_it);
             program_->uniform("mvp", false, projection_ * view * model);
             s->draw();
         }
@@ -89,14 +112,6 @@ namespace zombye {
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {
         glClearColor(red, green, blue, alpha);
-    }
-
-    void rendering_system::register_component(staticmesh_component* component) {
-        staticmesh_components_.emplace_back(component);
-    }
-
-    void rendering_system::unregister_component(staticmesh_component* component) {
-        remove(staticmesh_components_, component);
     }
 
     void rendering_system::register_component(camera_component* component) {
@@ -108,5 +123,21 @@ namespace zombye {
         if (it != camera_components_.end()) {
             camera_components_.erase(it);
         }
+    }
+
+    void rendering_system::register_component(light_component* component) {
+        light_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(light_component* component) {
+        remove(light_components_, component);
+    }
+
+    void rendering_system::register_component(staticmesh_component* component) {
+        staticmesh_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(staticmesh_component* component) {
+        remove(staticmesh_components_, component);
     }
 }

@@ -10,6 +10,7 @@
 
 #include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
@@ -27,14 +28,16 @@ namespace zombye {
 namespace zombye {
     class rendering_system {
         friend class camera_component;
+        friend class light_component;
         friend class staticmesh_component;
 
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
 
-        std::vector<staticmesh_component*> staticmesh_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;
+        std::vector<light_component*> light_components_;
+        std::vector<staticmesh_component*> staticmesh_components_;
 
         shader_ptr vertex_shader_;
         shader_ptr fragment_shader_;
@@ -87,10 +90,12 @@ namespace zombye {
         }
 
     private:
-        void register_component(staticmesh_component* component);
-        void unregister_component(staticmesh_component* component);
         void register_component(camera_component* component);
         void unregister_component(camera_component* component);
+        void register_component(light_component* component);
+        void unregister_component(light_component* component);
+        void register_component(staticmesh_component* component);
+        void unregister_component(staticmesh_component* component);
     };
 }
 
