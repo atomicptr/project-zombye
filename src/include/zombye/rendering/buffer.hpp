@@ -24,14 +24,25 @@ namespace zombye {
         }
 
         buffer(const buffer& other) = delete;
-        buffer(buffer&& other) noexcept = default;
+
+        buffer(buffer&& other) noexcept
+        : id_{other.id_}, usage_{other.usage_} {
+            id_ = 0;
+        }
 
         ~buffer() noexcept {
             glDeleteBuffers(1, &id_);
         }
 
         buffer& operator=(const buffer& other) = delete;
-        buffer& operator=(buffer&& other) noexcept = default;
+
+        buffer& operator=(buffer&& other) noexcept {
+            id_ = other.id_;
+            usage_ = other.usage_;
+            other.id_ = 0;
+
+            return *this;
+        }
 
         void data(size_t size, const void* data) noexcept {
             glBindBuffer(target, id_);

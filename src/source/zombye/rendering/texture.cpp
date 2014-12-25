@@ -37,8 +37,26 @@ namespace zombye {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
+    texture::texture(texture&& other) noexcept
+    : id_{other.id_}, width_{other.width_}, height_{other.height_} {
+        other.id_ = 0;
+        other.width_ = 0;
+        other.height_ = 0;
+    }
+
     texture::~texture() noexcept {
         glDeleteTextures(1, &id_);
+    }
+
+    texture& texture::operator=(texture&& other) noexcept {
+        id_ = other.id_;
+        width_ = other.width_;
+        height_ = other.height_;
+        other.id_ = 0;
+        other.width_ = 0;
+        other.height_ = 0;
+
+        return *this;
     }
 
     void texture::bind(uint32_t unit) const noexcept {

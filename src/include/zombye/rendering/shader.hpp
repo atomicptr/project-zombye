@@ -13,10 +13,10 @@ namespace zombye {
     public:
         shader(const std::string& name, GLenum type, const std::string& source);
         shader(const shader& other) = delete;
-        shader(shader&& other) noexcept = default;
+        shader(shader&& other) noexcept;
         ~shader() noexcept;
         shader& operator=(const shader& other) = delete;
-        shader& operator=(shader&& other) noexcept = default;
+        shader& operator=(shader&& other) noexcept;
     };
 }
 

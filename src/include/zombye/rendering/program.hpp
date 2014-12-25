@@ -20,10 +20,10 @@ namespace zombye {
     public:
         program() noexcept;
         program(const program& other) = delete;
-        program(program&& other) noexcept = default;
+        program(program&& other) noexcept;
         ~program() noexcept;
         program& operator=(const program& other) = delete;
-        program& operator=(program&& other) noexcept = default;
+        program& operator=(program&& other) noexcept;
 
         void attach_shader(shader_ptr shader);
         void link();

@@ -29,7 +29,19 @@ namespace zombye {
         }
     }
 
+    shader::shader(shader&& other) noexcept
+    : id_{other.id_} {
+        other.id_ = 0;
+    }
+
     shader::~shader() noexcept {
         glDeleteShader(id_);
+    }
+
+    shader& shader::operator=(shader&& other) noexcept {
+        id_ = other.id_;
+        other.id_ = 0;
+
+        return *this;
     }
 }

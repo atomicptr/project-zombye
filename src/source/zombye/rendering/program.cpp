@@ -10,11 +10,24 @@ namespace zombye {
         id_ = glCreateProgram();
     }
 
+    program::program(program&& other) noexcept
+    : id_{other.id_}, shaders_{other.shaders_} {
+        other.id_ = 0;
+    }
+
     program::~program() noexcept {
         for (auto& shader : shaders_) {
             glDetachShader(id_, shader->id_);
         }
         glDeleteProgram(id_);
+    }
+
+    program& program::operator=(program&& other) noexcept {
+        id_ = other.id_;
+        shaders_ = other.shaders_;
+        other.id_ = 0;
+
+        return *this;
     }
 
     void program::attach_shader(shader_ptr shader) {

@@ -12,10 +12,10 @@ namespace zombye {
     public:
         texture(const gli::texture2D& texture) noexcept;
         texture(const texture& other) = delete;
-        texture(texture&& other) noexcept = default;
+        texture(texture&& other) noexcept;
         ~texture() noexcept;
         texture& operator=(const texture& other) = delete;
-        texture& operator=(texture&& other) noexcept = default;
+        texture& operator=(texture&& other) noexcept;
 
         void bind(uint32_t unit) const noexcept;
 

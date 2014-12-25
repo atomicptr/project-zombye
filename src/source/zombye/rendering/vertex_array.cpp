@@ -6,8 +6,20 @@ namespace zombye {
         bind();
     }
 
+    vertex_array::vertex_array(vertex_array&& other) noexcept
+    : id_{other.id_} {
+        other.id_ = 0;
+    }
+
     vertex_array::~vertex_array() noexcept {
         glDeleteVertexArrays(1, &id_);
+    }
+
+    vertex_array& vertex_array::operator=(vertex_array&& other) noexcept {
+        id_ = other.id_;
+        other.id_ = 0;
+
+        return *this;
     }
 
     void vertex_array::bind() const noexcept {

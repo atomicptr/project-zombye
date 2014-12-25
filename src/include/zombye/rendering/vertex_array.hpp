@@ -13,10 +13,10 @@ namespace zombye {
     public:
         vertex_array() noexcept;
         vertex_array(const vertex_array& other) = delete;
-        vertex_array(vertex_array&& other) = default;
+        vertex_array(vertex_array&& other) noexcept;
         ~vertex_array() noexcept;
         vertex_array& operator=(const vertex_array& other) = delete;
-        vertex_array& operator=(vertex_array&& other) = default;
+        vertex_array& operator=(vertex_array&& other) noexcept;
 
         void bind() const noexcept;
         void bind_index_buffer(const index_buffer& buffer);
