@@ -24,6 +24,7 @@ void zombye::menu_state::enter() {
     sm_->get_game()->entity_manager().emplace("red_light", glm::vec3{4.f, 1.f, -5.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
     sm_->get_game()->entity_manager().emplace("green_light", glm::vec3{4.f, 0.f, -8.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
     sm_->get_game()->entity_manager().emplace("red_light", glm::vec3{4.f, 0.f, 8.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
+    sm_->get_game()->entity_manager().emplace("animated", glm::vec3{4.f, 1.f, -6.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
 }
 
 void zombye::menu_state::leave() {

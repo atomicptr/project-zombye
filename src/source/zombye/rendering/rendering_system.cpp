@@ -12,8 +12,8 @@
 
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
-    : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, texture_manager_{game_},
-    active_camera_{0} {
+    : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, skinned_mesh_manager_{game_},
+    texture_manager_{game_}, active_camera_{0} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -38,19 +38,35 @@ namespace zombye {
         glEnable(GL_DEPTH_TEST);
         clear_color(0.4, 0.5, 0.9, 1.0);
 
-        vertex_shader_ = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
-        fragment_shader_ = shader_manager_.load("shader/staticmesh.fs", GL_FRAGMENT_SHADER);
+        auto vertex_shader = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
+        auto fragment_shader = shader_manager_.load("shader/staticmesh.fs", GL_FRAGMENT_SHADER);
 
-        program_ = std::make_unique<program>();
-        program_->attach_shader(vertex_shader_);
-        program_->attach_shader(fragment_shader_);
+        staticmesh_program_ = std::make_unique<program>();
+        staticmesh_program_->attach_shader(vertex_shader);
+        staticmesh_program_->attach_shader(fragment_shader);
 
         staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        staticmesh_layout_.emplace_back("nomal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
+        staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
         staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
 
-        staticmesh_layout_.setup_program(*program_, "fragcolor");
-        program_->link();
+        staticmesh_layout_.setup_program(*staticmesh_program_, "fragcolor");
+        staticmesh_program_->link();
+
+        vertex_shader = shader_manager_.load("shader/animation.vs", GL_VERTEX_SHADER);
+        fragment_shader = shader_manager_.load("shader/animation.fs", GL_FRAGMENT_SHADER);
+
+        animation_program_ = std::make_unique<program>();
+        animation_program_->attach_shader(vertex_shader);
+        animation_program_->attach_shader(fragment_shader);
+
+        skinnedmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+        skinnedmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
+        skinnedmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
+        skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3) + sizeof(glm::vec2));
+        skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(skinned_vertex) - sizeof(glm::vec4));
+
+        skinnedmesh_layout_.setup_program(*animation_program_, "fragcolor");
+        animation_program_->link();
 
         float fovy = 90.f * 3.1415f / 180.f;
         float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
@@ -93,25 +109,49 @@ namespace zombye {
         }
         int light_count = light_positions.size();
 
-        program_->use();
-        program_->uniform("diffuse_sampler", 0);
-        program_->uniform("specular_sampler", 1);
-        program_->uniform("light_count", light_count);
-        program_->uniform("light_position", light_count, light_positions);
-        program_->uniform("light_color", light_count, light_colors);
-        program_->uniform("view", camera_position);
+        staticmesh_program_->use();
+        staticmesh_program_->uniform("diffuse_sampler", 0);
+        staticmesh_program_->uniform("specular_sampler", 1);
+        staticmesh_program_->uniform("light_count", light_count);
+        staticmesh_program_->uniform("light_position", light_count, light_positions);
+        staticmesh_program_->uniform("light_color", light_count, light_colors);
+        staticmesh_program_->uniform("view", camera_position);
         for (auto& s : staticmesh_components_) {
             auto model = s->owner().transform();
             auto model_it = glm::inverse(glm::transpose(model));
-            program_->uniform("m", false, model);
-            program_->uniform("mit", false, model_it);
-            program_->uniform("mvp", false, projection_ * view * model);
+            staticmesh_program_->uniform("m", false, model);
+            staticmesh_program_->uniform("mit", false, model_it);
+            staticmesh_program_->uniform("mvp", false, projection_ * view * model);
             s->draw();
+        }
+
+        animation_program_->use();
+        animation_program_->uniform("diffuse_sampler", 0);
+        animation_program_->uniform("specular_sampler", 1);
+        animation_program_->uniform("light_count", light_count);
+        animation_program_->uniform("light_position", light_count, light_positions);
+        animation_program_->uniform("light_color", light_count, light_colors);
+        animation_program_->uniform("view", camera_position);
+        for (auto& a: animation_components_) {
+            auto model = a->owner().transform();
+            auto model_it = glm::inverse(glm::transpose(model));
+            animation_program_->uniform("m", false, model);
+            animation_program_->uniform("mit", false, model_it);
+            animation_program_->uniform("mvp", false, projection_ * view * model);
+            a->draw();
         }
     }
 
     void rendering_system::clear_color(float red, float green, float blue, float alpha) {
         glClearColor(red, green, blue, alpha);
+    }
+
+    void rendering_system::register_component(animation_component* component) {
+        animation_components_.emplace_back(component);
+    }
+
+    void rendering_system::unregister_component(animation_component* component) {
+        remove(animation_components_, component);
     }
 
     void rendering_system::register_component(camera_component* component) {

@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
+#include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/light_component.hpp>
@@ -15,6 +16,7 @@
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
+#include <zombye/rendering/skinned_mesh_manager.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/texture_manager.hpp>
@@ -27,6 +29,7 @@ namespace zombye {
 
 namespace zombye {
     class rendering_system {
+        friend class animation_component;
         friend class camera_component;
         friend class light_component;
         friend class staticmesh_component;
@@ -35,13 +38,15 @@ namespace zombye {
         SDL_Window* window_;
         SDL_GLContext context_;
 
+        std::vector<animation_component*> animation_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;
         std::vector<light_component*> light_components_;
         std::vector<staticmesh_component*> staticmesh_components_;
 
-        shader_ptr vertex_shader_;
-        shader_ptr fragment_shader_;
-        std::unique_ptr<program> program_;
+        std::unique_ptr<program> animation_program_;
+        std::unique_ptr<program> staticmesh_program_;
+        vertex_layout skinnedmesh_layout_;
+        zombye::skinned_mesh_manager skinned_mesh_manager_;
         vertex_layout staticmesh_layout_;
         zombye::mesh_manager mesh_manager_;
         zombye::texture_manager texture_manager_;
@@ -81,6 +86,14 @@ namespace zombye {
             return shader_manager_;
         }
 
+        auto& skinnedmesh_layout() noexcept {
+            return skinnedmesh_layout_;
+        }
+
+        auto& skinned_mesh_manager() noexcept {
+            return skinned_mesh_manager_;
+        }
+
         auto& staticmesh_layout() noexcept {
             return staticmesh_layout_;
         }
@@ -90,6 +103,8 @@ namespace zombye {
         }
 
     private:
+        void register_component(animation_component* component);
+        void unregister_component(animation_component* component);
         void register_component(camera_component* component);
         void unregister_component(camera_component* component);
         void register_component(light_component* component);

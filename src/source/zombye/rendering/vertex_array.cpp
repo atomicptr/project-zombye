@@ -3,6 +3,7 @@
 namespace zombye {
     vertex_array::vertex_array() noexcept {
         glGenVertexArrays(1, &id_);
+        bind();
     }
 
     vertex_array::~vertex_array() noexcept {
