@@ -16,6 +16,7 @@
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
+#include <zombye/rendering/skeleton_manager.hpp>
 #include <zombye/rendering/skinned_mesh_manager.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/texture.hpp>
@@ -46,11 +47,12 @@ namespace zombye {
         std::unique_ptr<program> animation_program_;
         std::unique_ptr<program> staticmesh_program_;
         vertex_layout skinnedmesh_layout_;
-        zombye::skinned_mesh_manager skinned_mesh_manager_;
         vertex_layout staticmesh_layout_;
         zombye::mesh_manager mesh_manager_;
         zombye::texture_manager texture_manager_;
         zombye::shader_manager shader_manager_;
+        zombye::skinned_mesh_manager skinned_mesh_manager_;
+        zombye::skeleton_manager skeleton_manager_;
         unsigned long active_camera_;
 
         glm::mat4 projection_;
@@ -92,6 +94,10 @@ namespace zombye {
 
         auto& skinned_mesh_manager() noexcept {
             return skinned_mesh_manager_;
+        }
+
+        auto& skeleton_manager() noexcept {
+            return skeleton_manager_;
         }
 
         auto& staticmesh_layout() noexcept {

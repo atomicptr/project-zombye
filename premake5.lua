@@ -87,6 +87,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
+            links "tinyxml2"
+
+        configuration {"gmake", "macosx"}
+            links "tinyxml2"
 
         configuration "debug"
             flags {"FatalWarnings"}

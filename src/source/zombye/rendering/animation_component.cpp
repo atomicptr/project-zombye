@@ -4,10 +4,11 @@
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
-    animation_component::animation_component(game& game, entity& owner, const std::string& mesh)
+    animation_component::animation_component(game& game, entity& owner, const std::string& mesh, const std::string& skeleton)
     : reflective{game, owner} {
         game_.rendering_system().register_component(this);
         load(mesh);
+        load_skeleton(skeleton);
     }
 
     animation_component::~animation_component() noexcept {
@@ -73,6 +74,13 @@ namespace zombye {
         }
     }
 
+    void animation_component::load_skeleton(const std::string& skeleton) {
+        skeleton_ = game_.rendering_system().skeleton_manager().load(skeleton);
+        if (!skeleton_) {
+            log(LOG_FATAL, "could not load skeleton " + skeleton);
+        }
+    }
+
     animation_component::animation_component(game& game, entity& owner)
     : reflective(game, owner) {
         game_.rendering_system().register_component(this);
@@ -80,5 +88,6 @@ namespace zombye {
 
     void animation_component::register_reflection() {
         register_property<std::string>("mesh", nullptr, &animation_component::load);
+        register_property<std::string>("skeleton", nullptr, &animation_component::load_skeleton);
     }
 }
