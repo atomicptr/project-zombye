@@ -33,7 +33,7 @@ void main() {
     vec4 diffuse_color = texture2D(diffuse_sampler, f_texcoord);
     float gloss = texture2D(specular_sampler, f_texcoord).r;
 
-    vec3 final_color;
+    vec3 final_color = vec3(0, 0, 0);
     for (int i = 0; i < light_count; ++i) {
         vec3 L = normalize(light_position[i] - f_world_position);
         final_color += blinn_phong(N, L, V, light_color[i], diffuse_color.rgb, diffuse_color.rgb, gloss, 50);

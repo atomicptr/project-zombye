@@ -1,9 +1,6 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
 #include <animation_converter/animation_converter.hpp>
 
 namespace devtools {

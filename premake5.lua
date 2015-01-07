@@ -79,8 +79,6 @@ solution "project-zombye"
 
         defines "GLM_FORCE_RADIANS"
 
-        links {"assimp"}
-
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
                 toolset "clang"
