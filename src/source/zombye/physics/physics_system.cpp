@@ -12,7 +12,7 @@
 #define DEBUG_DRAW_CONFIG (ZDBG_DRAW_WIREFRAME | ZDBG_DRAW_AAB | ZDBG_DRAW_CONTACT_POINTS | ZDBG_DRAW_CONSTRAINTS | ZDBG_DRAW_CONSTRAINTS_LIMITS | ZDBG_DRAW_NORMALS)
 
 zombye::physics_system::physics_system(game& game)
-: game_{game} {
+: game_{game}, collision_mesh_manager_{game_} {
     broadphase_ = std::make_unique<btDbvtBroadphase>();
     collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
     dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
@@ -45,6 +45,8 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
 }
 
 void zombye::physics_system::update(float delta_time) {
+    static auto cm = collision_mesh_manager_.load("physics/dummy.col");
+
     world_->stepSimulation(delta_time);
 
     for(auto comp : components_) {

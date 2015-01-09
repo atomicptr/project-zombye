@@ -3,6 +3,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include <zombye/physics/collision_mesh_manager.hpp>
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/debug_renderer.hpp>
 #include <zombye/physics/debug_render_bridge.hpp>
@@ -26,8 +27,13 @@ namespace zombye {
         void enable_debug();
         void disable_debug();
 
+        auto& collision_mesh_manager() const noexcept {
+            return collision_mesh_manager_;
+        }
+
     private:
         game& game_;
+        zombye::collision_mesh_manager collision_mesh_manager_;
         std::unique_ptr<btDbvtBroadphase> broadphase_;
         std::unique_ptr<btDefaultCollisionConfiguration> collision_config_;
         std::unique_ptr<btCollisionDispatcher> dispatcher_;
