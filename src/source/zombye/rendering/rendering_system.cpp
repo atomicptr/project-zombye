@@ -99,6 +99,7 @@ namespace zombye {
 
         std::vector<glm::vec3> light_positions;
         std::vector<glm::vec3> light_colors;
+        std::vector<float> light_distances;
         auto i = 0;
         for (auto& l : light_components_) {
             if (i > 15) {
@@ -106,6 +107,7 @@ namespace zombye {
             }
             light_positions.emplace_back(l->owner().position());
             light_colors.emplace_back(l->color());
+            light_distances.emplace_back(l->distance());
         }
         int light_count = light_positions.size();
 
@@ -115,6 +117,7 @@ namespace zombye {
         staticmesh_program_->uniform("light_count", light_count);
         staticmesh_program_->uniform("light_position", light_count, light_positions);
         staticmesh_program_->uniform("light_color", light_count, light_colors);
+        staticmesh_program_->uniform("light_distance", light_count, light_distances);
         staticmesh_program_->uniform("view", camera_position);
         for (auto& s : staticmesh_components_) {
             auto model = s->owner().transform();
@@ -131,6 +134,7 @@ namespace zombye {
         animation_program_->uniform("light_count", light_count);
         animation_program_->uniform("light_position", light_count, light_positions);
         animation_program_->uniform("light_color", light_count, light_colors);
+        animation_program_->uniform("light_distance", light_count, light_distances);
         animation_program_->uniform("view", camera_position);
         for (auto& a: animation_components_) {
             auto model = a->owner().transform();

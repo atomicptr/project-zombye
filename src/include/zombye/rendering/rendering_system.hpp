@@ -76,8 +76,15 @@ namespace zombye {
             }
         }
 
-        unsigned long active_camera() {
+        unsigned long active_camera_id() {
             return active_camera_;
+        }
+
+        camera_component* active_camera() {
+            if (camera_components_.find(active_camera_) != camera_components_.end()) {
+                return camera_components_[active_camera_];
+            }
+            return nullptr;
         }
 
         auto& mesh_manager() noexcept {

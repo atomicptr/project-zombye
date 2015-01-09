@@ -34,6 +34,9 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
         throw std::runtime_error("could not create window: " + error);
     }
 
+    // should be done in input
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     SDL_ClearError();
 
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
@@ -60,7 +63,7 @@ void zombye::game::run() {
     float old_time;
 
     // start menu state
-    gameplay_system_->use(GAME_STATE_MENU);
+    gameplay_system_->use(GAME_STATE_PLAY);
 
     auto fps = fps_counter{};
 
