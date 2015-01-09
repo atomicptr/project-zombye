@@ -1,13 +1,14 @@
 #version 140
 
-in vec3 in_position;
-in vec3 in_color;
+in vec3 position;
+in vec3 color;
 
-out vec4 out_color;
+out vec3 f_color;
 
 uniform mat4 vp;
 
 void main() {
-    out_color = vec4(in_color, 1.0);
-    gl_Position = vp * vec4(in_position, 1.0);
+	gl_PointSize = 100.0;
+	f_color = color;
+	gl_Position = vp * vec4(position, 1.0);
 }

@@ -1,45 +1,53 @@
 #version 140
 
-in vec2 out_texel;
-in vec3 n;
-in vec3 v;
-in vec3 world_position;
+in vec2 f_texcoord;
+in vec3 f_normal;
+in vec3 f_world_position;
 
 out vec4 fragcolor;
+
+uniform sampler2D diffuse_sampler;
+uniform sampler2D specular_sampler;
 
 uniform int light_count;
 uniform vec3 light_position[16];
 uniform vec3 light_color[16];
-uniform float light_intensity[16];
+uniform float light_distance[16];
+uniform vec3 view;
 
-uniform sampler2D color_texture;
-uniform sampler2D specular_texture;
+vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diffuse_color, vec3 specular_color, float shininess) {
+    vec3 H = normalize(V + L);
 
-vec3 blinn_phong(vec3 n, vec3 l, vec3 v, vec3 diffuse_color, vec3 specular_color, float id, float is,
-float kd, float ks, float s) {
-    vec3 h = normalize(v + l);
-    float ndotl = max(0.0, dot(n, l));
-    float ndoth = max(0.0, dot(n, h));
+    float NdotL = max(0.0, dot(N, L));
+    float NdotH = max(0.0, dot(N, H));
 
-    vec3 diffuse_term = id * kd * ndotl * diffuse_color;
-    vec3 specular_term = is * ks * pow(ndoth, s) * specular_color;
-    vec3 final_color = diffuse_term + specular_term;
-    return final_color;
+    vec3 color = light_color * diffuse_color;
+    vec3 diffuse_term = color * NdotL;
+    vec3 specular_term = color * pow(NdotH, shininess);
+
+    return diffuse_term + specular_term;
 }
 
 void main() {
-    vec4 color = texture(color_texture, out_texel);
-    float ks = texture(specular_texture, out_texel).r;
+    vec3 N = normalize(f_normal);
+    vec3 V = normalize(view - f_world_position);
 
-    vec3 nn = normalize(n);
-    vec3 nv = normalize(v);
-    vec3 final_color;
+    vec4 diffuse_color = texture(diffuse_sampler, f_texcoord);
+    float shininess = texture(specular_sampler, f_texcoord).r * 128.f;
 
+    vec3 final_color = vec3(0, 0, 0);
     for (int i = 0; i < light_count; ++i) {
-        vec3 l = light_position[i] - world_position;
-        vec3 nl = normalize(l);
-        final_color += blinn_phong(nn, nl, nv, color.rgb, color.rgb, light_intensity[i], 1.0, 1.0, ks, 50);
+        vec3 light = light_position[i] - f_world_position;
+        vec3 L = normalize(light);
+        float ld = length(light);
+        float contribution = ld / light_distance[i];
+        if (contribution <= 1.0) {
+            contribution = 1.0 - contribution;
+        } else {
+            contribution = 0.0;
+        }
+        final_color += blinn_phong(N, L, V, contribution * light_color[i], diffuse_color.rgb, diffuse_color.rgb, shininess);
     }
 
-    gl_FragColor = vec4(final_color, color.a);
+    fragcolor = vec4(final_color, diffuse_color.a);
 }

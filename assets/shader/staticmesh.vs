@@ -1,27 +1,20 @@
 #version 140
 
-in vec3 in_position;
-in vec3 in_normal;
-in vec2 in_texel;
+in vec3 position;
+in vec3 normal;
+in vec2 texcoord;
 
-out vec2 out_texel;
-out vec3 n;
-out vec3 v;
-out vec3 world_position;
+out vec2 f_texcoord;
+out vec3 f_normal;
+out vec3 f_world_position;
 
-uniform int light_count;
-uniform vec3 light_position[16];
-uniform vec3 view;
-
-uniform mat4 mvp;
 uniform mat4 m;
 uniform mat4 mit;
+uniform mat4 mvp;
 
 void main() {
-    n = (mit * vec4(in_normal, 0.0)).xyz;
-    world_position = (m * vec4(in_position, 1.0)).xyz;
-    v = view - world_position;
-
-    out_texel = in_texel;
-    gl_Position = mvp * vec4(in_position, 1.0);
+    f_texcoord = texcoord;
+    f_normal = (mit * vec4(normal, 0.0)).xyz;
+    f_world_position = (m * vec4(position, 1.0)).xyz;
+    gl_Position = mvp * vec4(position, 1.0);
 }

@@ -26,8 +26,8 @@ zombye::physics_system::physics_system(game& game)
 
     world_->setGravity(btVector3(0, -9.81, 0));
 
-    debug_drawer_ = std::make_unique<debug_renderer>(game_); // TODO: change this
-    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(debug_drawer_.get());
+    debug_renderer_ = std::make_unique<debug_renderer>(game);
+    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(*debug_renderer_);
 
     world_->setDebugDrawer(bt_debug_drawer_.get());
 
@@ -54,7 +54,7 @@ void zombye::physics_system::update(float delta_time) {
 
 void zombye::physics_system::debug_draw() {
     world_->debugDrawWorld();
-    debug_drawer_->draw();
+    debug_renderer_->draw();
 }
 
 void zombye::physics_system::toggle_debug() {

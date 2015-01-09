@@ -7,10 +7,10 @@
 #include <glm/glm.hpp>
 
 #include <zombye/rendering/vertex_array.hpp>
-#include <zombye/rendering/vertex_buffer.hpp>
+#include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 #include <zombye/rendering/shader.hpp>
-#include <zombye/rendering/shader_program.hpp>
+#include <zombye/rendering/program.hpp>
 
 namespace zombye {
     struct debug_vertex {
@@ -24,17 +24,17 @@ namespace zombye {
         game& game_;
         rendering_system& rs_;
         vertex_layout debug_vertex_layout_;
-        std::unique_ptr<vertex_buffer> vbo_;
+        vertex_buffer vbo_;
         vertex_array vao_;
-        shader_program physics_debug_program_;
+        program debug_program_;
         std::vector<debug_vertex> line_buffer_;
+        std::vector<debug_vertex> point_buffer_;
 
     public:
         debug_renderer(game& game);
 
-        void draw_line(const glm::vec3&, const glm::vec3&, const glm::vec3&);
-        void draw_contact_point(const glm::vec3&, const glm::vec3&, float, int, const glm::vec3&);
-        void draw_transform(glm::vec3&, glm::quat&, float);
+        void buffer_line(const glm::vec3&, const glm::vec3&, const glm::vec3&);
+        void buffer_contact_point(const glm::vec3& point, const glm::vec3& normal, float distance, float lifetime, const glm::vec3& color);
 
         void draw();
     };

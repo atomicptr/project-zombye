@@ -37,8 +37,8 @@ namespace zombye {
 
         std::vector<physics_component*> components_;
 
-        std::unique_ptr<debug_renderer> debug_drawer_; // TODO: change this
         std::unique_ptr<debug_render_bridge> bt_debug_drawer_;
+        std::unique_ptr<debug_renderer> debug_renderer_;
 
         void register_component(physics_component*);
         void unregister_component(physics_component*);
