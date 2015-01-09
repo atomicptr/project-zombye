@@ -32,8 +32,8 @@ void main() {
     vec3 N = normalize(f_normal);
     vec3 V = normalize(view - f_world_position);
 
-    vec4 diffuse_color = texture2D(diffuse_sampler, f_texcoord);
-    float shininess = texture2D(specular_sampler, f_texcoord).r * 128.f;
+    vec4 diffuse_color = texture(diffuse_sampler, f_texcoord);
+    float shininess = texture(specular_sampler, f_texcoord).r * 128.f;
 
     vec3 final_color = vec3(0, 0, 0);
     for (int i = 0; i < light_count; ++i) {
