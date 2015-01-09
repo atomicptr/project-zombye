@@ -22,12 +22,8 @@ namespace zombye {
             animation.name = std::string{data_ptr, name_size};
             data_ptr += name_size;
 
-            log(LOG_DEBUG, animation.name);
-
             animation.length = *reinterpret_cast<const float*>(data_ptr);
             data_ptr += sizeof(float);
-
-            log(LOG_DEBUG, std::to_string(animation.length));
 
             auto track_count = *reinterpret_cast<const size_t*>(data_ptr);
             data_ptr += sizeof(size_t);

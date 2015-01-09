@@ -1,6 +1,12 @@
 #include <zombye/physics/physics_component.hpp>
 
-zombye::physics_component::physics_component(game &g, entity &owner, btCollisionShape* col_shape, bool isstatic) : component(g, owner) {
+zombye::physics_component::physics_component(game& game, entity& owner)
+: reflective{game, owner}, body_{nullptr}, motion_state_{nullptr} {
+    physics_ = game.physics();
+    world_ = physics_->world();
+}
+
+zombye::physics_component::physics_component(game &g, entity &owner, btCollisionShape* col_shape, bool isstatic) : reflective(g, owner) {
     physics_ = g.physics();
     world_ = physics_->world();
 

@@ -11,13 +11,17 @@
 
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/entity.hpp>
+#include <zombye/ecs/reflective.hpp>
 
 #include <zombye/physics/physics_system.hpp>
 
 namespace zombye {
     class physics_system;
 
-    class physics_component : public component {
+    class physics_component : public reflective<physics_component, component> {
+        friend class reflective<physics_component, component>;
+
+        physics_component(game& game, entity& owner);
     public:
         physics_component(game&, entity&, btCollisionShape*, bool isstatic=false);
         ~physics_component();
