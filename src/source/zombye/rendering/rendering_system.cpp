@@ -13,7 +13,7 @@
 namespace zombye {
     rendering_system::rendering_system(game& game, SDL_Window* window)
     : game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, skinned_mesh_manager_{game_},
-    skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0} {
+    skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, projection_{1.f}, view_{1.f} {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -90,10 +90,10 @@ namespace zombye {
 
     void rendering_system::update(float delta_time) {
         auto camera = camera_components_.find(active_camera_);
-        auto view = glm::mat4{1.f};
+        view_ = glm::mat4{1.f};
         auto camera_position = glm::vec3{0.f};
         if (camera != camera_components_.end()) {
-            view = camera->second->transform();
+            view_ = camera->second->transform();
             camera_position = camera->second->owner().position();
         }
 
@@ -124,7 +124,7 @@ namespace zombye {
             auto model_it = glm::inverse(glm::transpose(model));
             staticmesh_program_->uniform("m", false, model);
             staticmesh_program_->uniform("mit", false, model_it);
-            staticmesh_program_->uniform("mvp", false, projection_ * view * model);
+            staticmesh_program_->uniform("mvp", false, projection_ * view_ * model);
             s->draw();
         }
 
@@ -141,7 +141,7 @@ namespace zombye {
             auto model_it = glm::inverse(glm::transpose(model));
             animation_program_->uniform("m", false, model);
             animation_program_->uniform("mit", false, model_it);
-            animation_program_->uniform("mvp", false, projection_ * view * model);
+            animation_program_->uniform("mvp", false, projection_ * view_ * model);
             a->draw();
         }
     }

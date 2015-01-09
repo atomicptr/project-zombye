@@ -26,12 +26,13 @@ zombye::physics_system::physics_system(game& game)
 
     world_->setGravity(btVector3(0, -9.81, 0));
 
-    //bt_debug_drawer_ = std::make_unique<debug_render_bridge>(debug_drawer_.get());
+    debug_renderer_ = std::make_unique<debug_renderer>(game);
+    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(*debug_renderer_);
 
     world_->setDebugDrawer(bt_debug_drawer_.get());
 
 #ifdef ZOMBYE_DEBUG
-    //bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
+    bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
 #endif
 }
 
@@ -53,24 +54,23 @@ void zombye::physics_system::update(float delta_time) {
 
 void zombye::physics_system::debug_draw() {
     world_->debugDrawWorld();
+    debug_renderer_->draw();
 }
 
 void zombye::physics_system::toggle_debug() {
-    /*
     if(bt_debug_drawer_->getDebugMode() != 0) {
         disable_debug();
     } else {
         enable_debug();
     }
-    */
 }
 
 void zombye::physics_system::enable_debug() {
-    //bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
+    bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
 }
 
 void zombye::physics_system::disable_debug() {
-    //bt_debug_drawer_->setDebugMode(0);
+    bt_debug_drawer_->setDebugMode(0);
 }
 
 void zombye::physics_system::register_component(physics_component* comp) {

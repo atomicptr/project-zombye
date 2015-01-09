@@ -7,13 +7,14 @@
 #include <btBulletDynamicsCommon.h>
 #include <LinearMath/btIDebugDraw.h>
 
+#include <zombye/physics/debug_renderer.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
 
     class debug_render_bridge : public btIDebugDraw {
     public:
-        debug_render_bridge();
+        debug_render_bridge(debug_renderer& debug_renderer);
         ~debug_render_bridge();
 
         void drawLine(const btVector3&, const btVector3&, const btVector3&);
@@ -27,7 +28,7 @@ namespace zombye {
         int getDebugMode() const;
 
     private:
-
+        debug_renderer& debug_renderer_;
         int debug_mode_;
     };
 }

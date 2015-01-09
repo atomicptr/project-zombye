@@ -56,6 +56,7 @@ namespace zombye {
         unsigned long active_camera_;
 
         glm::mat4 projection_;
+        glm::mat4 view_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
@@ -113,6 +114,14 @@ namespace zombye {
 
         auto& texture_manager() noexcept {
             return texture_manager_;
+        }
+
+        auto projection() const noexcept {
+            return projection_;
+        }
+
+        auto view() const noexcept {
+            return view_;
         }
 
     private:

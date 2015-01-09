@@ -1,4 +1,5 @@
 #include <zombye/physics/physics_component.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 zombye::physics_component::physics_component(game& game, entity& owner)
 : reflective{game, owner}, body_{nullptr}, motion_state_{nullptr} {

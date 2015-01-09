@@ -1,6 +1,7 @@
 #include <zombye/physics/debug_render_bridge.hpp>
 
-zombye::debug_render_bridge::debug_render_bridge() : debug_mode_(0) {}
+zombye::debug_render_bridge::debug_render_bridge(debug_renderer& debug_renderer)
+: debug_mode_(0), debug_renderer_{debug_renderer} {}
 
 zombye::debug_render_bridge::~debug_render_bridge() {}
 
@@ -22,7 +23,7 @@ void zombye::debug_render_bridge::drawLine(const btVector3 &btfrom, const btVect
     color.z = btcolor.z();
 
     if(debug_mode_ != 0) {
-        //renderer_->draw_line(from, to, color);
+        debug_renderer_.buffer_line(from, to, color);
     }
 }
 
@@ -46,7 +47,7 @@ void zombye::debug_render_bridge::drawContactPoint(const btVector3 &btpoint, con
     color.z = btcolor.z();
 
     if(debug_mode_ != 0) {
-        //renderer_->draw_contact_point(point, normal, distance, lifetime, color);
+        debug_renderer_.buffer_contact_point(point, normal, distance, lifetime, color);
     }
 }
 
