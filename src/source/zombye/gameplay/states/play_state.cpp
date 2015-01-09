@@ -23,9 +23,9 @@ public:
             auto& owner = cam->owner();
             auto pos = owner.position();
             auto look_at = cam->look_at();
-            auto direction = glm::normalize(look_at - pos);
-            owner.position(pos + 0.3f * direction);
-            cam->set_look_at(look_at + 0.3f * direction);
+            auto direction = glm::vec3{1.f, 0.f, 1.f};
+            owner.position(pos - 0.3f * direction);
+            cam->set_look_at(look_at - 0.3f * direction);
         }
     }
 private:
@@ -42,9 +42,9 @@ public:
             auto& owner = cam->owner();
             auto pos = owner.position();
             auto look_at = cam->look_at();
-            auto direction = glm::normalize(look_at - pos);
-            owner.position(pos - 0.3f * direction);
-            cam->set_look_at(look_at - 0.3f * direction);
+            auto direction = glm::vec3{1.f, 0.f, 1.f};
+            owner.position(pos + 0.3f * direction);
+            cam->set_look_at(look_at + 0.3f * direction);
         }
     }
 private:
@@ -61,9 +61,7 @@ public:
             auto& owner = cam->owner();
             auto pos = owner.position();
             auto look_at = cam->look_at();
-            auto direction = glm::normalize(look_at - pos);
-            auto up = cam->up();
-            direction = glm::normalize(glm::cross(direction, up));
+            auto direction = glm::vec3{1.f, 0.f, -1.f};
             owner.position(pos - 0.3f * direction);
             cam->set_look_at(look_at - 0.3f * direction);
         }
@@ -82,9 +80,7 @@ public:
             auto& owner = cam->owner();
             auto pos = owner.position();
             auto look_at = cam->look_at();
-            auto direction = glm::normalize(look_at - pos);
-            auto up = cam->up();
-            direction = glm::normalize(glm::cross(direction, up));
+            auto direction = glm::vec3{1.f, 0.f, -1.f};
             owner.position(pos + 0.3f * direction);
             cam->set_look_at(look_at + 0.3f * direction);
         }
@@ -121,8 +117,8 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{2.f, 0.f, 6.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
-    camera.emplace<camera_component>(glm::vec3{2.f, 0.f, 2.f}, glm::vec3{0.f, 1.f, 0.f});
+    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{2.f, 8.f, 2.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+    camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 /*
     sm_->get_game()->entity_manager().emplace("light_test", glm::vec3{0.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
@@ -149,22 +145,5 @@ void zombye::play_state::update(float delta_time) {
 
     if(command != nullptr) {
         command->execute();
-    }
-
-    auto cam = sm_->get_game()->rendering_system().active_camera();
-    if (cam) {
-        auto input = sm_->get_game()->input();
-        auto x = (input->mouse()->x() / sm_->get_game()->width()) - 1.f;
-        auto y = (input->mouse()->y() / sm_->get_game()->height()) - 1.f;
-        x *= M_PI;
-        y *= M_PI;
-        auto pos = cam->owner().position();
-        auto look_at = cam->look_at();
-        auto up = cam->up();
-        auto r = glm::length(look_at - pos);
-        auto sx = r * cosf(y) * cosf(x);
-        auto sy = r * sinf(y);
-        auto sz = r * cosf(y) * sinf(x);
-        cam->set_look_at(glm::vec3{sx, sy, sz});
     }
 }
