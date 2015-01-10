@@ -100,14 +100,18 @@ namespace devtools {
 
     void mesh_converter::serialize(bool collison_geometry) {
         auto vertex_count = vertices_.size();
-
         os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
         auto i = 0;
         for (auto& v : vertices_) {
-            os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
-            if (skin_.size() > 0) {
-                auto& s = skin_[i];
-                os_.write(reinterpret_cast<char*>(&v), sizeof(skin));
+            if (!collison_geometry) {
+                os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
+                if (skin_.size() > 0) {
+                    auto& s = skin_[i];
+                    os_.write(reinterpret_cast<char*>(&v), sizeof(skin));
+                    ++i;
+                }
+            } else {
+                os_.write(reinterpret_cast<char*>(&v.pos), sizeof(glm::vec3));
             }
         }
 

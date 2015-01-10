@@ -25,6 +25,8 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
 
     auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
+    int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
+
     window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
         height_, mask);
 
@@ -33,9 +35,6 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     if (!window_) {
         throw std::runtime_error("could not create window: " + error);
     }
-
-    // should be done in input
-    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     SDL_ClearError();
 
