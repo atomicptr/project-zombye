@@ -5,7 +5,7 @@ zombye::convex_hull_shape::convex_hull_shape(std::shared_ptr<const collision_mes
 
     auto vertices = mesh->vertices();
 
-    log(std::to_string(vertices.size()));
+    log("Create convex hull shape from: " + std::to_string(vertices.size()) + " vertices");
 
     for(auto &vertex : vertices) {
         auto &pos = vertex.pos;
