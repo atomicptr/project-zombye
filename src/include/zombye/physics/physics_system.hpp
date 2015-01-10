@@ -27,7 +27,7 @@ namespace zombye {
         void enable_debug();
         void disable_debug();
 
-        auto& collision_mesh_manager() const noexcept {
+        auto& collision_mesh_manager() noexcept {
             return collision_mesh_manager_;
         }
 

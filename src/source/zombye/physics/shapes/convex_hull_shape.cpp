@@ -1,11 +1,16 @@
 #include <zombye/physics/shapes/convex_hull_shape.hpp>
 
-zombye::convex_hull_shape::convex_hull_shape(mesh *m) {
+zombye::convex_hull_shape::convex_hull_shape(std::shared_ptr<const collision_mesh> mesh) : mesh_(mesh) {
     auto shape = new btConvexHullShape();
 
-    shape->addPoint(btVector3(2, 2, 1));
-    shape->addPoint(btVector3(-2, 2, 1));
-    shape->addPoint(btVector3(0, 2, -1));
+    auto vertices = mesh->vertices();
+
+    log(std::to_string(vertices.size()));
+
+    for(auto &vertex : vertices) {
+        auto &pos = vertex.pos;
+        shape->addPoint(btVector3(pos.x, pos.y, pos.z));
+    }
 
     shape_ = std::unique_ptr<btCollisionShape>(shape);
 }
