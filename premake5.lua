@@ -55,6 +55,8 @@ solution "project-zombye"
         configuration {"gmake", "macosx"}
             linkoptions "-framework OpenCL"
 
+    -- TODO: readd the mesh and animation converter projects
+
     project "zombye"
         kind "WindowedApp"
 
