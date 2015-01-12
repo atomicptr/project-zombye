@@ -44,7 +44,7 @@ namespace zombye {
 
         void set_distance(const float& distance) {
             distance_ = distance;
-        } 
+        }
 
     private:
         light_component(game& game, entity& owner) noexcept;
