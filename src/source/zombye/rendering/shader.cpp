@@ -1,35 +1,47 @@
-#include <stdexcept>
 #include <vector>
 
 #include <zombye/rendering/shader.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
-    shader::shader(const std::string& file_name, GLenum type, const std::string& source)
-    : name_{0} {
-        name_ = glCreateShader(type);
-        auto tmp = source.c_str();
-        glShaderSource(name_, 1, &tmp, nullptr);
-        glCompileShader(name_);
-        auto length = GLint{0};
-        glGetShaderiv(name_, GL_INFO_LOG_LENGTH, &length);
-        auto log_buffer = std::vector<char>{};
+    shader::shader(const std::string& name, GLenum type, const std::string& source) {
+        id_ = glCreateShader(type);
+
+        auto source_ptr = source.c_str();
+        glShaderSource(id_, 1, &source_ptr, nullptr);
+
+        glCompileShader(id_);
+
+        auto length = 0;
+        glGetShaderiv(id_, GL_INFO_LOG_LENGTH, &length);
         if (length > 1) {
-            log_buffer.resize(length);
-            glGetShaderInfoLog(name_, length, nullptr, log_buffer.data());
-            log(LOG_INFO, "compilation log of " + file_name + ": "
-                + std::string{log_buffer.begin(), log_buffer.end()});
+            auto log_buffer = std::vector<char>(length);
+            glGetShaderInfoLog(id_, length, nullptr, log_buffer.data());
+            log("compilation log of " + name + ":");
+            log(std::string{log_buffer.begin(), log_buffer.end()});
         }
-        auto status = GLint{0};
-        glGetShaderiv(name_, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE) {
-            glDeleteShader(name_);
-            throw std::runtime_error("an error occured during compilation of " + file_name
-                + std::string{log_buffer.begin(), log_buffer.end()});
+
+        auto status = 0;
+        glGetShaderiv(id_, GL_COMPILE_STATUS, &status);
+        if (!status) {
+            glDeleteShader(id_);
+            log(LOG_FATAL, "an error occured during compilation of " + name);
         }
     }
 
+    shader::shader(shader&& other) noexcept
+    : id_{other.id_} {
+        other.id_ = 0;
+    }
+
     shader::~shader() noexcept {
-        glDeleteShader(name_);
+        glDeleteShader(id_);
+    }
+
+    shader& shader::operator=(shader&& other) noexcept {
+        id_ = other.id_;
+        other.id_ = 0;
+
+        return *this;
     }
 }

@@ -14,7 +14,7 @@ namespace zombye {
 
     class debug_render_bridge : public btIDebugDraw {
     public:
-        debug_render_bridge(debug_renderer*);
+        debug_render_bridge(debug_renderer& debug_renderer);
         ~debug_render_bridge();
 
         void drawLine(const btVector3&, const btVector3&, const btVector3&);
@@ -28,8 +28,7 @@ namespace zombye {
         int getDebugMode() const;
 
     private:
-        debug_renderer* renderer_;
-
+        debug_renderer& debug_renderer_;
         int debug_mode_;
     };
 }

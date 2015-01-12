@@ -22,12 +22,11 @@ namespace zombye {
         static unsigned long id_generator_;
         unsigned long type_id_;
         std::string type_name_;
-        rtti* base_rtti_;
         factory factory_;
         reflection reflection_;
         property_list properties_;
     public:
-        rtti(const std::string& type_name,rtti* base_rtti, factory factory, reflection reflection) noexcept;
+        rtti(const std::string& type_name, factory factory, reflection reflection) noexcept;
         void emplace_back(abstract_property* property) {
             properties_.emplace_back(property);
         }
@@ -36,9 +35,6 @@ namespace zombye {
         }
         const std::string& type_name() const noexcept {
             return type_name_;
-        }
-        rtti* base_rtti() const noexcept {
-            return base_rtti_;
         }
         const factory& ctor() const noexcept {
             return factory_;

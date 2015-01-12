@@ -1,7 +1,62 @@
 {
     "dummy": {
         "staticmesh_component": {
-            "mesh": "meshes/dummy.msh"
+            "mesh": "meshes/dummy.mesh"
+        }
+    },
+
+    "sphere": {
+        "staticmesh_component": {
+            "mesh": "meshes/Sphere.mesh"
+        }
+    },
+
+    "suzanne": {
+        "staticmesh_component": {
+            "mesh": "meshes/Suzanne.mesh"
+        }
+    },
+
+    "animated": {
+        "animation_component": {
+            "mesh": "meshes/animated.mesh",
+            "skeleton": "anims/animated.skeleton"
+        }
+    },
+
+    "light": {
+        "light_component": {
+            "color": ["f", 1.0, 1.0, 1.0],
+            "specular_color": ["f", 1.0, 1.0, 1.0],
+            "distance": 100.0
+        }
+    },
+
+   "red_light": {
+        "light_component": {
+            "color": ["f", 1.0, 0.0, 0.0],
+            "specular_color": ["f", 1.0, 1.0, 1.0],
+            "distance": 5.0
+        }
+    },
+
+   "green_light": {
+        "light_component": {
+            "color": ["f", 0.0, 1.0, 0.0],
+            "specular_color": ["f", 1.0, 1.0, 1.0],
+            "distance": 5.0
+        }
+    },
+
+    "light_test": {
+        "staticmesh_component": {
+            "mesh": "meshes/light_test.mesh"
+        }
+    },
+
+    "building": {
+        "staticmesh_component": {
+            "mesh": "meshes/building.mesh"
         }
     }
 }

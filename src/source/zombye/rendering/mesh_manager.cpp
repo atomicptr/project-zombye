@@ -1,4 +1,3 @@
-#include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 

@@ -4,11 +4,16 @@
 #include <glm/glm.hpp>
 
 #include <zombye/ecs/component.hpp>
-#include <zombye/ecs/entity.hpp>
+#include <zombye/ecs/reflective.hpp>
 
 namespace zombye {
+    class entity;
     class game;
-    class camera_component : public component {
+}
+
+namespace zombye {
+    class camera_component : public reflective<camera_component, component> {
+        friend class reflective<camera_component, component>;
         glm::vec3 look_at_;
         glm::vec3 up_;
     public:
@@ -32,6 +37,9 @@ namespace zombye {
         void set_up(const glm::vec3& up) {
             up_ = up;
         }
+
+    private:
+        camera_component(game& game, entity& owner) noexcept;
     };
 }
 

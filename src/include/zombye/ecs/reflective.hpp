@@ -14,7 +14,7 @@ namespace zombye {
     class game;
     class nulltype {
     public:
-        nulltype(game& game, entity& owner) noexcept { }
+        nulltype(game&, entity&) noexcept { }
         static rtti* type_rtti() noexcept {
             return nullptr;
         }
@@ -38,8 +38,8 @@ namespace zombye {
             type_rtti()->emplace_back(new property<type, property_type>(name, getter, setter));
         }
         static zombye::rtti* type_rtti() noexcept {
-            static zombye::rtti rtti_(demangle(typeid(type).name()), base_type::type_rtti(),
-                (rtti::factory)type::create, (rtti::reflection)type::register_reflection);
+            static zombye::rtti rtti_(demangle(typeid(type).name()), (rtti::factory)type::create,
+                (rtti::reflection)type::register_reflection);
             return &rtti_;
         }
         virtual zombye::rtti* rtti() noexcept {

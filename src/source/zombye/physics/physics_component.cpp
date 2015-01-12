@@ -1,8 +1,16 @@
 #include <zombye/physics/physics_component.hpp>
+#include <glm/gtx/string_cast.hpp>
 
-zombye::physics_component::physics_component(game &g, entity &owner, btCollisionShape* col_shape, bool isstatic) : component(g, owner) {
+zombye::physics_component::physics_component(game& game, entity& owner)
+: reflective{game, owner}, body_{nullptr}, motion_state_{nullptr}, colshape_{nullptr} {
+    physics_ = game.physics();
+    world_ = physics_->world();
+}
+
+zombye::physics_component::physics_component(game &g, entity &owner, collision_shape* col_shape, bool isstatic) : reflective(g, owner) {
     physics_ = g.physics();
     world_ = physics_->world();
+    colshape_ = std::unique_ptr<collision_shape>(col_shape);
 
     physics_->register_component(this);
 
@@ -21,10 +29,10 @@ zombye::physics_component::physics_component(game &g, entity &owner, btCollision
     auto inertia = btVector3{0, 0, 0};
 
     if(!isstatic) {
-        col_shape->calculateLocalInertia(mass, inertia);
+        colshape_->shape()->calculateLocalInertia(mass, inertia);
     }
 
-    auto bodyinfo = btRigidBody::btRigidBodyConstructionInfo{mass, motion_state_.get(), col_shape, inertia};
+    auto bodyinfo = btRigidBody::btRigidBodyConstructionInfo{mass, motion_state_.get(), colshape_->shape(), inertia};
 
     body_ = std::make_unique<btRigidBody>(bodyinfo);
 

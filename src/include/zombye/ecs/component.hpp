@@ -6,7 +6,7 @@
 namespace zombye {
     class game;
     class entity;
-    class component : public reflective<component, nulltype> {
+    class component {
     protected:
         game& game_;
         entity& owner_;
@@ -15,7 +15,6 @@ namespace zombye {
         component(const component& other) = delete;
         component(component&& other) = delete;
         virtual ~component() noexcept = 0;
-        static component* create(game& game, entity& owner);
         entity& owner() const noexcept {
             return owner_;
         }

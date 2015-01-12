@@ -1,5 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/physics_system.hpp>
+#include <algorithm>
 
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
@@ -11,7 +12,7 @@
 #define DEBUG_DRAW_CONFIG (ZDBG_DRAW_WIREFRAME | ZDBG_DRAW_AAB | ZDBG_DRAW_CONTACT_POINTS | ZDBG_DRAW_CONSTRAINTS | ZDBG_DRAW_CONSTRAINTS_LIMITS | ZDBG_DRAW_NORMALS)
 
 zombye::physics_system::physics_system(game& game)
-: game_{game} {
+: game_{game}, collision_mesh_manager_{game_} {
     broadphase_ = std::make_unique<btDbvtBroadphase>();
     collision_config_ = std::make_unique<btDefaultCollisionConfiguration>();
     dispatcher_ = std::make_unique<btCollisionDispatcher>(collision_config_.get());
@@ -25,8 +26,8 @@ zombye::physics_system::physics_system(game& game)
 
     world_->setGravity(btVector3(0, -9.81, 0));
 
-    debug_drawer_ = std::make_unique<debug_renderer>(game_); // TODO: change this
-    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(debug_drawer_.get());
+    debug_renderer_ = std::make_unique<debug_renderer>(game);
+    bt_debug_drawer_ = std::make_unique<debug_render_bridge>(*debug_renderer_);
 
     world_->setDebugDrawer(bt_debug_drawer_.get());
 
@@ -44,6 +45,8 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
 }
 
 void zombye::physics_system::update(float delta_time) {
+    static auto cm = collision_mesh_manager_.load("physics/dummy.col");
+
     world_->stepSimulation(delta_time);
 
     for(auto comp : components_) {
@@ -53,6 +56,7 @@ void zombye::physics_system::update(float delta_time) {
 
 void zombye::physics_system::debug_draw() {
     world_->debugDrawWorld();
+    debug_renderer_->draw();
 }
 
 void zombye::physics_system::toggle_debug() {
@@ -76,7 +80,11 @@ void zombye::physics_system::register_component(physics_component* comp) {
 }
 
 void zombye::physics_system::unregister_component(physics_component* comp) {
-    auto it = std::find(components_.begin(), components_.end(), comp);
+    //auto it = std::find(components_.begin(), components_.end(), comp);
+
+    auto it = std::find_if(components_.begin(), components_.end(), [comp](auto other) {
+        return comp == other;
+    });
 
     if(it != components_.end()) {
         auto last = components_.end() - 1;

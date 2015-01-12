@@ -7,14 +7,18 @@
 #include <zombye/utils/cached_resource_manager.hpp>
 
 namespace zombye {
+    class game;
+}
+
+namespace zombye {
     using texture_ptr = std::shared_ptr<const texture>;
 
-    class game;
     class texture_manager : public cached_resource_manager<const texture, texture_manager> {
         friend class cached_resource_manager<const texture, texture_manager>;
+
         game& game_;
     public:
-        texture_manager(game& game);
+        texture_manager(game& game) noexcept;
         ~texture_manager() noexcept = default;
     protected:
         texture_ptr load_new(const std::string& name);
