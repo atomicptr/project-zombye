@@ -6,13 +6,13 @@
 
 namespace zombye {
     class rtti;
-	class rtti_manager {
-		static std::unordered_map<std::string, rtti*>& rttis();
-	public:
-		static void register_type(rtti* type_info);
+    class rtti_manager {
+        static std::unordered_map<std::string, rtti*>& rttis();
+    public:
+        static void register_type(rtti* type_info);
 
-		static rtti* type_info(const std::string& name);
-	};
+        static rtti* type_info(const std::string& name);
+    };
 }
 
 #endif
