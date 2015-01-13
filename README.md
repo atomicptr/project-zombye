@@ -10,6 +10,7 @@ Zombie bye bye.
 * bullet3 physics [(dc73128)](https://github.com/bulletphysics/bullet3/commit/dc731280b865317d0df66da64ab292bfbb341c32)
 * glm (0.9.5.4)
 * jsoncpp [(9c80798)](https://github.com/open-source-parsers/jsoncpp/tree/9c80798038e571021b8289d73180d8d7ba3b1be0)
+* tinyxml2 [(38b49ae)](https://github.com/leethomason/tinyxml2/commit/38b49ae042125f33537bbdc45bc06874a78ec80a)
 
 ## Supported compilers
 

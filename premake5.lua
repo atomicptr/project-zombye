@@ -7,6 +7,7 @@ solution "project-zombye"
         "deps/jsoncpp/include",
         "deps/gli/include",
         "deps/glm/include",
+        "deps/tinyxml2",
         "src/include"
     }
 
@@ -32,8 +33,16 @@ solution "project-zombye"
         warnings "Off"
 
         configuration {"gmake", "windows"}
-            includedirs { "$(AMDAPPSDKROOT)/include" }
-            libdirs { "$(AMDAPPSDKROOT)/lib/x64" }
+            includedirs {
+                "$(AMDAPPSDKROOT)/include"
+                -- TODO: add NVidia OpenCL include path
+                -- TODO: add Intel OpenCL include path
+            }
+            libdirs {
+                "$(AMDAPPSDKROOT)/lib/x64"
+                -- TODO: add NVidia OpenCL lib path
+                -- TODO: add Intel OpenCL lib path
+            }
 
             linkoptions {"-lmingw32 -lOpenCL"}
 
@@ -55,7 +64,51 @@ solution "project-zombye"
         configuration {"gmake", "macosx"}
             linkoptions "-framework OpenCL"
 
-    -- TODO: readd the mesh and animation converter projects
+    project "mesh_converter"
+        kind "ConsoleApp"
+
+        buildoptions "-std=c++1y"
+
+        files "src/source/mesh_converter/**.cpp"
+
+        defines "GLM_FORCE_RADIANS"
+
+        links "deps"
+
+        configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
+                buildoptions "-stdlib=libc++"
+                links "c++"
+            end
+
+        configuration "debug"
+            flags {"Symbols", "FatalWarnings"}
+            optimize "Off"
+
+        configuration "release"
+            optimize "Full"
+
+    project "animation_converter"
+        kind "ConsoleApp"
+
+        buildoptions "-std=c++1y"
+
+        files "src/source/animation_converter/**.cpp"
+
+        defines "GLM_FORCE_RADIANS"
+
+        links "deps"
+
+        configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
+                buildoptions "-stdlib=libc++"
+                links "c++"
+            end
+
+        configuration "debug"
+            flags {"FatalWarnings"}
 
     project "zombye"
         kind "WindowedApp"
@@ -65,20 +118,6 @@ solution "project-zombye"
         files "src/source/zombye/**.cpp"
 
         defines "GLM_FORCE_RADIANS"
-
-        configuration {"gmake", "linux"}
-            if _OPTIONS["cc"] == "clang" then
-                toolset "clang"
-                buildoptions "-stdlib=libc++"
-                links "c++"
-            end
-            links "tinyxml2"
-
-        configuration {"gmake", "macosx"}
-            links "tinyxml2"
-
-        configuration "debug"
-            flags {"FatalWarnings"}
 
         configuration {"gmake", "windows"}
             buildoptions "-std=gnu++1y"
