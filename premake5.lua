@@ -141,6 +141,11 @@ solution "project-zombye"
 
             links {"deps"}
 
+            postbuildcommands {
+                "cp deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/bin/SDL2.dll SDL2.dll",
+                "cp deps/mingw/SDL2_mixer-2.0.0/x86_64-w64-mingw32/bin/*.dll ."
+            }
+
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
                 toolset "clang"
