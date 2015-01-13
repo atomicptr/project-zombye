@@ -96,7 +96,9 @@ solution "project-zombye"
                 "deps/mingw/glew/lib/x64"
             }
 
-            linkoptions {"-lmingw32 -lOpenCL -lopengl32 -lSDL2main -lSDL2 -lSDL2_mixer"}
+            defines {"GLEW_STATIC"}
+
+            linkoptions {"-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lglew32s -lopengl32"}
 
             links {"deps"}
 
