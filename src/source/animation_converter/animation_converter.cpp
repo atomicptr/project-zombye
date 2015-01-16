@@ -44,6 +44,7 @@ namespace devtools {
             auto ax = axis->FloatAttribute("x");
             auto ay = axis->FloatAttribute("y");
             auto az = axis->FloatAttribute("z");
+            ay = angle >= -0.0000001f && angle <= 0.0000001f ? 1.f : ay;
             auto axis_ = glm::vec3{ax, ay, az};
             auto rot = glm::quat{angle, axis_};
 

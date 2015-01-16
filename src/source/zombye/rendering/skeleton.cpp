@@ -44,7 +44,7 @@ namespace zombye {
                     keyframe.translate = *reinterpret_cast<const glm::vec3*>(data_ptr);
                     data_ptr += sizeof(glm::vec3);
 
-                    keyframe.rotate = *reinterpret_cast<const glm::quat*>(data_ptr);
+                    keyframe.rotate = glm::normalize(*reinterpret_cast<const glm::quat*>(data_ptr));
                     data_ptr += sizeof(glm::quat);
 
                     keyframe.scale = *reinterpret_cast<const glm::vec3*>(data_ptr);

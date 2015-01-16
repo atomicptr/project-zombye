@@ -34,17 +34,37 @@ namespace zombye {
                 auto next_frame = current_frame_ + 1;
                 auto t1 = current_frame_ * time_slot;
                 auto t2 = next_frame * time_slot;
+                if (elapsed_time_ >= t2) {
+                    ++current_frame_;
+                }
+                
                 for (auto i = 0; i < bones.size(); ++i) {
                     auto v1 = animation.tracks[i].keyframes[current_frame_].translate;
                     auto v2 = animation.tracks[i].keyframes[next_frame].translate;
-                    if (elapsed_time_ <= t2) {
-                        auto delta = elapsed_time_ - t1;
+
+                    auto q1 = animation.tracks[i].keyframes[current_frame_].rotate;
+                    auto q2 = animation.tracks[i].keyframes[next_frame].rotate;
+
+                    if (elapsed_time_ < t2) {
+                        auto delta = (elapsed_time_ - t1) / time_slot;
+                        delta = delta > 1.f ? 1.f : delta;
+
                         auto iv = glm::lerp(v1, v2, delta);
-                        pose_[i] = glm::translate(glm::mat4{1.f}, iv) * bones[i].transform;
+
+                        log(LOG_DEBUG, "frame " + std::to_string(current_frame_) + " | delta: " + std::to_string(delta)
+                            + "| elapsed_time: " + std::to_string(elapsed_time_) + " | t1: " + std::to_string(t1) 
+                            + " | t2: " + std::to_string(t2));
+
+                        auto iq = glm::normalize(glm::lerp(q1, q2, delta));
+
+                        auto pose = glm::toMat4(iq);
+                        pose[3].x = iv.x;
+                        pose[3].y = iv.y;
+                        pose[3].z = iv.z;
+
+                        pose_[i] = pose * bones[i].transform;
                     }
-                }
-                if (elapsed_time_ >= t2) {
-                    ++current_frame_;
+
                 }
             } else {
                 elapsed_time_ = 0.f;
