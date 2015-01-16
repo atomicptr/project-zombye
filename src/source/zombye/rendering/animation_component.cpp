@@ -34,7 +34,7 @@ namespace zombye {
                 auto next_frame = current_frame_ + 1;
                 auto t1 = current_frame_ * time_slot;
                 auto t2 = next_frame * time_slot;
-                if (elapsed_time_ >= t2) {
+                if (elapsed_time_ >= t2 && next_frame < (max_frames - 1)) {
                     ++current_frame_;
                 }
                 
@@ -50,10 +50,6 @@ namespace zombye {
                         delta = delta > 1.f ? 1.f : delta;
 
                         auto iv = glm::lerp(v1, v2, delta);
-
-                        log(LOG_DEBUG, "frame " + std::to_string(current_frame_) + " | delta: " + std::to_string(delta)
-                            + "| elapsed_time: " + std::to_string(elapsed_time_) + " | t1: " + std::to_string(t1) 
-                            + " | t2: " + std::to_string(t2));
 
                         auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 

@@ -13,13 +13,6 @@ namespace zombye {
         data_ptr += sizeof(size_t);
         auto size = vertex_count * sizeof(skinned_vertex);
 
-        auto ptr = data_ptr;
-        for (auto i = 0; i < vertex_count; ++i) {
-            auto v = reinterpret_cast<const skinned_vertex*>(ptr);
-            log(LOG_DEBUG, "vertice " + std::to_string(i) + ": " + glm::to_string(v->index));
-            ptr += sizeof(skinned_vertex);
-        }
-
         vbo_.data(size, data_ptr);
         data_ptr += size;
 
