@@ -1,5 +1,8 @@
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/skinned_mesh.hpp>
+#include <zombye/utils/logger.hpp>
+
+#include <glm/gtx/string_cast.hpp>
 
 namespace zombye {
     skinned_mesh::skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source) noexcept
@@ -9,6 +12,13 @@ namespace zombye {
         auto vertex_count = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
         auto size = vertex_count * sizeof(skinned_vertex);
+
+        auto ptr = data_ptr;
+        for (auto i = 0; i < vertex_count; ++i) {
+            auto v = reinterpret_cast<const skinned_vertex*>(ptr);
+            log(LOG_DEBUG, "vertice " + std::to_string(i) + ": " + glm::to_string(v->index));
+            ptr += sizeof(skinned_vertex);
+        }
 
         vbo_.data(size, data_ptr);
         data_ptr += size;

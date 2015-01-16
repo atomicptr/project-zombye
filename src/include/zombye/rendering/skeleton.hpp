@@ -51,8 +51,12 @@ namespace zombye {
             return bones_;
         }
 
-        const auto& animation(const std::string& name) noexcept {
-            return animations_[name];
+        const auto& animation(const std::string& name) const {
+            auto it = animations_.find(name);
+            if (it == animations_.end()) {
+                throw std::invalid_argument("no animation named " + name + " in skeleton");
+            }
+            return it->second;
         }
     };
 }

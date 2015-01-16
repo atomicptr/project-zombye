@@ -25,8 +25,6 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
 
     auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
-    int ret = SDL_SetRelativeMouseMode(SDL_TRUE);
-
     window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
         height_, mask);
 
@@ -42,6 +40,7 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(new zombye::rendering_system(*this, window_.get()));
+    animation_system_ = std::make_unique<zombye::animation_system>(*this);
     physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system(*this));
     gameplay_system_ = std::unique_ptr<zombye::gameplay_system>(new zombye::gameplay_system(this));
 }
@@ -90,6 +89,7 @@ void zombye::game::run() {
 
         physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
+        animation_system_->update(delta_time);
 
         rendering_system_->begin_scene();
         rendering_system_->update(delta_time);

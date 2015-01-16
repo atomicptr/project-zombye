@@ -12,8 +12,13 @@ namespace zombye {
         auto i = uint32_t{0};
         for (auto& attribute : vertex_attributes_) {
             buffers[attribute.index]->bind();
-            vertex_array.bind_vertex_attribute(*(buffers[attribute.index]), i, attribute.size, attribute.type,
-                attribute.normalized, attribute.stride, attribute.offset);
+            if (attribute.type == GL_INT) {
+                vertex_array.bind_vertex_attributei(*(buffers[attribute.index]), i, attribute.size, attribute.type,
+                    attribute.stride, attribute.offset);
+            } else {
+                vertex_array.bind_vertex_attribute(*(buffers[attribute.index]), i, attribute.size, attribute.type,
+                    attribute.normalized, attribute.stride, attribute.offset);
+            }
             ++i;
         }
     }
@@ -23,8 +28,13 @@ namespace zombye {
         auto i = uint32_t{0};
         for (auto& attribute : vertex_attributes_) {
             buffers[attribute.index].bind();
-            vertex_array.bind_vertex_attribute(buffers[attribute.index], i, attribute.size, attribute.type,
-                attribute.normalized, attribute.stride, attribute.offset);
+            if (attribute.type == GL_INT) {
+                vertex_array.bind_vertex_attributei(buffers[attribute.index], i, attribute.size, attribute.type,
+                    attribute.stride, attribute.offset);
+            } else {
+                vertex_array.bind_vertex_attribute(buffers[attribute.index], i, attribute.size, attribute.type,
+                    attribute.normalized, attribute.stride, attribute.offset);
+            }
             ++i;
         }
     }

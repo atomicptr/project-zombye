@@ -4,6 +4,7 @@
 
 #include <zombye/gameplay/states/play_state.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
+#include <zombye/rendering/animation_component.hpp>
 
 class test_command : public zombye::command {
 public:
@@ -118,7 +119,8 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{2.f, 8.f, 2.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+    //auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{2.f, 8.f, 2.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{2.f, 3.f, 8.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
     camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 /*
@@ -129,12 +131,17 @@ void zombye::play_state::enter() {
     sm_->get_game()->entity_manager().emplace("red_light", glm::vec3{4.f, 0.f, 8.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
     sm_->get_game()->entity_manager().emplace("animated", glm::vec3{4.f, 1.f, -6.f}, glm::normalize(glm::quat{}), glm::vec3{1.f});
 */
+/*
     sm_->get_game()->entity_manager().emplace("building", glm::vec3{0.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
     auto& e =sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{2.f, 0.0f, 2.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
     e.emplace<physics_component>(new box_shape{1.0f, 1.0f, 1.0f}, true);
     auto& e1 =sm_->get_game()->entity_manager().emplace("dummy", glm::vec3{2.f, 10.0f, 2.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
     e1.emplace<physics_component>(new box_shape{1.0f, 1.0f, 1.0f}, false);
     sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 30.f, 5.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+*/
+    auto& ani = sm_->get_game()->entity_manager().emplace("adummy", glm::vec3{0.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+    ani.component<animation_component>()->change_state("move");
+    sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }
 
 void zombye::play_state::leave() {

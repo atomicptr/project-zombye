@@ -23,6 +23,8 @@ namespace zombye {
     private:
         void bind_vertex_attribute(const vertex_buffer& buffer, uint32_t index, int32_t size, GLenum type,
         bool normalized, size_t stride, intptr_t offset) noexcept;
+        void bind_vertex_attributei(const vertex_buffer& buffer, uint32_t index, int32_t size, GLenum type,
+        size_t stride, intptr_t offset) noexcept;
     };
 }
 

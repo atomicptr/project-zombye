@@ -107,7 +107,7 @@ namespace devtools {
                 os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
                 if (skin_.size() > 0) {
                     auto& s = skin_[i];
-                    os_.write(reinterpret_cast<char*>(&v), sizeof(skin));
+                    os_.write(reinterpret_cast<char*>(&s), sizeof(skin));
                     ++i;
                 }
             } else {

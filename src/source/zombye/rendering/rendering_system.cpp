@@ -142,6 +142,7 @@ namespace zombye {
             animation_program_->uniform("m", false, model);
             animation_program_->uniform("mit", false, model_it);
             animation_program_->uniform("mvp", false, projection_ * view_ * model);
+            animation_program_->uniform("pose", 10, false, a->pose());
             a->draw();
         }
     }

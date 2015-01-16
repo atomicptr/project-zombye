@@ -1,18 +1,60 @@
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/compatibility.hpp>
+
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/component.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/utils/logger.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace zombye {
     animation_component::animation_component(game& game, entity& owner, const std::string& mesh, const std::string& skeleton)
-    : reflective{game, owner} {
+    : reflective{game, owner}, current_state_{""}, elapsed_time_{0.f}, current_frame_{0} {
         game_.rendering_system().register_component(this);
+        game_.animation_system().register_component(this);
         load(mesh);
         load_skeleton(skeleton);
     }
 
     animation_component::~animation_component() noexcept {
         game_.rendering_system().unregister_component(this);
+        game_.animation_system().unregister_component(this);
+    }
+
+    void animation_component::update(float delta_time) {
+        if (current_state_ != "") {
+            auto& animation = skeleton_->animation(current_state_);
+            auto& bones = skeleton_->bones();
+            auto length = animation.length;
+            auto max_frames = animation.tracks[0].keyframes.size();
+            auto time_slot = length / max_frames;
+            elapsed_time_ += delta_time;
+            if (elapsed_time_ <= length) {
+                auto next_frame = current_frame_ + 1;
+                auto t1 = current_frame_ * time_slot;
+                auto t2 = next_frame * time_slot;
+                for (auto i = 0; i < bones.size(); ++i) {
+                    auto v1 = animation.tracks[i].keyframes[current_frame_].translate;
+                    auto v2 = animation.tracks[i].keyframes[next_frame].translate;
+                    if (elapsed_time_ <= t2) {
+                        auto delta = elapsed_time_ - t1;
+                        auto iv = glm::lerp(v1, v2, delta);
+                        pose_[i] = glm::translate(glm::mat4{1.f}, iv) * bones[i].transform;
+                    }
+                }
+                if (elapsed_time_ >= t2) {
+                    ++current_frame_;
+                }
+            } else {
+                elapsed_time_ = 0.f;
+                current_frame_ = 0;
+            }
+        } else {
+            for (auto& b : pose_) {
+                b = glm::mat4{1.f};
+            }
+        }
     }
 
     void animation_component::draw() const noexcept {
@@ -79,11 +121,17 @@ namespace zombye {
         if (!skeleton_) {
             log(LOG_FATAL, "could not load skeleton " + skeleton);
         }
+
+        auto bone_count = skeleton_->bones().size();
+        for (auto i = 0u; i < bone_count; ++i) {
+            pose_.emplace_back(glm::mat4{1.f});
+        }
     }
 
     animation_component::animation_component(game& game, entity& owner)
-    : reflective(game, owner) {
+    : reflective(game, owner), current_state_{""}, elapsed_time_{0.f}, current_frame_{0} {
         game_.rendering_system().register_component(this);
+        game_.animation_system().register_component(this);
     }
 
     void animation_component::register_reflection() {

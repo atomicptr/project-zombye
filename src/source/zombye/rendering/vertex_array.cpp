@@ -37,4 +37,12 @@ namespace zombye {
         glEnableVertexAttribArray(index);
         glVertexAttribPointer(index, size, type, normalized, stride, reinterpret_cast<GLvoid*>(offset));
     }
+
+    void vertex_array::bind_vertex_attributei(const vertex_buffer& buffer, uint32_t index, int32_t size, GLenum type,
+    size_t stride, intptr_t offset) noexcept {
+        buffer.bind();
+        glEnableVertexAttribArray(index);
+        glVertexAttribIPointer(index, size, type, stride, reinterpret_cast<GLvoid*>(offset));
+    }
+
 }
