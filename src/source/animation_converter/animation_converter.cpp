@@ -3,6 +3,11 @@
 
 #include <animation_converter/animation_converter.hpp>
 
+void to_string(const glm::quat& q) {
+    std::cout << "fqat(" << glm::angle(q) << ", " << glm::axis(q).x 
+        << ", " << glm::axis(q).y << ", " << glm::axis(q).z << ")" << std::endl;
+}
+
 namespace devtools {
     animation_converter::animation_converter(const std::string& in, const std::string& out) {
         is_.LoadFile(in.c_str());
@@ -44,9 +49,8 @@ namespace devtools {
             auto ax = axis->FloatAttribute("x");
             auto ay = axis->FloatAttribute("y");
             auto az = axis->FloatAttribute("z");
-            ay = angle >= -0.0000001f && angle <= 0.0000001f ? 1.f : ay;
             auto axis_ = glm::vec3{ax, ay, az};
-            auto rot = glm::quat{angle, axis_};
+            auto rot = glm::angleAxis(angle, axis_);
 
             auto norm = glm::normalize(rot);
             auto transform = glm::toMat4(norm);
@@ -99,7 +103,9 @@ namespace devtools {
                     auto ax = axis->FloatAttribute("x");
                     auto ay = axis->FloatAttribute("y");
                     auto az = axis->FloatAttribute("z");
-                    k.rotate = glm::quat{angle, glm::vec3{ax, ay, az}};
+                    k.rotate = glm::normalize(glm::angleAxis(angle, glm::vec3{ax, ay, az}));
+
+                    to_string(glm::normalize(k.rotate));
 
                     auto scale = keyframe->FirstChildElement("scale");
                     auto sx = scale->FloatAttribute("x");

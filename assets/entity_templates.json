@@ -24,6 +24,13 @@
         }
     },
 
+    "qdummy": {
+        "animation_component": {
+            "mesh": "meshes/qdummy.mesh",
+            "skeleton": "anims/qdummy.skeleton"
+        }
+    },
+
     "light": {
         "light_component": {
             "color": ["f", 1.0, 1.0, 1.0],
