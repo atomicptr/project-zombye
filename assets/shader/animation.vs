@@ -21,8 +21,8 @@ void main() {
     vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
     vec4 nor = vec4(0.0, 0.0, 0.0, 0.0);
     for (int i = 0; i < 4; ++i) {
-    	pos += weight[i] * pose[index[i]] * vec4(position, 1.0);
-    	nor += weight[i] * pose[index[i]] * vec4(normal, 0.0);
+        pos += weight[i] * pose[index[i]] * vec4(position, 1.0);
+        nor += weight[i] * pose[index[i]] * vec4(normal, 0.0);
     }
 
     f_normal = (mit * nor).xyz;

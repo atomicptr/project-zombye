@@ -3,6 +3,8 @@
 
 #include <animation_converter/animation_converter.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
 void to_string(const glm::quat& q) {
     std::cout << "fqat(" << glm::angle(q) << ", " << glm::axis(q).x 
         << ", " << glm::axis(q).y << ", " << glm::axis(q).z << ")" << std::endl;
@@ -37,6 +39,9 @@ namespace devtools {
         while (bone) {
             auto b = devtools::bone{};
             b.id = bone->UnsignedAttribute("id");
+            b.parent = -1;
+
+            auto name = bone->Attribute("name");
 
             auto position = bone->FirstChildElement("position");
             auto x = position->FloatAttribute("x");
@@ -57,16 +62,32 @@ namespace devtools {
             transform[3].x = x;
             transform[3].y = y;
             transform[3].z = z;
-            transform = glm::inverse(transform);
 
             b.transform = transform;
 
-            bones_.emplace_back(b);
+            bone_hierachy_.insert(std::make_pair(name, b));
 
             bone = bone->NextSiblingElement();
         }
 
         auto bonehierachy = bones->NextSiblingElement();
+        auto boneparent = bonehierachy->FirstChildElement("boneparent");
+
+        while (boneparent) {
+            auto parent = boneparent->Attribute("parent");
+            auto bone = boneparent->Attribute("bone");
+            bone_hierachy_[bone].parent = bone_hierachy_[parent].id;
+            bone_hierachy_[bone].transform = bone_hierachy_[parent].transform * bone_hierachy_[bone].transform;
+
+            boneparent = boneparent->NextSiblingElement();
+        }
+
+        for (auto& b : bone_hierachy_) {
+            b.second.transform = glm::inverse(b.second.transform);
+            bones_.emplace_back(b.second);
+        }
+
+        std::sort(bones_.begin(), bones_.end(), [](auto& b1, auto& b2){ return b1.id < b2.id; });
 
         auto animations = bonehierachy->NextSiblingElement();
         auto animation = animations->FirstChildElement("animation");
@@ -78,11 +99,12 @@ namespace devtools {
 
             auto tracks = animation->FirstChildElement("tracks");
             auto track = tracks->FirstChildElement("track");
-            auto i = 0;
             while (track) {
                 auto t = devtools::track{};
+                auto bone = track->Attribute("bone");
 
-                t.id = i;
+                t.id = bone_hierachy_[bone].id;
+                t.parent = bone_hierachy_[bone].parent;
 
                 auto keyframes = track->FirstChildElement("keyframes");
                 auto keyframe = keyframes->FirstChildElement("keyframe");
@@ -105,8 +127,6 @@ namespace devtools {
                     auto az = axis->FloatAttribute("z");
                     k.rotate = glm::normalize(glm::angleAxis(angle, glm::vec3{ax, ay, az}));
 
-                    to_string(glm::normalize(k.rotate));
-
                     auto scale = keyframe->FirstChildElement("scale");
                     auto sx = scale->FloatAttribute("x");
                     auto sy = scale->FloatAttribute("y");
@@ -118,7 +138,8 @@ namespace devtools {
                     keyframe = keyframe->NextSiblingElement();
                 }
 
-                anim.tracks.emplace_back(t);
+                anim.tracks.insert(std::make_pair(t.id, t));
+                t.parent = bones_[t.parent].id;
 
                 track = track->NextSiblingElement();
             }
@@ -148,11 +169,12 @@ namespace devtools {
             size = a.tracks.size();
             os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
             for (auto& t : a.tracks) {
-                os_.write(reinterpret_cast<char*>(&t.id), sizeof(unsigned int));
+                os_.write(reinterpret_cast<char*>(&t.second.id), sizeof(int));
+                os_.write(reinterpret_cast<char*>(&t.second.parent), sizeof(int));
 
-                size = t.keyframes.size();
+                size = t.second.keyframes.size();
                 os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-                for (auto& k : t.keyframes) {
+                for (auto& k : t.second.keyframes) {
                     os_.write(reinterpret_cast<char*>(&k), sizeof(keyframe));
                 }
             }

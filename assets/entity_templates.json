@@ -26,8 +26,15 @@
 
     "qdummy": {
         "animation_component": {
-            "mesh": "meshes/qdummy.mesh",
-            "skeleton": "anims/qdummy.skeleton"
+            "mesh": "meshes/skeleton.mesh",
+            "skeleton": "anims/skeleton.skeleton"
+        }
+    },
+
+    "goblin": {
+        "animation_component": {
+            "mesh": "meshes/Goblin.mesh",
+            "skeleton": "anims/Goblin.skeleton"
         }
     },
 

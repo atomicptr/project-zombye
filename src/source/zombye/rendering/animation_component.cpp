@@ -23,11 +23,13 @@ namespace zombye {
     }
 
     void animation_component::update(float delta_time) {
+        static std::vector<glm::mat4> pose(skeleton_->bones().size(), glm::mat4{1.f});
+
         if (current_state_ != "") {
             auto& animation = skeleton_->animation(current_state_);
             auto& bones = skeleton_->bones();
             auto length = animation.length;
-            auto max_frames = animation.tracks[0].keyframes.size();
+            auto max_frames = animation.tracks.at(0).keyframes.size();
             auto time_slot = length / max_frames;
             elapsed_time_ += delta_time;
             if (elapsed_time_ <= length) {
@@ -39,11 +41,11 @@ namespace zombye {
                 }
                 
                 for (auto i = 0; i < bones.size(); ++i) {
-                    auto v1 = animation.tracks[i].keyframes[current_frame_].translate;
-                    auto v2 = animation.tracks[i].keyframes[next_frame].translate;
+                    auto v1 = animation.tracks.at(i).keyframes[39].translate;
+                    auto v2 = animation.tracks.at(i).keyframes[39].translate;
 
-                    auto q1 = animation.tracks[i].keyframes[current_frame_].rotate;
-                    auto q2 = animation.tracks[i].keyframes[next_frame].rotate;
+                    auto q1 = animation.tracks.at(i).keyframes[39].rotate;
+                    auto q2 = animation.tracks.at(i).keyframes[39].rotate;
 
                     if (elapsed_time_ < t2) {
                         auto delta = (elapsed_time_ - t1) / time_slot;
@@ -51,25 +53,51 @@ namespace zombye {
 
                         auto iv = glm::lerp(v1, v2, delta);
 
+                        std::cout << "v1: " << glm::to_string(v1) << std::endl;
+                        std::cout << "v2: " << glm::to_string(v2) << std::endl;
+                        std::cout << "iv: " << glm::to_string(iv) << std::endl;
+
                         auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 
-                        auto pose = glm::toMat4(iq);
-                        pose[3].x = iv.x;
-                        pose[3].y = iv.y;
-                        pose[3].z = iv.z;
+                        auto p = glm::toMat4(iq);
+                        p[3].x = iv.x;
+                        p[3].y = iv.y;
+                        p[3].z = iv.z;
 
-                        pose_[i] = pose * bones[i].transform;
+                        pose[i] = glm::mat4{1.f};
+                        auto parent = animation.tracks.at(i).parent;
+                        if (parent > -1) {
+                            pose[i] = pose[parent];
+                        }
+                        pose[i] *= p;
+
+                        std::cout << glm::to_string(p) << std::endl;
+                        std::cout << glm::to_string(pose[i]) << std::endl;
                     }
-
                 }
             } else {
                 elapsed_time_ = 0.f;
                 current_frame_ = 0;
             }
         } else {
-            for (auto& b : pose_) {
-                b = glm::mat4{1.f};
+            auto& bones = skeleton_->bones();
+            for (auto i = 0u; i < bones.size(); ++i) {
+                pose_[i] = bones[i].transform;
             }
+        }
+
+        auto& bones = skeleton_->bones();
+
+        for (auto i = 0; i < pose_.size(); ++i) {
+            std::cout << "B" << i << ":" << std::endl;
+            std::cout << glm::to_string(bones[i].transform) << std::endl;
+            std::cout << "M" << i << ":" << std::endl;
+            std::cout << glm::to_string(pose[i]) << std::endl;
+
+            pose_[i] = pose[i] * bones[i].transform;
+
+            std::cout << "J" << i << ":" << std::endl;
+            std::cout << glm::to_string(pose_[i]) << std::endl;
         }
     }
 

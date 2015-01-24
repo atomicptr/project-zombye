@@ -14,7 +14,8 @@ namespace zombye {
 
 namespace zombye {
     struct bone {
-        unsigned int id;
+        int id;
+        int parent;
         glm::mat4 transform;
     };
 
@@ -26,14 +27,15 @@ namespace zombye {
     };
 
     struct track {
-        unsigned int id;
+        int id;
+        int parent;
         std::vector<keyframe> keyframes;
     };
 
     struct animation {
         std::string name;
         float length;
-        std::vector<track> tracks;
+        std::unordered_map<int, track> tracks;
     };
 
     class skeleton {

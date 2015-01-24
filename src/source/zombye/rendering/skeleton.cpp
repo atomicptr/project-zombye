@@ -1,6 +1,8 @@
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/skeleton.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
 namespace zombye {
     skeleton::skeleton(rendering_system& rendering_system, const std::vector<char>& source) noexcept {
         auto data_ptr = source.data();
@@ -9,8 +11,8 @@ namespace zombye {
         data_ptr += sizeof(size_t);
         for (auto i = 0u; i < bone_count; ++i) {
             bones_.emplace_back(*reinterpret_cast<const bone*>(data_ptr));
+            data_ptr += sizeof(bone);
         }
-        data_ptr += bone_count * sizeof(bone);
 
         auto animation_count = *reinterpret_cast<const size_t*>(data_ptr);
         data_ptr += sizeof(size_t);
@@ -30,8 +32,10 @@ namespace zombye {
             for (auto j = 0u; j < track_count; ++j) {
                 auto track = zombye::track{};
 
-                track.id = *reinterpret_cast<const unsigned int*>(data_ptr);
-                data_ptr += sizeof(unsigned int);
+                track.id = *reinterpret_cast<const int*>(data_ptr);
+                data_ptr += sizeof(int);
+                track.parent = *reinterpret_cast<const int*>(data_ptr);
+                data_ptr += sizeof(int);
 
                 auto keyframe_count = *reinterpret_cast<const size_t*>(data_ptr);
                 data_ptr += sizeof(size_t);
@@ -53,7 +57,7 @@ namespace zombye {
                     track.keyframes.emplace_back(keyframe);
                 }
 
-                animation.tracks.emplace_back(track);
+                animation.tracks.insert(std::make_pair(track.id, track));
             }
 
             animations_.insert(std::make_pair(animation.name, animation));
