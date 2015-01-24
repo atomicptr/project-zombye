@@ -38,24 +38,23 @@ namespace zombye {
                 auto t2 = next_frame * time_slot;
                 if (elapsed_time_ >= t2 && next_frame < (max_frames - 1)) {
                     ++current_frame_;
+                    auto next_frame = current_frame_ + 1;
+                    t1 = current_frame_ * time_slot;
+                    t2 = next_frame * time_slot;
                 }
                 
                 for (auto i = 0; i < bones.size(); ++i) {
-                    auto v1 = animation.tracks.at(i).keyframes[39].translate;
-                    auto v2 = animation.tracks.at(i).keyframes[39].translate;
+                    auto v1 = animation.tracks.at(i).keyframes[current_frame_].translate;
+                    auto v2 = animation.tracks.at(i).keyframes[next_frame].translate;
 
-                    auto q1 = animation.tracks.at(i).keyframes[39].rotate;
-                    auto q2 = animation.tracks.at(i).keyframes[39].rotate;
+                    auto q1 = animation.tracks.at(i).keyframes[current_frame_].rotate;
+                    auto q2 = animation.tracks.at(i).keyframes[next_frame].rotate;
 
                     if (elapsed_time_ < t2) {
                         auto delta = (elapsed_time_ - t1) / time_slot;
                         delta = delta > 1.f ? 1.f : delta;
 
                         auto iv = glm::lerp(v1, v2, delta);
-
-                        std::cout << "v1: " << glm::to_string(v1) << std::endl;
-                        std::cout << "v2: " << glm::to_string(v2) << std::endl;
-                        std::cout << "iv: " << glm::to_string(iv) << std::endl;
 
                         auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 
@@ -69,10 +68,7 @@ namespace zombye {
                         if (parent > -1) {
                             pose[i] = pose[parent];
                         }
-                        pose[i] *= p;
-
-                        std::cout << glm::to_string(p) << std::endl;
-                        std::cout << glm::to_string(pose[i]) << std::endl;
+                        pose[i] *= glm::inverse(bones[i].transform) * p;
                     }
                 }
             } else {
@@ -82,22 +78,14 @@ namespace zombye {
         } else {
             auto& bones = skeleton_->bones();
             for (auto i = 0u; i < bones.size(); ++i) {
-                pose_[i] = bones[i].transform;
+                pose[i] = glm::inverse(bones[i].transform);
             }
         }
 
         auto& bones = skeleton_->bones();
 
         for (auto i = 0; i < pose_.size(); ++i) {
-            std::cout << "B" << i << ":" << std::endl;
-            std::cout << glm::to_string(bones[i].transform) << std::endl;
-            std::cout << "M" << i << ":" << std::endl;
-            std::cout << glm::to_string(pose[i]) << std::endl;
-
             pose_[i] = pose[i] * bones[i].transform;
-
-            std::cout << "J" << i << ":" << std::endl;
-            std::cout << glm::to_string(pose_[i]) << std::endl;
         }
     }
 
