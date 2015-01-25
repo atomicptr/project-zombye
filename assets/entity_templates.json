@@ -26,8 +26,8 @@
 
     "qdummy": {
         "animation_component": {
-            "mesh": "meshes/skeleton.mesh",
-            "skeleton": "anims/skeleton.skeleton"
+            "mesh": "meshes/body.mesh",
+            "skeleton": "anims/body.skeleton"
         }
     },
 

@@ -63,7 +63,8 @@ namespace devtools {
             transform[3].y = y;
             transform[3].z = z;
 
-            b.transform = transform;
+            b.relative_transform = transform;
+            b.absolute_transform = transform;
 
             bone_hierachy_.insert(std::make_pair(name, b));
 
@@ -77,13 +78,13 @@ namespace devtools {
             auto parent = boneparent->Attribute("parent");
             auto bone = boneparent->Attribute("bone");
             bone_hierachy_[bone].parent = bone_hierachy_[parent].id;
-            bone_hierachy_[bone].transform = bone_hierachy_[parent].transform * bone_hierachy_[bone].transform;
+            bone_hierachy_[bone].absolute_transform = bone_hierachy_[parent].absolute_transform * bone_hierachy_[bone].absolute_transform;
 
             boneparent = boneparent->NextSiblingElement();
         }
 
         for (auto& b : bone_hierachy_) {
-            b.second.transform = glm::inverse(b.second.transform);
+            b.second.absolute_transform = glm::inverse(b.second.absolute_transform);
             bones_.emplace_back(b.second);
         }
 

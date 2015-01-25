@@ -68,7 +68,7 @@ namespace zombye {
                         if (parent > -1) {
                             pose[i] = pose[parent];
                         }
-                        pose[i] *= glm::inverse(bones[i].transform) * p;
+                        pose[i] *= bones[i].relative_transform * p;
                     }
                 }
             } else {
@@ -78,14 +78,14 @@ namespace zombye {
         } else {
             auto& bones = skeleton_->bones();
             for (auto i = 0u; i < bones.size(); ++i) {
-                pose[i] = glm::inverse(bones[i].transform);
+                pose[i] = glm::inverse(bones[i].absolute_transform);
             }
         }
 
         auto& bones = skeleton_->bones();
 
         for (auto i = 0; i < pose_.size(); ++i) {
-            pose_[i] = pose[i] * bones[i].transform;
+            pose_[i] = pose[i] * bones[i].absolute_transform;
         }
     }
 
@@ -154,9 +154,9 @@ namespace zombye {
             log(LOG_FATAL, "could not load skeleton " + skeleton);
         }
 
-        auto bone_count = skeleton_->bones().size();
-        for (auto i = 0u; i < bone_count; ++i) {
-            pose_.emplace_back(glm::mat4{1.f});
+        auto& bones = skeleton_->bones();
+        for (auto i = 0u; i < bones.size(); ++i) {
+            pose_.emplace_back(glm::inverse(bones[i].absolute_transform));
         }
     }
 

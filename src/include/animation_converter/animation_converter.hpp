@@ -15,7 +15,8 @@ namespace devtools {
     struct bone {
         int id;
         int parent;
-        glm::mat4 transform;
+        glm::mat4 relative_transform;
+        glm::mat4 absolute_transform;
     };
 
     struct keyframe {

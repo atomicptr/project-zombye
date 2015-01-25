@@ -54,6 +54,8 @@ namespace zombye {
 
         void change_state(const std::string& state) {
             current_state_ = state;
+            current_frame_ = 0;
+            elapsed_time_ = 0.f;
         }
     private:
         animation_component(game& game, entity& owner);

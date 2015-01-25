@@ -13,7 +13,7 @@ out vec3 f_world_position;
 uniform mat4 m;
 uniform mat4 mit;
 uniform mat4 mvp;
-uniform mat4 pose[10];
+uniform mat4 pose[250];
 
 void main() {
     f_texcoord = texcoord;
