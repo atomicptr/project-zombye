@@ -44,32 +44,32 @@ namespace zombye {
                 }
                 
                 for (auto i = 0; i < bones.size(); ++i) {
-                    auto v1 = animation.tracks.at(i).keyframes[current_frame_].translate;
-                    auto v2 = animation.tracks.at(i).keyframes[next_frame].translate;
+                    auto v1 = animation.tracks.at(i).keyframes.at(current_frame_).translate;
+                    auto v2 = animation.tracks.at(i).keyframes.at(next_frame).translate;
 
-                    auto q1 = animation.tracks.at(i).keyframes[current_frame_].rotate;
-                    auto q2 = animation.tracks.at(i).keyframes[next_frame].rotate;
+                    auto q1 = animation.tracks.at(i).keyframes.at(current_frame_).rotate;
+                    q1 = glm::normalize(q1);
+                    auto q2 = animation.tracks.at(i).keyframes.at(next_frame).rotate;
+                    q2 = glm::normalize(q2);
 
-                    if (elapsed_time_ < t2) {
-                        auto delta = (elapsed_time_ - t1) / time_slot;
-                        delta = delta > 1.f ? 1.f : delta;
+                    auto delta = (elapsed_time_ - t1) / time_slot;
+                    delta = delta > 1.f ? 1.f : delta;
 
-                        auto iv = glm::lerp(v1, v2, delta);
+                    auto iv = glm::lerp(v1, v2, delta);
 
-                        auto iq = glm::normalize(glm::lerp(q1, q2, delta));
+                    auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 
-                        auto p = glm::toMat4(iq);
-                        p[3].x = iv.x;
-                        p[3].y = iv.y;
-                        p[3].z = iv.z;
+                    auto p = glm::toMat4(iq);
+                    p[3].x = iv.x;
+                    p[3].y = iv.y;
+                    p[3].z = iv.z;
 
-                        pose[i] = glm::mat4{1.f};
-                        auto parent = animation.tracks.at(i).parent;
-                        if (parent > -1) {
-                            pose[i] = pose[parent];
-                        }
-                        pose[i] *= bones[i].relative_transform * p;
+                    pose[i] = glm::mat4{1.f};
+                    auto parent = animation.tracks.at(i).parent;
+                    if (parent > -1) {
+                        pose[i] = pose[parent];
                     }
+                    pose[i] *= bones.at(i).relative_transform * p;
                 }
             } else {
                 elapsed_time_ = 0.f;
@@ -78,14 +78,14 @@ namespace zombye {
         } else {
             auto& bones = skeleton_->bones();
             for (auto i = 0u; i < bones.size(); ++i) {
-                pose[i] = glm::inverse(bones[i].absolute_transform);
+                pose[i] = glm::inverse(bones.at(i).absolute_transform);
             }
         }
 
         auto& bones = skeleton_->bones();
 
         for (auto i = 0; i < pose_.size(); ++i) {
-            pose_[i] = pose[i] * bones[i].absolute_transform;
+            pose_[i] = pose[i] * bones.at(i).absolute_transform;
         }
     }
 
