@@ -1,140 +1,116 @@
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <sstream>
+#include <vector>
 
 #include <glm/gtx/string_cast.hpp>
 
 #include <mesh_converter/mesh_converter.hpp>
 
 namespace devtools {
-    mesh_converter::mesh_converter(const std::string& in, const std::string& out) {
-        is_.LoadFile(in.c_str());
-        if (is_.Error()) {
-            throw std::runtime_error{"could not open input file" + in};
+    mesh_converter::mesh_converter(const std::string& input_file, const std::string& output_path) {
+        output_path_ = output_path;
+        if (*(output_path_.end() - 1) != '/') {
+            output_path_ = "/";
         }
-        os_.open(out, std::ios::trunc | std::ios::binary);
-        if (!os_.is_open()) {
-            throw std::runtime_error{"could not open output file " + out};
+
+        std::fstream file(input_file);
+        if (!file.is_open()) {
+            throw std::runtime_error("could not open input file " + input_file);
         }
+        if (!reader_.parse(file, root_)) {
+            throw std::runtime_error("could not parse input file " + input_file + "\n" + reader_.getFormattedErrorMessages());
+        }
+        file.close();
     }
 
-    mesh_converter::~mesh_converter() noexcept {
-        if (os_.is_open()) {
-            os_.close();
-        }
-    }
+    void mesh_converter::run() {
+        for (auto it = root_.begin(); it != root_.end(); ++it) {
+            std::string mesh_name = it.key().asString();
+            auto& value = *it;
 
-    void mesh_converter::parse(bool collison_geometry) {
-        auto mesh = is_.FirstChildElement("mesh");
-        if (!mesh) {
-            throw std::runtime_error{"no mesh defined"};
-        }
-        auto sharedgeometry = mesh->FirstChildElement("sharedgeometry");
-
-        auto vertexcount = sharedgeometry->UnsignedAttribute("vertexcount");
-        auto vertexbuffer = sharedgeometry->FirstChildElement("vertexbuffer");
-        auto vertex = vertexbuffer->FirstChildElement("vertex");
-        for (auto i = 0; i < vertexcount; ++i) {
-            auto pos = vertex->FirstChildElement("position");
-            auto nor = vertex->FirstChildElement("normal");
-            auto tex = vertex->FirstChildElement("texcoord");
-            devtools::vertex v;
-            v.pos.x = pos->FloatAttribute("x");
-            v.pos.y = pos->FloatAttribute("y");
-            v.pos.z = pos->FloatAttribute("z");
-            v.nor.x = nor->FloatAttribute("x");
-            v.nor.y = nor->FloatAttribute("y");
-            v.nor.z = nor->FloatAttribute("z");
-            v.tex.x = tex->FloatAttribute("u");
-            v.tex.y = tex->FloatAttribute("v");
-            vertices_.emplace_back(v);
-            vertex = vertex->NextSiblingElement();
-        }
-
-        auto submeshes = sharedgeometry->NextSiblingElement("submeshes");
-        auto submesh = submeshes->FirstChildElement("submesh");
-        while (submesh) {
-            auto material = submesh->Attribute("material");
-            materials_.emplace_back(material);
-            auto faces = submesh->FirstChildElement("faces");
-            auto count = faces->UnsignedAttribute("count");
-            devtools::submesh s;
-            s.index_count = 3 * count;
-            s.offset = indices_.size();
-            submeshes_.emplace_back(s);
-            auto face = faces->FirstChildElement("face");
-            for (auto i = 0; i < count; ++i) {
-                indices_.emplace_back(face->UnsignedAttribute("v1"));
-                indices_.emplace_back(face->UnsignedAttribute("v2"));
-                indices_.emplace_back(face->UnsignedAttribute("v3"));
-                face = face->NextSiblingElement();
+            std::vector<vertex> vertices;
+            auto vertices_data = value["vertices"];
+            if (vertices_data.isNull()) {
+                throw std::runtime_error("no vertex data in " + mesh_name);
             }
-            submesh = submesh->NextSiblingElement();
-        }
+            for (auto& v : vertices_data) {
+                auto position = v["position"];
+                if (position.isNull()) {
+                    throw std::runtime_error("no position attribute in vertex of " + mesh_name);
+                }
+                if (position.size() != 3) {
+                    throw std::runtime_error("position attribute in " + mesh_name + " requires 3 elements");
+                }
+                auto pos = glm::vec3{position[0].asFloat(), position[1].asFloat(), position[2].asFloat()};
 
-        auto boneassignments = mesh->FirstChildElement("boneassignments");
-        if (boneassignments) {
-            auto vertexboneassignment = boneassignments->FirstChildElement("vertexboneassignment");
-            auto j = 0;
-            while (vertexboneassignment) {
-                skin s;
-                for (auto i = 0; i < 4; ++i) {
-                    ++j;
-                    s.index[i] = vertexboneassignment->UnsignedAttribute("boneindex");
-                    s.weight[i] = vertexboneassignment->FloatAttribute("weight");
-                    auto v1 = vertexboneassignment->UnsignedAttribute("vertexindex");
-                    vertexboneassignment = vertexboneassignment->NextSiblingElement();
-                    if (vertexboneassignment) {
-                        auto v2 = vertexboneassignment->UnsignedAttribute("vertexindex");
-                        if (v1 != v2) {
-                            break;
-                        }
-                    } else {
-                        break;
+                auto texcoord = v["texcoord"];
+                if (texcoord.isNull()) {
+                    throw std::runtime_error("no texcoord attribute in vertex of " + mesh_name);
+                }
+                if (texcoord.size() != 2) {
+                    throw std::runtime_error("texcoord attribute in " + mesh_name + " requires 2 elements");
+                }
+                auto tex = glm::vec2{texcoord[0].asFloat(), texcoord[1].asFloat()};
+
+                auto normal = v["normal"];
+                if (normal.isNull()) {
+                    throw std::runtime_error("no normal attribute in vertex of " + mesh_name);
+                }
+                if (normal.size() != 3) {
+                    throw std::runtime_error("normal attribute in " + mesh_name + " requires 3 elements");
+                }
+                auto nor = glm::vec3{normal[0].asFloat(), normal[1].asFloat(), normal[2].asFloat()};
+
+                vertex vert;
+                vert.position = pos;
+                vert.texcoord = tex;
+                vert.normal = nor;
+                vertices.emplace_back(vert);
+            }
+
+            std::vector<unsigned int> indices;
+            std::vector<submesh> submeshes;
+            auto submesh_data = value["submeshes"];
+            if (submesh_data.isNull()) {
+                throw std::runtime_error("no submesh data in " + mesh_name);
+            }
+            for (auto& s : submesh_data) {
+                submesh sm;
+                sm.offset = indices.size();
+
+                auto indice_data = s["indices"];
+                if (indice_data.isNull()) {
+                    throw std::runtime_error("no index data in submesh of " + mesh_name);
+                }
+                for (auto& t : indice_data) {
+                    if (t.size() != 3) {
+                        throw std::runtime_error("sizeof indices per triangle must be 3");
                     }
+                    indices.emplace_back(t[0].asUInt());
+                    indices.emplace_back(t[1].asUInt());
+                    indices.emplace_back(t[2].asUInt());
                 }
-                skin_.emplace_back(s);
-            }
-        }
-    }
 
-    void mesh_converter::serialize(bool collison_geometry) {
-        auto vertex_count = vertices_.size();
-        os_.write(reinterpret_cast<char*>(&vertex_count), sizeof(size_t));
-        auto i = 0;
-        for (auto& v : vertices_) {
-            if (!collison_geometry) {
-                os_.write(reinterpret_cast<char*>(&v), sizeof(vertex));
-                if (skin_.size() > 0) {
-                    auto& s = skin_[i];
-                    os_.write(reinterpret_cast<char*>(&v), sizeof(skin));
-                    ++i;
-                }
-            } else {
-                os_.write(reinterpret_cast<char*>(&v.pos), sizeof(glm::vec3));
-            }
-        }
-
-        auto index_count = indices_.size();
-        os_.write(reinterpret_cast<char*>(&index_count), sizeof(size_t));
-        for (auto i : indices_) {
-            os_.write(reinterpret_cast<char*>(&i), sizeof(index));
-        }
-
-        if (!collison_geometry) {
-            auto submesh_count = submeshes_.size();
-            os_.write(reinterpret_cast<char*>(&submesh_count), sizeof(size_t));
-            for (auto& s : submeshes_) {
-                os_.write(reinterpret_cast<char*>(&s), sizeof(submesh));
+                sm.index_count = indices.size();
+                submeshes.emplace_back(sm);
             }
 
-            auto material_count = materials_.size();
-            os_.write(reinterpret_cast<char*>(&material_count), sizeof(size_t));
-            for (auto& m : materials_) {
-                auto str_size = m.length();
-                os_.write(reinterpret_cast<char*>(&str_size), sizeof(size_t));
-                os_.write(m.c_str(), str_size);
+            header h;
+            h.vertex_count = vertices.size();
+
+            std::string output_file = output_path_ + "meshes/" + mesh_name + ".msh";
+            std::ofstream output(output_file, std::ios::binary | std::ios::trunc);
+            if (!output.is_open()) {
+                throw std::runtime_error("could not open output file " + output_file);
             }
+
+            output.write(reinterpret_cast<char*>(&h), sizeof(header));
+            output.write(reinterpret_cast<char*>(vertices.data()), vertices.size() * sizeof(vertex));
+            output.write(reinterpret_cast<char*>(indices.data()), indices.size() * sizeof(unsigned int));
+            output.write(reinterpret_cast<char*>(submeshes.data()), submeshes.size() * sizeof(submesh));
+
+            output.close();
         }
     }
 }
