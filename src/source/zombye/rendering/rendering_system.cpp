@@ -46,8 +46,8 @@ namespace zombye {
         staticmesh_program_->attach_shader(fragment_shader);
 
         staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-        staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), sizeof(glm::vec3));
-        staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 2 * sizeof(glm::vec3));
+        staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
+        staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
 
         staticmesh_layout_.setup_program(*staticmesh_program_, "fragcolor");
         staticmesh_program_->link();
