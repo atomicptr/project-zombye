@@ -18,8 +18,6 @@ namespace zombye {
             + index_size
             + head.submesh_count * sizeof(devtools::submesh);
 
-        log("source size: " + std::to_string(source.size()) + " calculated size: " + std::to_string(size));
-
         if (size != source.size()) {
             throw std::runtime_error(file_name + " has not the apropriate size");
         }
