@@ -25,6 +25,32 @@ namespace devtools {
     }
 
     void mesh_converter::run() {
+        std::ifstream material_database("material_database.json");
+        if (!material_database.is_open()) {
+            std::ofstream mdb("material_database.json", std::ios::trunc);
+            if (!mdb.is_open()) {
+                throw std::runtime_error("could not open material database");
+            }
+            Json::Value root;
+            root["id_count"] = Json::Value{0};
+            Json::StyledWriter sw;
+            auto output_string = sw.write(root);
+            mdb << output_string;
+            mdb.close();
+            material_database.open("material_database.json");
+            if (!material_database.is_open()) {
+                throw std::runtime_error("could not open material database");
+            }
+        }
+        Json::Value mdb_root;
+        Json::Reader mdb_reader;
+        if (!mdb_reader.parse(material_database, mdb_root)) {
+            throw std::runtime_error("could not parse material database\n" + mdb_reader.getFormattedErrorMessages());
+        }
+        material_database.close();
+
+        auto id_count = mdb_root["id_count"].asUInt();
+
         for (auto it = root_.begin(); it != root_.end(); ++it) {
             std::string mesh_name = it.key().asString();
             auto& value = *it;
@@ -93,8 +119,109 @@ namespace devtools {
                 }
 
                 sm.index_count = indices.size();
+
+                auto textures = s["textures"];
+                if (textures.isNull()) {
+                    throw std::runtime_error("no texture data in submesh of " + mesh_name);
+                }
+
+                auto diffuse_texture = textures["diffuse"];
+                if (diffuse_texture.isNull()) {
+                    throw std::runtime_error("no diffuse texture in texture data in submesh of " + mesh_name);
+                }
+                auto texture_path = diffuse_texture.asString();
+                auto texture_name = std::string{texture_path.begin() + texture_path.rfind("/") + 1, texture_path.end()};
+
+                std::ifstream tex_in(texture_path, std::ios::binary);
+                if (!tex_in.is_open()) {
+                    throw std::runtime_error("could not open texture to read " + texture_path);
+                }
+                auto texture_id = mdb_root[texture_name];
+                if (texture_id.isNull()) {
+                    ++id_count;
+                    texture_id = mdb_root[texture_name] = Json::Value{id_count};
+                    mdb_root["id_count"] = Json::Value{id_count};
+                }
+                auto texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                std::ofstream tex_out(texture_output_path, std::ios::binary | std::ios::trunc);
+                if (!tex_out.is_open()) {
+                    throw std::runtime_error("could not open texture to write " + texture_output_path);
+                }
+
+                tex_out << tex_in.rdbuf();
+                tex_in.close();
+                tex_out.close();
+
+                sm.diffuse = texture_id.asUInt();
+
+                auto normal_texture = textures["normal"];
+                if (normal_texture.isNull()) {
+                    throw std::runtime_error("no normal texture in texture data in submesh of " + mesh_name);
+                }
+                texture_path = normal_texture.asString();
+                texture_name = std::string{texture_path.begin() + texture_path.rfind("/") + 1, texture_path.end()};
+
+                tex_in.open(texture_path, std::ios::binary);
+                if (!tex_in.is_open()) {
+                    throw std::runtime_error("could not open texture to read " + texture_path);
+                }
+                texture_id = mdb_root[texture_name];
+                if (texture_id.isNull()) {
+                    ++id_count;
+                    texture_id = mdb_root[texture_name] = Json::Value{id_count};
+                    mdb_root["id_count"] = Json::Value{id_count};
+                }
+                texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                tex_out.open(texture_output_path, std::ios::binary | std::ios::trunc);
+                if (!tex_out.is_open()) {
+                    throw std::runtime_error("could not open texture to write " + texture_output_path);
+                }
+
+                tex_out << tex_in.rdbuf();
+                tex_in.close();
+                tex_out.close();
+
+                sm.normal = texture_id.asUInt();
+
+                auto material_texture = textures["material"];
+                if (material_texture.isNull()) {
+                    throw std::runtime_error("no material texture in texture data in submesh of " + mesh_name);
+                }
+                texture_path = material_texture.asString();
+                texture_name = std::string{texture_path.begin() + texture_path.rfind("/") + 1, texture_path.end()};
+
+                tex_in.open(texture_path, std::ios::binary);
+                if (!tex_in.is_open()) {
+                    throw std::runtime_error("could not open texture to read " + texture_path);
+                }
+                texture_id = mdb_root[texture_name];
+                if (texture_id.isNull()) {
+                    ++id_count;
+                    texture_id = mdb_root[texture_name] = Json::Value{id_count};
+                    mdb_root["id_count"] = Json::Value{id_count};
+                }
+                texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                tex_out.open(texture_output_path, std::ios::binary | std::ios::trunc);
+                if (!tex_out.is_open()) {
+                    throw std::runtime_error("could not open texture to write " + texture_output_path);
+                }
+
+                tex_out << tex_in.rdbuf();
+                tex_in.close();
+                tex_out.close();
+
+                sm.material = texture_id.asUInt();
+
                 submeshes.emplace_back(sm);
             }
+
+            std::ofstream mdb_write("material_database.json", std::ios::trunc);
+            if (!mdb_write.is_open()) {
+                throw std::runtime_error("could not open material database to write");
+            }
+            Json::StyledWriter sw;
+            mdb_write << sw.write(mdb_root);
+            mdb_write.close();
 
             header h;
             h.vertex_count = vertices.size();
