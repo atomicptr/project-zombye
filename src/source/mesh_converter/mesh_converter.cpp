@@ -225,6 +225,8 @@ namespace devtools {
 
             header h;
             h.vertex_count = vertices.size();
+            h.index_count = indices.size();
+            h.submesh_count = submeshes.size();
 
             std::string output_file = output_path_ + "meshes/" + mesh_name + ".msh";
             std::ofstream output(output_file, std::ios::binary | std::ios::trunc);
