@@ -68,7 +68,7 @@ namespace zombye {
         skinnedmesh_layout_.setup_program(*animation_program_, "fragcolor");
         animation_program_->link();
 
-        float fovy = 90.f * 3.1415f / 180.f;
+        float fovy = 45.f * 3.1415f / 180.f;
         float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
         float near = 0.01f;
         float far = 1000.f;
