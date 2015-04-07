@@ -25,7 +25,6 @@ namespace zombye {
         friend class reflective<staticmesh_component, component>;
 
         std::shared_ptr<const zombye::mesh> mesh_;
-        std::vector<material> materials_;
     public:
         staticmesh_component(game& game, entity& owner, const std::string& mesh);
         ~staticmesh_component() noexcept;

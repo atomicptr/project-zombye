@@ -10,6 +10,6 @@ namespace zombye {
         if (!asset) {
             return nullptr;
         }
-        return std::make_shared<const mesh>(game_.rendering_system(), asset->content());
+        return std::make_shared<const mesh>(game_.rendering_system(), asset->content(), name);
     }
 }
