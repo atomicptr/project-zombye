@@ -118,7 +118,7 @@ namespace devtools {
                     indices.emplace_back(t[2].asUInt());
                 }
 
-                sm.index_count = indices.size();
+                sm.index_count = indices.size() - sm.offset;
 
                 auto textures = s["textures"];
                 if (textures.isNull()) {
@@ -142,7 +142,7 @@ namespace devtools {
                     texture_id = mdb_root[texture_name] = Json::Value{id_count};
                     mdb_root["id_count"] = Json::Value{id_count};
                 }
-                auto texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                auto texture_output_path = output_path_ + "texture/" + std::to_string(texture_id.asUInt()) + ".dds";
                 std::ofstream tex_out(texture_output_path, std::ios::binary | std::ios::trunc);
                 if (!tex_out.is_open()) {
                     throw std::runtime_error("could not open texture to write " + texture_output_path);
@@ -171,7 +171,7 @@ namespace devtools {
                     texture_id = mdb_root[texture_name] = Json::Value{id_count};
                     mdb_root["id_count"] = Json::Value{id_count};
                 }
-                texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                texture_output_path = output_path_ + "texture/" + std::to_string(texture_id.asUInt()) + ".dds";
                 tex_out.open(texture_output_path, std::ios::binary | std::ios::trunc);
                 if (!tex_out.is_open()) {
                     throw std::runtime_error("could not open texture to write " + texture_output_path);
@@ -200,7 +200,7 @@ namespace devtools {
                     texture_id = mdb_root[texture_name] = Json::Value{id_count};
                     mdb_root["id_count"] = Json::Value{id_count};
                 }
-                texture_output_path = output_path_ + "texture/" + std::to_string(id_count) + ".dds";
+                texture_output_path = output_path_ + "texture/" + std::to_string(texture_id.asUInt()) + ".dds";
                 tex_out.open(texture_output_path, std::ios::binary | std::ios::trunc);
                 if (!tex_out.is_open()) {
                     throw std::runtime_error("could not open texture to write " + texture_output_path);
