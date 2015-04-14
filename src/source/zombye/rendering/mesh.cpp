@@ -19,7 +19,8 @@ namespace zombye {
             + head.submesh_count * sizeof(devtools::submesh);
 
         if (size != source.size()) {
-            throw std::runtime_error(file_name + " has not the apropriate size");
+            throw std::runtime_error(file_name + " has not the apropriate size. expected size: "
+                + std::to_string(source.size()) + " calculated size: " + std::to_string(size));
         }
         data_ptr += sizeof(header);
 
