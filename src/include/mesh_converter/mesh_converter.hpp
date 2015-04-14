@@ -20,6 +20,11 @@ namespace devtools {
         glm::vec3 normal;
     };
 
+    struct skin {
+        glm::ivec4 indices;
+        glm::vec4 weights;
+    };
+
     struct submesh {
         size_t index_count = 0;
         size_t offset = 0;

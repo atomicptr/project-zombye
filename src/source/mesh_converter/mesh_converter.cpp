@@ -56,6 +56,7 @@ namespace devtools {
             auto& value = *it;
 
             std::vector<vertex> vertices;
+            std::vector<skin> skin_attributes;
             auto vertices_data = value["vertices"];
             if (vertices_data.isNull()) {
                 throw std::runtime_error("no vertex data in " + mesh_name);
@@ -88,11 +89,36 @@ namespace devtools {
                 }
                 auto nor = glm::vec3{normal[0].asFloat(), normal[1].asFloat(), normal[2].asFloat()};
 
+                auto indices = v["indices"];
+                auto ind = glm::ivec4{0};
+                if (!indices.isNull()) {
+                    if (indices.size() == 0) {
+                        throw std::runtime_error("indices attribute in " + mesh_name + " requires at least 1 element");
+                    }
+                    ind = glm::ivec4{indices[0].asUInt(), indices[1].asUInt(), indices[2].asUInt(), indices[3].asUInt()};
+                }
+
+                auto weights = v["weights"];
+                auto wei = glm::vec4{0.f};
+                if (!weights.isNull()) {
+                    if (indices.size() == 0) {
+                        throw std::runtime_error("weights attribute in " + mesh_name + " requires at least 1 element");
+                    }
+                    wei = glm::vec4{weights[0].asFloat(), weights[1].asFloat(), weights[2].asFloat(), weights[3].asFloat()};
+                }
+
                 vertex vert;
                 vert.position = pos;
                 vert.texcoord = tex;
                 vert.normal = nor;
                 vertices.emplace_back(vert);
+
+                if (!indices.isNull() && !weights.isNull()) {
+                    skin sk;
+                    sk.indices = ind;
+                    sk.weights = wei;
+                    skin_attributes.emplace_back(sk);
+                }
             }
 
             std::vector<unsigned int> indices;
@@ -235,7 +261,12 @@ namespace devtools {
             }
 
             output.write(reinterpret_cast<char*>(&h), sizeof(header));
-            output.write(reinterpret_cast<char*>(vertices.data()), vertices.size() * sizeof(vertex));
+            for (auto i = 0ul; i < vertices.size(); ++i) {
+                output.write(reinterpret_cast<char*>(&vertices[i]), sizeof(vertex));
+                if (skin_attributes.size() > 0) {
+                    output.write(reinterpret_cast<char*>(&skin_attributes[i]), sizeof(skin));
+                }
+            }
             output.write(reinterpret_cast<char*>(indices.data()), indices.size() * sizeof(unsigned int));
             output.write(reinterpret_cast<char*>(submeshes.data()), submeshes.size() * sizeof(submesh));
 
