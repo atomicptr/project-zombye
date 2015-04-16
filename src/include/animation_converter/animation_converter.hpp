@@ -9,12 +9,19 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <tinyxml2.h>
+#include <json/json.h>
 
 namespace devtools {
+    struct header {
+        const unsigned long magic = 0x0000D78F;
+        size_t bone_count = 0;
+    };
+
     struct bone {
-        unsigned int id;
-        glm::mat4 transform;
+        int id;
+        int parent;
+        glm::mat4 relative_transform;
+        glm::mat4 absolute_transform;
     };
 
     struct keyframe {
@@ -25,32 +32,34 @@ namespace devtools {
     };
 
     struct track {
-        unsigned int id;
+        int id;
+        int parent;
         std::vector<keyframe> keyframes;
     };
 
     struct animation {
         std::string name;
         float length;
-        std::vector<track> tracks;
+        std::unordered_map<int, track> tracks;
     };
 
     class animation_converter {
-        std::vector<bone> bones_;
-        std::vector<animation> animations_;
-        tinyxml2::XMLDocument is_;
-        std::ofstream os_;
+    private:
+        Json::Reader reader_;
+        Json::Value root_;
+        std::string output_path_;
+
     public:
-        animation_converter(const std::string& in, const std::string& out);
+        animation_converter(const std::string& input_file, const std::string& output_path);
+        ~animation_converter() = default;
+
         animation_converter(const animation_converter& other) = delete;
-        animation_converter(animation_converter&& other) = delete;
-        ~animation_converter() noexcept;
-
-        void parse(const std::string& name);
-        void serialize();
-
         animation_converter& operator=(const animation_converter& other) = delete;
+
+        animation_converter(animation_converter&& other) = delete;
         animation_converter& operator=(animation_converter&& other) = delete;
+
+        void run();
     };
 }
 

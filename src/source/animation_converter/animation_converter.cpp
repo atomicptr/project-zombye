@@ -4,151 +4,102 @@
 #include <animation_converter/animation_converter.hpp>
 
 namespace devtools {
-    animation_converter::animation_converter(const std::string& in, const std::string& out) {
-        is_.LoadFile(in.c_str());
-        if (is_.Error()) {
-            throw std::runtime_error{"could not open input file" + in};
+    animation_converter::animation_converter(const std::string& input_file, const std::string& output_path) {
+        output_path_ = output_path;
+        if (*(output_path_.end() - 1) != '/') {
+            output_path_ = "/";
         }
-        os_.open(out, std::ios::trunc | std::ios::binary);
-        if (!os_.is_open()) {
-            throw std::runtime_error{"could not open output file " + out};
+
+        std::fstream file(input_file);
+        if (!file.is_open()) {
+            throw std::runtime_error("could not open input file " + input_file);
         }
+        if (!reader_.parse(file, root_)) {
+            throw std::runtime_error("could not parse input file " + input_file + "\n" + reader_.getFormattedErrorMessages());
+        }
+        file.close();
     }
 
-    animation_converter::~animation_converter() noexcept {
-        if (os_.is_open()) {
-            os_.close();
-        }
-    }
+    void animation_converter::run() {
+        for (auto it = root_.begin(); it != root_.end(); ++it) {
+            std::string model_name = it.key().asString();
+            auto& value = *it;
 
-    void animation_converter::parse(const std::string& name) {
-        auto skeleton = is_.FirstChildElement("skeleton");
-        if (!skeleton) {
-            throw std::runtime_error{"no skeleton defined"};
-        }
-        auto bones = skeleton->FirstChildElement("bones");
+            std::unordered_map<int, bone> bone_hierachy;
+            auto skeleton = value["skeleton"];
+            if (skeleton.isNull()) {
+                throw std::runtime_error("no skeleton data in " + model_name);
+            }
+            for (auto& b : skeleton) {
+                bone bn;
 
-        auto bone = bones->FirstChildElement("bone");
-        while (bone) {
-            auto b = devtools::bone{};
-            b.id = bone->UnsignedAttribute("id");
+                auto id = b["id"];
+                if (id.isNull()) {
+                    throw std::runtime_error("no id attribute in bone data of " + model_name);
+                }
+                bn.id = id.asInt();
 
-            auto position = bone->FirstChildElement("position");
-            auto x = position->FloatAttribute("x");
-            auto y = position->FloatAttribute("y");
-            auto z = position->FloatAttribute("z");
-
-            auto rotation = bone->FirstChildElement("rotation");
-            auto angle = rotation->FloatAttribute("angle");
-            auto axis = rotation->FirstChildElement("axis");
-            auto ax = axis->FloatAttribute("x");
-            auto ay = axis->FloatAttribute("y");
-            auto az = axis->FloatAttribute("z");
-            auto axis_ = glm::vec3{ax, ay, az};
-            auto rot = glm::quat{angle, axis_};
-
-            auto norm = glm::normalize(rot);
-            auto transform = glm::toMat4(norm);
-            transform[3].x = x;
-            transform[3].y = y;
-            transform[3].z = z;
-            transform = glm::inverse(transform);
-
-            b.transform = transform;
-
-            bones_.emplace_back(b);
-
-            bone = bone->NextSiblingElement();
-        }
-
-        auto bonehierachy = bones->NextSiblingElement();
-
-        auto animations = bonehierachy->NextSiblingElement();
-        auto animation = animations->FirstChildElement("animation");
-        while (animation) {
-            auto anim = devtools::animation{};
-
-            anim.name = animation->Attribute("name");
-            anim.length = animation->FloatAttribute("length");
-
-            auto tracks = animation->FirstChildElement("tracks");
-            auto track = tracks->FirstChildElement("track");
-            auto i = 0;
-            while (track) {
-                auto t = devtools::track{};
-
-                t.id = i;
-
-                auto keyframes = track->FirstChildElement("keyframes");
-                auto keyframe = keyframes->FirstChildElement("keyframe");
-                while (keyframe) {
-                    auto k = devtools::keyframe{};
-
-                    k.time = keyframe->FloatAttribute("time");
-
-                    auto translate = keyframe->FirstChildElement("translate");
-                    auto x = translate->FloatAttribute("x");
-                    auto y = translate->FloatAttribute("y");
-                    auto z = translate->FloatAttribute("z");
-                    k.translate = glm::vec3{x, y, z};
-
-                    auto rotate = keyframe->FirstChildElement("rotate");
-                    auto angle = rotate->FloatAttribute("angle");
-                    auto axis = rotate->FirstChildElement("axis");
-                    auto ax = axis->FloatAttribute("x");
-                    auto ay = axis->FloatAttribute("y");
-                    auto az = axis->FloatAttribute("z");
-                    k.rotate = glm::quat{angle, glm::vec3{ax, ay, az}};
-
-                    auto scale = keyframe->FirstChildElement("scale");
-                    auto sx = scale->FloatAttribute("x");
-                    auto sy = scale->FloatAttribute("y");
-                    auto sz = scale->FloatAttribute("z");
-                    k.scale = glm::vec3{sx, sy, sz};
-
-                    t.keyframes.emplace_back(k);
-
-                    keyframe = keyframe->NextSiblingElement();
+                auto parent = b["parent"];
+                if (parent.isNull()) {
+                    bn.parent = -1;
+                } else {
+                    bn.parent = parent.asInt();
                 }
 
-                anim.tracks.emplace_back(t);
+                auto translation = b["translation"];
+                if (translation.isNull()) {
+                    throw std::runtime_error("no translation attribute in bone data of " + model_name);
+                }
+                if (translation.size() != 3) {
+                    throw std::runtime_error("translation attribute has not the apropriate size in " + model_name);
+                }
+                auto trans = glm::vec3{translation[0].asFloat(), translation[1].asFloat(), translation[2].asFloat()};
 
-                track = track->NextSiblingElement();
+                auto rotation = b["rotation"];
+                if (rotation.isNull()) {
+                    throw std::runtime_error("no rotation attribute in bone data of " + model_name);
+                }
+                if (rotation.size() != 4) {
+                    throw std::runtime_error("rotation attribute has not the apropriate size in " + model_name);
+                }
+                auto rot = glm::quat{rotation[0].asFloat(), rotation[1].asFloat(), rotation[2].asFloat(), rotation[3].asFloat()};
+                rot = glm::normalize(rot);
+
+                auto transform = glm::toMat4(rot);
+                transform[3].x = trans.x;
+                transform[3].y = trans.y;
+                transform[3].z = trans.z;
+
+                bn.relative_transform = transform;
+                bn.absolute_transform = transform;
+
+                bone_hierachy.insert(std::make_pair(bn.id, bn));
             }
 
-            animations_.emplace_back(anim);
-
-            animation = animation->NextSiblingElement();
-        }
-    }
-
-    void animation_converter::serialize() {
-        auto size = bones_.size();
-        os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (auto& b : bones_) {
-            os_.write(reinterpret_cast<char*>(&b), sizeof(bone));
-        }
-
-        size = animations_.size();
-        os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-        for (auto& a : animations_) {
-            size = a.name.length();
-            os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-            os_.write(a.name.c_str(), size);
-
-            os_.write(reinterpret_cast<char*>(&a.length), sizeof(float));
-
-            size = a.tracks.size();
-            os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-            for (auto& t : a.tracks) {
-                os_.write(reinterpret_cast<char*>(&t.id), sizeof(unsigned int));
-
-                size = t.keyframes.size();
-                os_.write(reinterpret_cast<char*>(&size), sizeof(size_t));
-                for (auto& k : t.keyframes) {
-                    os_.write(reinterpret_cast<char*>(&k), sizeof(keyframe));
+            for (auto i = 0; i < bone_hierachy.size(); ++i) {
+                auto parent = bone_hierachy[i].parent;
+                if (parent != -1) {
+                    bone_hierachy[i].absolute_transform = bone_hierachy[parent].absolute_transform * bone_hierachy[i].absolute_transform;
                 }
             }
+
+            std::vector<bone> bones;
+            for (auto& b : bone_hierachy) {
+                b.second.absolute_transform = glm::inverse(b.second.absolute_transform);
+                bones.emplace_back(b.second);
+            }
+
+            header h;
+            h.bone_count = bones.size();
+
+            std::string output_file = output_path_ + "anims/" + model_name + ".skl";
+            std::ofstream output(output_file, std::ios::binary | std::ios::trunc);
+            if (!output.is_open()) {
+                throw std::runtime_error("could not open output file " + output_file);
+            }
+
+            output.write(reinterpret_cast<char*>(&h), sizeof(header));
+            output.write(reinterpret_cast<char*>(bones.data()), bones.size() * sizeof(bone));
         }
     }
 }
