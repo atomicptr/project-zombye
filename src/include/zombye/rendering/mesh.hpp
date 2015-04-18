@@ -16,7 +16,7 @@ namespace zombye {
 
 namespace zombye {
     struct header {
-        unsigned long magic;
+        unsigned int magic;
         size_t vertex_count;
         size_t index_count;
         size_t submesh_count;
