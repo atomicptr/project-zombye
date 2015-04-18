@@ -17,8 +17,8 @@ namespace zombye {
 namespace zombye {
     struct skinned_vertex {
         glm::vec3 pos;
-        glm::vec3 nor;
         glm::vec2 tex;
+        glm::vec3 nor;
         glm::ivec4 index;
         glm::vec4 weight;
     };
@@ -29,14 +29,14 @@ namespace zombye {
         vertex_buffer vbo_;
         index_buffer ibo_;
     public:
-        skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source) noexcept;
+        skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept;
         skinned_mesh(const skinned_mesh& other) = delete;
         skinned_mesh(skinned_mesh&& other) noexcept = default;
         ~skinned_mesh() = default;
         skinned_mesh& operator=(const skinned_mesh other) = delete;
         skinned_mesh& operator=(skinned_mesh&& other) noexcept = default;
 
-        void draw(int index) const noexcept;
+        void draw() const noexcept;
 
         auto& vao() const noexcept {
             return vao_;

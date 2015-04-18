@@ -60,10 +60,10 @@ namespace zombye {
         animation_program_->attach_shader(fragment_shader);
 
         skinnedmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
-        skinnedmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(glm::vec3));
-        skinnedmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3));
-        skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 2 * sizeof(glm::vec3) + sizeof(glm::vec2));
-        skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), sizeof(skinned_vertex) - sizeof(glm::vec4));
+        skinnedmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 3 * sizeof(float));
+        skinnedmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 5 * sizeof(float));
+        skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 8 * sizeof(float));
+        skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 12 * sizeof(float));
 
         skinnedmesh_layout_.setup_program(*animation_program_, "fragcolor");
         animation_program_->link();
