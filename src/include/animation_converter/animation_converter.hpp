@@ -13,7 +13,7 @@
 
 namespace devtools {
     struct header {
-        const unsigned long magic = 0x0000D78F;
+        const unsigned int magic = 0x3142415A;
         size_t bone_count = 0;
     };
 
