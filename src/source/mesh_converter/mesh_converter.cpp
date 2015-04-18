@@ -101,7 +101,7 @@ namespace devtools {
                 auto weights = v["weights"];
                 auto wei = glm::vec4{0.f};
                 if (!weights.isNull()) {
-                    if (indices.size() == 0) {
+                    if (weights.size() == 0) {
                         throw std::runtime_error("weights attribute in " + mesh_name + " requires at least 1 element");
                     }
                     wei = glm::vec4{weights[0].asFloat(), weights[1].asFloat(), weights[2].asFloat(), weights[3].asFloat()};
