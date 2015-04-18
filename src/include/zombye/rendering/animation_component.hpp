@@ -22,7 +22,6 @@ namespace zombye {
         friend class reflective<animation_component, component>;
 
         std::shared_ptr<const skinned_mesh> mesh_;
-        std::vector<material> materials_;
         std::shared_ptr<const zombye::skeleton> skeleton_;
     public:
         animation_component(game& game, entity& owner, const std::string& mesh, const std::string& skeleton);
