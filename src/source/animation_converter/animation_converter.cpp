@@ -3,6 +3,13 @@
 
 #include <animation_converter/animation_converter.hpp>
 
+#include <glm/gtx/string_cast.hpp>
+
+void to_string(const glm::quat& q) {
+    std::cout << "fqat(" << glm::angle(q) << ", " << glm::axis(q).x 
+        << ", " << glm::axis(q).y << ", " << glm::axis(q).z << ")" << std::endl;
+}
+
 namespace devtools {
     animation_converter::animation_converter(const std::string& input_file, const std::string& output_path) {
         output_path_ = output_path;

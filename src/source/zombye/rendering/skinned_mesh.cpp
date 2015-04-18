@@ -2,6 +2,9 @@
 
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/skinned_mesh.hpp>
+#include <zombye/utils/logger.hpp>
+
+#include <glm/gtx/string_cast.hpp>
 
 namespace zombye {
     skinned_mesh::skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept

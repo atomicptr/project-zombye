@@ -14,8 +14,10 @@ namespace zombye {
 
 namespace zombye {
     struct bone {
-        unsigned int id;
-        glm::mat4 transform;
+        int id;
+        int parent;
+        glm::mat4 relative_transform;
+        glm::mat4 absolute_transform;
     };
 
     struct keyframe {
@@ -26,14 +28,15 @@ namespace zombye {
     };
 
     struct track {
-        unsigned int id;
+        int id;
+        int parent;
         std::vector<keyframe> keyframes;
     };
 
     struct animation {
         std::string name;
         float length;
-        std::vector<track> tracks;
+        std::unordered_map<int, track> tracks;
     };
 
     class skeleton {
@@ -51,8 +54,12 @@ namespace zombye {
             return bones_;
         }
 
-        const auto& animation(const std::string& name) noexcept {
-            return animations_[name];
+        const auto& animation(const std::string& name) const {
+            auto it = animations_.find(name);
+            if (it == animations_.end()) {
+                throw std::invalid_argument("no animation named " + name + " in skeleton");
+            }
+            return it->second;
         }
     };
 }

@@ -17,10 +17,24 @@
         }
     },
 
-    "animated": {
+    "adummy": {
         "animation_component": {
-            "mesh": "meshes/animated.mesh",
-            "skeleton": "anims/animated.skeleton"
+            "mesh": "meshes/adummy.mesh",
+            "skeleton": "anims/adummy.skeleton"
+        }
+    },
+
+    "qdummy": {
+        "animation_component": {
+            "mesh": "meshes/body.mesh",
+            "skeleton": "anims/body.skeleton"
+        }
+    },
+
+    "goblin": {
+        "animation_component": {
+            "mesh": "meshes/Goblin.mesh",
+            "skeleton": "anims/Goblin.skeleton"
         }
     },
 

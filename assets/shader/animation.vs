@@ -13,10 +13,20 @@ out vec3 f_world_position;
 uniform mat4 m;
 uniform mat4 mit;
 uniform mat4 mvp;
+uniform mat4 pose[250];
 
 void main() {
     f_texcoord = texcoord;
-    f_normal = (mit * vec4(normal, 0.0)).xyz;
-    f_world_position = (m * vec4(position, 1.0)).xyz;
-    gl_Position = mvp * vec4(position, 1.0);
+
+    vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
+    vec4 nor = vec4(0.0, 0.0, 0.0, 0.0);
+    for (int i = 0; i < 4; ++i) {
+        pos += weight[i] * pose[index[i]] * vec4(position, 1.0);
+        nor += weight[i] * pose[index[i]] * vec4(normal, 0.0);
+    }
+
+    f_normal = (mit * nor).xyz;
+    f_world_position = (m * pos).xyz;
+
+    gl_Position = mvp * vec4(pos.xyz, 1.0);
 }
