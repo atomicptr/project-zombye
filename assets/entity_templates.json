@@ -1,7 +1,8 @@
 {
     "dummy": {
-        "staticmesh_component": {
-            "mesh": "meshes/dummy.mesh"
+        "animation_component": {
+            "mesh": "meshes/dummy.msh",
+            "skeleton": "anims/dummy.skl"
         }
     },
 
@@ -26,8 +27,8 @@
 
     "qdummy": {
         "animation_component": {
-            "mesh": "meshes/body.mesh",
-            "skeleton": "anims/body.skeleton"
+            "mesh": "meshes/dummy.msh",
+            "skeleton": "anims/dummy.skl"
         }
     },
 
@@ -69,8 +70,9 @@
     },
 
     "building": {
-        "staticmesh_component": {
-            "mesh": "meshes/building.mesh"
+        "animation_component": {
+            "mesh": "meshes/dummy.msh",
+            "skeleton": "anims/dummy.skl"
         }
     }
 }

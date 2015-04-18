@@ -40,10 +40,15 @@ namespace zombye {
     };
 
     class skeleton {
+        struct header {
+            unsigned int magic;
+            size_t bone_count;
+        };
+
         std::vector<bone> bones_;
         std::unordered_map<std::string, zombye::animation> animations_;
     public:
-        skeleton(rendering_system& rendering_system, const std::vector<char>& source) noexcept;
+        skeleton(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept;
         skeleton(const skeleton& other) = delete;
         skeleton(skeleton&& other) noexcept = default;
         skeleton() = default;
