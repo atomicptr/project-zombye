@@ -8,7 +8,7 @@ namespace zombye {
         auto data_ptr = source.data();
 
         auto head = *reinterpret_cast<const header*>(data_ptr);
-        if (head.magic != 0x00659CEF) {
+        if (head.magic != 0x31424D5A) {
             throw std::runtime_error(file_name + " is not an zombye mesh file");
         }
         auto vertex_size = head.vertex_count * sizeof(vertex);
