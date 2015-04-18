@@ -8,7 +8,7 @@
 
 namespace devtools {
     struct header {
-        const unsigned long magic = 0x00659CEF;
+        const unsigned int magic = 0x31424D5A;
         size_t vertex_count = 0;
         size_t index_count = 0;
         size_t submesh_count = 0;
