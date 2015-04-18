@@ -139,3 +139,5 @@ proguard/
 # sftp configuration file
 sftp-config.json
 
+# mesh converter material database
+material_database.json
