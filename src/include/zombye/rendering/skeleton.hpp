@@ -14,23 +14,33 @@ namespace zombye {
 
 namespace zombye {
     struct bone {
-        int id;
-        int parent;
+        int32_t id;
+        int32_t parent;
         glm::mat4 relative_transform;
         glm::mat4 absolute_transform;
     };
 
-    struct keyframe {
+    struct translation_keyframe {
         float time;
         glm::vec3 translate;
+    };
+
+    struct rotation_keyframe {
+        float time;
         glm::quat rotate;
+    };
+
+    struct scale_keyframe {
+        float time;
         glm::vec3 scale;
     };
 
     struct track {
-        int id;
-        int parent;
-        std::vector<keyframe> keyframes;
+        int32_t id;
+        int32_t parent;
+        std::vector<translation_keyframe> tkeys;
+        std::vector<rotation_keyframe> qkeys;
+        std::vector<scale_keyframe> skeys;
     };
 
     struct animation {
@@ -41,8 +51,10 @@ namespace zombye {
 
     class skeleton {
         struct header {
-            unsigned int magic;
-            size_t bone_count;
+            uint32_t magic;
+            int64_t size;
+            int64_t bone_count;
+            int64_t animation_count;
         };
 
         std::vector<bone> bones_;

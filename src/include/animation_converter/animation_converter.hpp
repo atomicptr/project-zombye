@@ -13,34 +13,46 @@
 
 namespace devtools {
     struct header {
-        const unsigned int magic = 0x3142415A;
-        size_t bone_count = 0;
+        const uint32_t magic = 0x3142415A;
+        int64_t size = 0;
+        int64_t bone_count = 0;
+        int64_t animation_count = 0;
     };
 
     struct bone {
-        int id;
-        int parent;
+        int32_t id;
+        int32_t parent;
         glm::mat4 relative_transform;
         glm::mat4 absolute_transform;
     };
 
-    struct keyframe {
+    struct translation_keyframe {
         float time;
         glm::vec3 translate;
+    };
+
+    struct rotation_keyframe {
+        float time;
         glm::quat rotate;
+    };
+
+    struct scale_keyframe {
+        float time;
         glm::vec3 scale;
     };
 
     struct track {
-        int id;
-        int parent;
-        std::vector<keyframe> keyframes;
+        int32_t id;
+        int32_t parent;
+        int64_t tkey_count;
+        int64_t qkey_count;
+        int64_t skey_count;
     };
 
     struct animation {
         std::string name;
         float length;
-        std::unordered_map<int, track> tracks;
+        int64_t track_count;
     };
 
     class animation_converter {
