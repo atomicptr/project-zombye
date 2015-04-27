@@ -78,8 +78,6 @@ namespace devtools {
                 transform[3].z = trans.z;
 
                 bn.relative_transform = transform;
-                std::cout << "id " << bn.id << std::endl;
-                std::cout << glm::to_string(bn.relative_transform) << std::endl;
                 bn.absolute_transform = transform;
 
                 bone_hierachy.insert(std::make_pair(bn.id, bn));
