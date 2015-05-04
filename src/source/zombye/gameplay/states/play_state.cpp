@@ -119,11 +119,11 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{0.f, 3.f, 10.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
+    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{0.f, 2.f, 10.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
     camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
-    auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
+    auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(glm::radians(-90.f), glm::vec3{1.f, 0.f, 0.f}), glm::vec3{1.f});
     ani.component<animation_component>()->change_state("move");
     sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }
