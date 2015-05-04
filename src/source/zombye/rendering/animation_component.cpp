@@ -1,3 +1,5 @@
+#include <stack>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
 
@@ -25,16 +27,21 @@ namespace zombye {
     void animation_component::update(float delta_time) {
         static std::vector<glm::mat4> pose(skeleton_->bones().size(), glm::mat4{1.f});
         static const float fps = 1.f / 24.f;
-
-        //std::cout << "interpolation" << std::endl;
+        pose.assign(skeleton_->bones().size(), glm::mat4{1.f});
 
         if (current_state_ != "") {
             auto& animation = skeleton_->animation(current_state_);
             auto& bones = skeleton_->bones();
+            auto& bone_hierachy = skeleton_->bone_hierachy_;
             auto length = animation.length * fps;
             elapsed_time_ += delta_time;
             if (elapsed_time_ <= length) {
-                for (auto i = 0; i < bones.size(); ++i) {
+                std::stack<int> traversal;
+                traversal.push(0);
+                while(!traversal.empty()) {
+                    auto i = traversal.top();
+                    traversal.pop();
+
                     auto& track = animation.tracks.at(i);
 
                     auto& current_frame = current_keyframes_.at(i);
@@ -80,28 +87,18 @@ namespace zombye {
                     auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 
                     auto p = glm::toMat4(iq);
-                    //p = glm::mat4{1.f};
                     p[3].x = iv.x;
                     p[3].y = iv.y;
                     p[3].z = iv.z;
 
-                    
-                    pose[i] = glm::mat4{1.f};
-                    //std::cout << "id: " << i << std::endl;
-                    auto parent = animation.tracks.at(i).parent;
-                    if (parent > -1) {
-                        //std::cout << "parent: " << parent << std::endl;
-                        //std::cout << glm::to_string(pose[parent]) << std::endl;
-                        pose[i] = pose[parent];
-                    }
-                    //std::cout << "relative transform" << std::endl;
-                    //std::cout << glm::to_string(bones.at(i).relative_transform) << std::endl;
-                    //std::cout << "local transform" << std::endl;
-                    //std::cout << glm::to_string(p) << std::endl;
                     pose[i] *= bones.at(i).relative_transform * p;
-                    //std::cout << "final pose" << std::endl;
-                    //pose[i] = p;
-                    //std::cout << glm::to_string(pose[i]) << std::endl;
+                    if (bone_hierachy.find(i) != bone_hierachy.end()) {
+                        for (auto node = bone_hierachy.begin(i); node != bone_hierachy.end(i); ++node) {
+                            auto& child = node->second;
+                            pose[child] *= pose[i];
+                            traversal.push(child);
+                        }   
+                    }
                 }
             } else {
                 elapsed_time_ = 0.f;
@@ -120,14 +117,9 @@ namespace zombye {
 
         auto& bones = skeleton_->bones();
 
-        //std::cout << std::endl << "pose" << std::endl;
-
         for (auto i = 0; i < pose_.size(); ++i) {
             pose_[i] = pose[i] * bones.at(i).absolute_transform;
-            //std::cout << "id: " << i << std::endl;
-            //std::cout << glm::to_string(pose[i]) << std::endl;
         }
-        //std::cout << std::endl;
     }
 
     void animation_component::draw() const noexcept {

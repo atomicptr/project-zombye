@@ -1,7 +1,6 @@
 #ifndef __ZOMBYE_SKELETON_HPP__
 #define __ZOMBYE_SKELETON_HPP__
 
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -62,6 +61,8 @@ namespace zombye {
             int64_t bone_count;
             int64_t animation_count;
         };
+
+        friend class animation_component;
 
         std::vector<bone> bones_;
         std::unordered_multimap<int, int> bone_hierachy_;
