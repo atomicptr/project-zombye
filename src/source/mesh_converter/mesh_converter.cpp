@@ -69,7 +69,7 @@ namespace devtools {
                 if (position.size() != 3) {
                     throw std::runtime_error("position attribute in " + mesh_name + " requires 3 elements");
                 }
-                auto pos = glm::vec3{position[0].asFloat(), position[1].asFloat(), position[2].asFloat()};
+                auto pos = glm::vec3{position[0].asFloat(), position[2].asFloat(), -position[1].asFloat()};
 
                 auto texcoord = v["texcoord"];
                 if (texcoord.isNull()) {
@@ -87,7 +87,7 @@ namespace devtools {
                 if (normal.size() != 3) {
                     throw std::runtime_error("normal attribute in " + mesh_name + " requires 3 elements");
                 }
-                auto nor = glm::vec3{normal[0].asFloat(), normal[1].asFloat(), normal[2].asFloat()};
+                auto nor = glm::vec3{normal[0].asFloat(), normal[2].asFloat(), -normal[1].asFloat()};
 
                 auto indices = v["indices"];
                 auto ind = glm::ivec4{0};

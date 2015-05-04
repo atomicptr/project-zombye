@@ -81,6 +81,12 @@ namespace devtools {
                 transform[3].y = trans.y;
                 transform[3].z = trans.z;
 
+                static auto offset = glm::angleAxis(glm::radians(-90.f), glm::vec3{1.f, 0.f, 0.f});
+                static auto offset_matrix = glm::toMat4(offset);
+                static auto offset_matrix_t = glm::transpose(offset_matrix);
+
+                transform = offset_matrix * transform * offset_matrix_t;
+
                 bn.relative_transform = transform;
                 bn.absolute_transform = transform;
 
@@ -238,6 +244,13 @@ namespace devtools {
                         rotation_keyframe rk;
                         rk.time = frame.asFloat();
                         rk.rotate = glm::quat{data[0].asFloat(), data[1].asFloat(), data[2].asFloat(), data[3].asFloat()};
+
+                        static auto offset = glm::angleAxis(glm::radians(-90.f), glm::vec3{1.f, 0.f, 0.f});
+                        static auto offset_matrix = glm::toMat4(offset);
+                        static auto offset_matrix_t = glm::transpose(offset_matrix);
+                        auto rotation_matrix = glm::toMat4(rk.rotate);
+                        rotation_matrix = offset_matrix * rotation_matrix * offset_matrix_t;
+                        rk.rotate = glm::quat_cast(rotation_matrix);
 
                         all_qkeys.emplace_back(rk);
                     }
