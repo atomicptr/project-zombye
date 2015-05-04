@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <stack>
 
 #include <animation_converter/animation_converter.hpp>
 
@@ -71,6 +72,9 @@ namespace devtools {
                 }
                 auto rot = glm::quat{rotation[0].asFloat(), rotation[1].asFloat(), rotation[2].asFloat(), rotation[3].asFloat()};
                 rot = glm::normalize(rot);
+                if (rot.w < 0.f) {
+                    rot = -rot;
+                }
 
                 auto transform = glm::toMat4(rot);
                 transform[3].x = trans.x;
@@ -83,10 +87,27 @@ namespace devtools {
                 bone_hierachy.insert(std::make_pair(bn.id, bn));
             }
 
+            /*
             for (auto i = 0; i < bone_hierachy.size(); ++i) {
                 auto parent = bone_hierachy[i].parent;
                 if (parent != -1) {
                     bone_hierachy[i].absolute_transform = bone_hierachy[parent].absolute_transform * bone_hierachy[i].absolute_transform;
+                }
+            }
+            */
+            std::stack<int32_t> traversal;
+            traversal.push(0);
+            while (!traversal.empty()) {
+                auto current = traversal.top();
+                traversal.pop();
+                auto node = value["bone_hierachy"][std::to_string(current)];
+                if (node.isNull()) {
+                    continue;
+                }
+                for (auto& child : node) {
+                    auto c = child.asInt();
+                    traversal.push(c);
+                    bone_hierachy[c].absolute_transform = bone_hierachy[current].absolute_transform * bone_hierachy[c].absolute_transform;
                 }
             }
 
@@ -247,8 +268,10 @@ namespace devtools {
 
             auto animation_size = 20 + sizeof(float) + sizeof(int64_t);
 
+            auto bone_count = int(h.bone_count);
             h.size = sizeof(header)
-                + h.bone_count * sizeof(bone)
+                + bone_count * sizeof(bone)
+                + bone_count * sizeof(node) + (bone_count - 1) * sizeof(int32_t)
                 + h.animation_count * animation_size
                 + all_tracks.size() *  sizeof(track)
                 + all_tkeys.size() * sizeof(translation_keyframe)
@@ -257,6 +280,20 @@ namespace devtools {
 
             output.write(reinterpret_cast<char*>(&h), sizeof(header));
             output.write(reinterpret_cast<char*>(bones.data()), bones.size() * sizeof(bone));
+
+            auto stuff = 0ul;
+            for (auto i = 0ul; i < value["bone_hierachy"].size(); ++i) {
+                node n;
+                n.id = i;
+                auto children = value["bone_hierachy"][std::to_string(i)];
+                n.children_count = children.size();
+                output.write(reinterpret_cast<char*>(&n), sizeof(node));
+                stuff += sizeof(node);
+                for (auto& child : children) {
+                    output.write(reinterpret_cast<char*>(&child), sizeof(int32_t));
+                    stuff += sizeof(int32_t);
+                }
+            }
 
             auto track_ptr = 0ul;
             auto tkey_ptr = 0ul;

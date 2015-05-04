@@ -19,6 +19,11 @@ namespace devtools {
         int64_t animation_count = 0;
     };
 
+    struct node {
+        int32_t id;
+        int32_t children_count;
+    };
+
     struct bone {
         int32_t id;
         int32_t parent;
