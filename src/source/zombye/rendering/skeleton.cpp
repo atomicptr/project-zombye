@@ -26,6 +26,16 @@ namespace zombye {
             data_ptr += sizeof(bone);
         }
 
+        for (auto i = 0ul; i < head.bone_count; ++i) {
+            node n = *reinterpret_cast<const node*>(data_ptr);
+            data_ptr += sizeof(node);
+            for (auto j = 0; j < n.children_count; ++j) {
+                int32_t id = *reinterpret_cast<const int32_t*>(data_ptr);
+                data_ptr += sizeof(int32_t);
+                bone_hierachy_.emplace(std::make_pair(int(i), id));
+            }
+        }
+
         for (auto i = 0ul; i < head.animation_count; ++i) {
             zombye::animation a;
 

@@ -1,6 +1,7 @@
 #ifndef __ZOMBYE_SKELETON_HPP__
 #define __ZOMBYE_SKELETON_HPP__
 
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -49,6 +50,11 @@ namespace zombye {
         std::unordered_map<int, track> tracks;
     };
 
+    struct node {
+        int32_t id;
+        int32_t children_count;
+    };
+
     class skeleton {
         struct header {
             uint32_t magic;
@@ -58,6 +64,7 @@ namespace zombye {
         };
 
         std::vector<bone> bones_;
+        std::unordered_multimap<int, int> bone_hierachy_;
         std::unordered_map<std::string, zombye::animation> animations_;
     public:
         skeleton(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept;
