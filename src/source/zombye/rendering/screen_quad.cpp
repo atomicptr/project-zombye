@@ -1,7 +1,7 @@
 #include <glm/glm.hpp>
 
 #include <zombye/rendering/rendering_system.hpp>
-#include "screen_quad.hpp"
+#include <zombye/rendering/screen_quad.hpp>
 #include <zombye/rendering/mesh.hpp>
 
 namespace zombye {
