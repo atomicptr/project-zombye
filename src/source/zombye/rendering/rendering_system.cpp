@@ -134,7 +134,7 @@ namespace zombye {
 		staticmesh_layout_.setup_program(*composition_program_, "frag_color");
 		composition_program_->link();
 
-		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f), glm::vec2(width, height));
+		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height), glm::vec2(width, 0.f));
 	}
 
 	rendering_system::~rendering_system() {
