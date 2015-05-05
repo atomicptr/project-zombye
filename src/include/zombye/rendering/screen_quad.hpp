@@ -5,7 +5,7 @@
 #include <zombye/rendering/buffer.hpp>
 
 namespace zombye {
-	class rendering_system;
+	class vertex_layout;;
 }
 
 namespace zombye {
@@ -15,7 +15,7 @@ namespace zombye {
 		vertex_buffer vbo_;
 
 	public:
-		screen_quad(rendering_system& renderer, const glm::vec2& top_left, const glm::vec2& bottom_right);
+		screen_quad(vertex_layout& layout, const glm::vec2& top_left, const glm::vec2& bottom_right);
 		~screen_quad() = default;
 
 		screen_quad(const screen_quad& rhs) = delete;

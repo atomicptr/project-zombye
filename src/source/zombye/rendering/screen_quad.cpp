@@ -5,7 +5,7 @@
 #include <zombye/rendering/mesh.hpp>
 
 namespace zombye {
-	screen_quad::screen_quad(rendering_system& renderer, const glm::vec2& top_left, const glm::vec2& bottom_right)
+	screen_quad::screen_quad(vertex_layout& layout, const glm::vec2& top_left, const glm::vec2& bottom_right)
 	: vbo_{6 * sizeof(vertex), GL_STATIC_DRAW} {
 		glm::vec3 zero{0.f};
 		vertex vertices[6] = {
@@ -17,7 +17,7 @@ namespace zombye {
 			{glm::vec3{bottom_right.x, top_left.y, 0.f}, 	glm::vec2{1.f, 1.f}, zero},// zero, zero}
 		};
 		vbo_.data(6 * sizeof(vertex), vertices);
-		renderer.staticmesh_layout().setup_layout(vao_, &vbo_);
+		layout.setup_layout(vao_, &vbo_);
 	}
 
 	void screen_quad::draw() const {
