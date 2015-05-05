@@ -76,6 +76,23 @@ namespace zombye {
         float far = 1000.f;
         projection_ = glm::perspective(fovy, aspect, near, far);
         ortho_projection_ = glm::ortho(0.f, width, 0.f, height);
+
+        g_buffer_ = std::make_unique<framebuffer>();
+        g_buffer_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, width, height, GL_DEPTH_COMPONENT, GL_FLOAT);
+        g_buffer_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
+        g_buffer_->attach(GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
+        g_buffer_->attach(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
+
+        g_buffer_->bind();
+        glClearColor(0.4f, 0.6f, 0.9f, 1.f);
+        GLenum buf[5] = {
+            GL_COLOR_ATTACHMENT0,
+            GL_COLOR_ATTACHMENT1,
+            GL_COLOR_ATTACHMENT2,
+            GL_NONE
+        };
+        glDrawBuffers(5, buf);
+        g_buffer_->bind_default();
     }
 
     rendering_system::~rendering_system() {
