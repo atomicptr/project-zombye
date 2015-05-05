@@ -54,9 +54,10 @@ namespace zombye {
         void uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat3>& values) noexcept;
         void uniform(const std::string& name, size_t count, bool transpose, const std::vector<glm::mat4>& values) noexcept;
 
+        void bind_frag_data_location(const std::string& name, uint32_t color_number) noexcept;
+
     private:
         void bind_attribute_location(const std::string& name, uint32_t index) noexcept;
-        void bind_frag_data_location(const std::string& name, uint32_t color_number) noexcept;
     };
 }
 
