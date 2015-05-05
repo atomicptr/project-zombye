@@ -173,6 +173,10 @@ namespace zombye {
 		}
 		int light_count = light_positions.size();
 
+		glEnable(GL_DEPTH_TEST);
+		g_buffer_->bind();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_sampler", 0);
 		staticmesh_program_->uniform("specular_sampler", 1);
@@ -207,6 +211,9 @@ namespace zombye {
 			animation_program_->uniform("pose", a->pose().size(), false, a->pose());
 			a->draw();
 		}
+
+		glDisable(GL_DEPTH_TEST);
+		g_buffer_->bind_default();
 
 		render_debug_screen_quads();
 	}
