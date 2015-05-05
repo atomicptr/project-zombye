@@ -1,41 +1,8 @@
 {
-    "dummy": {
-        "animation_component": {
-            "mesh": "meshes/dummy.msh",
-            "skeleton": "anims/dummy.skl"
-        }
-    },
-
-    "sphere": {
-        "staticmesh_component": {
-            "mesh": "meshes/Sphere.mesh"
-        }
-    },
-
-    "suzanne": {
-        "staticmesh_component": {
-            "mesh": "meshes/Suzanne.mesh"
-        }
-    },
-
-    "adummy": {
-        "animation_component": {
-            "mesh": "meshes/adummy.mesh",
-            "skeleton": "anims/adummy.skeleton"
-        }
-    },
-
     "qdummy": {
         "animation_component": {
             "mesh": "meshes/dummy.msh",
             "skeleton": "anims/dummy.skl"
-        }
-    },
-
-    "goblin": {
-        "animation_component": {
-            "mesh": "meshes/Goblin.mesh",
-            "skeleton": "anims/Goblin.skeleton"
         }
     },
 
@@ -60,19 +27,6 @@
             "color": ["f", 0.0, 1.0, 0.0],
             "specular_color": ["f", 1.0, 1.0, 1.0],
             "distance": 5.0
-        }
-    },
-
-    "light_test": {
-        "staticmesh_component": {
-            "mesh": "meshes/light_test.mesh"
-        }
-    },
-
-    "building": {
-        "animation_component": {
-            "mesh": "meshes/dummy.msh",
-            "skeleton": "anims/dummy.skl"
         }
     }
 }
