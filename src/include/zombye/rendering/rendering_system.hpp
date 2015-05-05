@@ -132,6 +132,8 @@ namespace zombye {
         }
 
     private:
+        void render_debug_screen_quads() const;
+
         void register_component(animation_component* component);
         void unregister_component(animation_component* component);
         void register_component(camera_component* component);
