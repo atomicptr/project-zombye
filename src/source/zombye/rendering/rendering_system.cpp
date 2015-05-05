@@ -159,20 +159,6 @@ namespace zombye {
 			camera_position = camera->second->owner().position();
 		}
 
-		std::vector<glm::vec3> light_positions;
-		std::vector<glm::vec3> light_colors;
-		std::vector<float> light_distances;
-		auto i = 0;
-		for (auto& l : light_components_) {
-			if (i > 15) {
-				break;
-			}
-			light_positions.emplace_back(l->owner().position());
-			light_colors.emplace_back(l->color());
-			light_distances.emplace_back(l->distance());
-		}
-		int light_count = light_positions.size();
-
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -180,10 +166,6 @@ namespace zombye {
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_sampler", 0);
 		staticmesh_program_->uniform("specular_sampler", 1);
-		staticmesh_program_->uniform("light_count", light_count);
-		staticmesh_program_->uniform("light_position", light_count, light_positions);
-		staticmesh_program_->uniform("light_color", light_count, light_colors);
-		staticmesh_program_->uniform("light_distance", light_count, light_distances);
 		staticmesh_program_->uniform("view", camera_position);
 		for (auto& s : staticmesh_components_) {
 			auto model = s->owner().transform();
@@ -197,10 +179,6 @@ namespace zombye {
 		animation_program_->use();
 		animation_program_->uniform("diffuse_sampler", 0);
 		animation_program_->uniform("specular_sampler", 1);
-		animation_program_->uniform("light_count", light_count);
-		animation_program_->uniform("light_position", light_count, light_positions);
-		animation_program_->uniform("light_color", light_count, light_colors);
-		animation_program_->uniform("light_distance", light_count, light_distances);
 		animation_program_->uniform("view", camera_position);
 		for (auto& a: animation_components_) {
 			auto model = a->owner().transform();
@@ -215,11 +193,12 @@ namespace zombye {
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
+		render_screen_quad();
 		render_debug_screen_quads();
 	}
 
 	void rendering_system::render_debug_screen_quads() const {
-		static GLenum attachments[4] = {
+		const static GLenum attachments[4] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2,
@@ -242,6 +221,49 @@ namespace zombye {
 
 			debug_screen_quads_[i]->draw();
 		}
+	}
+
+	void rendering_system::render_screen_quad()  {
+		const static GLenum attachments[4] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2,
+			GL_DEPTH_ATTACHMENT
+		};
+
+		std::vector<glm::vec3> point_light_positions;
+		std::vector<glm::vec3> point_light_colors;
+		std::vector<float> point_light_radii;
+		for (auto& l : light_components_) {
+			point_light_positions.emplace_back(l->owner().position());
+			point_light_colors.emplace_back(l->color());
+			point_light_radii.emplace_back(l->distance());
+		}
+
+		auto camera = camera_components_.find(active_camera_);
+		auto camera_position = glm::vec3{0.f};
+		if (camera != camera_components_.end()) {
+			view_ = camera->second->transform();
+			camera_position = camera->second->owner().position();
+		}
+
+		composition_program_->use();
+		composition_program_->uniform("projection", false, ortho_projection_);
+		composition_program_->uniform("albedo_texture", 0);
+		composition_program_->uniform("normal_texture", 1);
+		composition_program_->uniform("specular_texture", 2);
+		composition_program_->uniform("depth_texture", 3);
+		composition_program_->uniform("inv_view_projection", false, glm::inverse(projection_ * view_));
+		composition_program_->uniform("view_vector", camera_position);
+		composition_program_->uniform("point_light_num", static_cast<int32_t>(light_components_.size()));
+		composition_program_->uniform("point_light_positions", light_components_.size(), point_light_positions);
+		composition_program_->uniform("point_light_colors", light_components_.size(), point_light_colors);
+		composition_program_->uniform("point_light_radii", light_components_.size(), point_light_radii);
+
+		for (auto i = 0; i < 4; ++i) {
+			g_buffer_->attachment(attachments[i]).bind(i);
+		}
+		screen_quad_->draw();
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {
