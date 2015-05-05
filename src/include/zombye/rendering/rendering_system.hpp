@@ -63,7 +63,7 @@ namespace zombye {
 
         std::unique_ptr<framebuffer> g_buffer_;
         std::unique_ptr<program> screen_quad_program_;
-        std::vector<std::unique_ptr<screen_quad>> screen_quads_;
+        std::vector<std::unique_ptr<screen_quad>> debug_screen_quads_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
