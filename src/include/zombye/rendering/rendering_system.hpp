@@ -11,9 +11,11 @@
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/buffer.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/framebuffer.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
 #include <zombye/rendering/program.hpp>
+#include <zombye/rendering/screen_quad.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
 #include <zombye/rendering/skeleton_manager.hpp>
@@ -57,6 +59,10 @@ namespace zombye {
 
         glm::mat4 projection_;
         glm::mat4 view_;
+
+        std::unique_ptr<framebuffer> g_buffer_;
+        std::unique_ptr<program> screen_quad_program_;
+        std::vector<std::unique_ptr<screen_quad>> screen_quads_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
