@@ -115,6 +115,22 @@ namespace zombye {
 				glm::vec2{((i + 1) * width / 4.f) - 0.01f * width, 0.01f * height}
 			));
 		}
+
+		composition_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/deferred.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error{"could not load deferred.vs"};
+		}
+		composition_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/deferred.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error{"could not load deferred.fs"};
+		}
+		composition_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*composition_program_, "frag_color");
+		composition_program_->link();
+
+		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f), glm::vec2(width, height));
 	}
 
 	rendering_system::~rendering_system() {
