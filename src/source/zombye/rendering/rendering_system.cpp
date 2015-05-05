@@ -69,10 +69,13 @@ namespace zombye {
         animation_program_->link();
 
         float fovy = 45.f * 3.1415f / 180.f;
-        float aspect = static_cast<float>(game_.width()) / static_cast<float>(game_.height());
+        auto width = float(game_.width());
+        auto height = float(game_.height());
+        float aspect = width / height;
         float near = 0.01f;
         float far = 1000.f;
         projection_ = glm::perspective(fovy, aspect, near, far);
+        ortho_projection_ = glm::ortho(0.f, width, 0.f, height);
     }
 
     rendering_system::~rendering_system() {

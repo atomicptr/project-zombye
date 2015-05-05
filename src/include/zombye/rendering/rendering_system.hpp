@@ -59,6 +59,7 @@ namespace zombye {
 
         glm::mat4 projection_;
         glm::mat4 view_;
+        glm::mat4 ortho_projection_;
 
         std::unique_ptr<framebuffer> g_buffer_;
         std::unique_ptr<program> screen_quad_program_;
