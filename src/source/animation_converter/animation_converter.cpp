@@ -72,9 +72,6 @@ namespace devtools {
                 }
                 auto rot = glm::quat{rotation[0].asFloat(), rotation[1].asFloat(), rotation[2].asFloat(), rotation[3].asFloat()};
                 rot = glm::normalize(rot);
-                if (rot.w < 0.f) {
-                    rot = -rot;
-                }
 
                 auto transform = glm::toMat4(rot);
                 transform[3].x = trans.x;
@@ -252,10 +249,6 @@ namespace devtools {
                         rotation_matrix = offset_matrix * rotation_matrix * offset_matrix_t;
                         rk.rotate = glm::quat_cast(rotation_matrix);
 
-                        if (rk.rotate.w < 1.f) {
-                            rk.rotate = -rk.rotate;
-                        }
-
                         all_qkeys.emplace_back(rk);
                     }
 
@@ -338,6 +331,14 @@ namespace devtools {
                     tkey_ptr += t.tkey_count;
 
                     for (auto j = 0ul; j < t.qkey_count; ++j) {
+                        if (j > 0) {
+                            auto& q1 = all_qkeys[qkey_ptr + j - 1].rotate;
+                            auto& q2 = all_qkeys[qkey_ptr + j].rotate;
+                            auto scalar = glm::dot(q1, q2);
+                            if (scalar < 0.f) {
+                                q2 = -q2;
+                            }
+                        }
                         output.write(reinterpret_cast<char*>(&all_qkeys[qkey_ptr + j]), sizeof(rotation_keyframe));
                     }
                     qkey_ptr += t.qkey_count;
