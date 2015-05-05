@@ -193,8 +193,11 @@ namespace zombye {
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
+		static auto debug_mode = false;
 		render_screen_quad();
-		render_debug_screen_quads();
+		if (debug_mode) {
+			render_debug_screen_quads();
+		}
 	}
 
 	void rendering_system::render_debug_screen_quads() const {
