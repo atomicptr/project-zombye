@@ -7,7 +7,6 @@ solution "project-zombye"
         "deps/jsoncpp/include",
         "deps/gli/include",
         "deps/glm/include",
-        "deps/tinyxml2",
         "src/include"
     }
 
