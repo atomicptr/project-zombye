@@ -252,6 +252,10 @@ namespace devtools {
                         rotation_matrix = offset_matrix * rotation_matrix * offset_matrix_t;
                         rk.rotate = glm::quat_cast(rotation_matrix);
 
+                        if (rk.rotate.w < 1.f) {
+                            rk.rotate = -rk.rotate;
+                        }
+
                         all_qkeys.emplace_back(rk);
                     }
 

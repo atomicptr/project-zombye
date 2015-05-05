@@ -34,6 +34,7 @@ namespace zombye {
             auto& bones = skeleton_->bones();
             auto& bone_hierachy = skeleton_->bone_hierachy_;
             auto length = animation.length * fps;
+
             elapsed_time_ += delta_time;
             if (elapsed_time_ <= length) {
                 std::stack<int> traversal;
@@ -70,7 +71,7 @@ namespace zombye {
 
                     t1 = track.qkeys[current_frame.qkey].time * fps;
                     t2 = track.qkeys[next_frame.qkey].time * fps;
-                    if (elapsed_time_ > t2 && next_frame.qkey < track.qkeys.size() - 1) {
+                    if (elapsed_time_ >= t2 && next_frame.qkey < track.qkeys.size() - 1) {
                         ++current_frame.qkey;
                         ++next_frame.qkey;
                         t1 = track.qkeys[current_frame.qkey].time * fps;
@@ -84,6 +85,7 @@ namespace zombye {
 
                     delta = (elapsed_time_ - t1) / (t2 - t1);
                     delta = delta > 1.f ? 1.f : delta;
+
                     auto iq = glm::normalize(glm::lerp(q1, q2, delta));
 
                     auto p = glm::toMat4(iq);
@@ -107,6 +109,7 @@ namespace zombye {
                     k.qkey = 0;
                     k.skey = 0;
                 }
+                return;
             }
         } else {
             auto& bones = skeleton_->bones();
@@ -116,7 +119,6 @@ namespace zombye {
         }
 
         auto& bones = skeleton_->bones();
-
         for (auto i = 0; i < pose_.size(); ++i) {
             pose_[i] = pose[i] * bones.at(i).absolute_transform;
         }
