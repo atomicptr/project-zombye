@@ -49,7 +49,9 @@ namespace zombye {
 		staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
 		staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
 
-		staticmesh_layout_.setup_program(*staticmesh_program_, "fragcolor");
+		staticmesh_layout_.setup_program(*staticmesh_program_, "albedo_color");
+		staticmesh_program_->bind_frag_data_location("normal_color", 1);
+		staticmesh_program_->bind_frag_data_location("specular_color", 2);
 		staticmesh_program_->link();
 
 		vertex_shader = shader_manager_.load("shader/animation.vs", GL_VERTEX_SHADER);
@@ -65,7 +67,9 @@ namespace zombye {
 		skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 8 * sizeof(float));
 		skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 12 * sizeof(float));
 
-		skinnedmesh_layout_.setup_program(*animation_program_, "fragcolor");
+		skinnedmesh_layout_.setup_program(*animation_program_, "albedo_color");
+		animation_program_->bind_frag_data_location("normal_color", 1);
+		animation_program_->bind_frag_data_location("specular_color", 2);
 		animation_program_->link();
 
 		float fovy = 45.f * 3.1415f / 180.f;
