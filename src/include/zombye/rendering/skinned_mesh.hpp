@@ -19,6 +19,7 @@ namespace zombye {
         glm::vec3 pos;
         glm::vec2 tex;
         glm::vec3 nor;
+        glm::vec3 tan;
         glm::ivec4 index;
         glm::vec4 weight;
     };

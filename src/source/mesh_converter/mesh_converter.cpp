@@ -139,9 +139,33 @@ namespace devtools {
                     if (t.size() != 3) {
                         throw std::runtime_error("sizeof indices per triangle must be 3");
                     }
-                    indices.emplace_back(t[0].asUInt());
-                    indices.emplace_back(t[1].asUInt());
-                    indices.emplace_back(t[2].asUInt());
+                    auto index0 = t[0].asUInt();
+                    auto index1 = t[1].asUInt();
+                    auto index2 = t[2].asUInt();
+
+                    indices.emplace_back(index0);
+                    indices.emplace_back(index1);
+                    indices.emplace_back(index2);
+
+                    auto& v0 = vertices[index0];
+                    auto& v1 = vertices[index1];
+                    auto& v2 = vertices[index2];
+
+                    auto e1 = v1.position - v0.position;
+                    auto e2 = v2.position - v0.position;
+
+                    auto delta_u1 = v1.texcoord.x - v0.texcoord.x;
+                    auto delta_v1 = v1.texcoord.y - v0.texcoord.y;
+                    auto delta_u2 = v2.texcoord.x - v0.texcoord.x;
+                    auto delta_v2 = v2.texcoord.y - v0.texcoord.y;
+
+                    auto f = 1.f / (delta_u1 * delta_v2 - delta_u2 * delta_v1);
+
+                    auto tangent = f * delta_v2 * e1 - delta_v1 * e2;
+
+                    v0.tangent += tangent;
+                    v1.tangent += tangent;
+                    v2.tangent += tangent;
                 }
 
                 sm.index_count = indices.size() - sm.offset;

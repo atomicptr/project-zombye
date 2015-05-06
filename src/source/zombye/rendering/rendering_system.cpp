@@ -48,6 +48,7 @@ namespace zombye {
 		staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
 		staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
 		staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
+		staticmesh_layout_.emplace_back("tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
 
 		staticmesh_layout_.setup_program(*staticmesh_program_, "albedo_color");
 		staticmesh_program_->bind_frag_data_location("normal_color", 1);
@@ -64,8 +65,9 @@ namespace zombye {
 		skinnedmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
 		skinnedmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 3 * sizeof(float));
 		skinnedmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 5 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 8 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 12 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 11 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 15 * sizeof(float));
 
 		skinnedmesh_layout_.setup_program(*animation_program_, "albedo_color");
 		animation_program_->bind_frag_data_location("normal_color", 1);
@@ -164,8 +166,9 @@ namespace zombye {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		staticmesh_program_->use();
-		staticmesh_program_->uniform("diffuse_sampler", 0);
-		staticmesh_program_->uniform("specular_sampler", 1);
+		staticmesh_program_->uniform("diffuse_texture", 0);
+		staticmesh_program_->uniform("specular_texture", 1);
+		staticmesh_program_->uniform("normal_texture", 2);
 		staticmesh_program_->uniform("view", camera_position);
 		for (auto& s : staticmesh_components_) {
 			auto model = s->owner().transform();
@@ -177,8 +180,9 @@ namespace zombye {
 		}
 
 		animation_program_->use();
-		animation_program_->uniform("diffuse_sampler", 0);
-		animation_program_->uniform("specular_sampler", 1);
+		animation_program_->uniform("diffuse_texture", 0);
+		animation_program_->uniform("specular_texture", 1);
+		animation_program_->uniform("normal_texture", 2);
 		animation_program_->uniform("view", camera_position);
 		for (auto& a: animation_components_) {
 			auto model = a->owner().transform();
@@ -193,7 +197,7 @@ namespace zombye {
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
-		static auto debug_mode = false;
+		static auto debug_mode = true;
 		render_screen_quad();
 		if (debug_mode) {
 			render_debug_screen_quads();
