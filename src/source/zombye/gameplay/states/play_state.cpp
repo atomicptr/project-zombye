@@ -4,10 +4,14 @@
 
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/gameplay/states/play_state.hpp>
+#include <zombye/gameplay/command.hpp>
+#include <zombye/input/input_manager.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/utils/logger.hpp>
+#include <zombye/utils/state_machine.hpp>
 
 class test_command : public zombye::command {
 public:

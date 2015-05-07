@@ -2,12 +2,11 @@
 #define __ZOMBYE_PLAY_STATE_HPP__
 
 #include <zombye/utils/state.hpp>
-#include <zombye/utils/state_machine.hpp>
-#include <zombye/input/input_manager.hpp>
 
-#include <zombye/gameplay/command.hpp>
-
-#include <zombye/utils/logger.hpp>
+namespace zombye {
+    class input_manager;
+    class state_machine;
+}
 
 namespace zombye {
     class play_state : public zombye::state {
