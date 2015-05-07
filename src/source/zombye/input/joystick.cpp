@@ -1,4 +1,6 @@
+#include <zombye/config/config_system.hpp>
 #include <zombye/input/joystick.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::joystick::joystick(int id, SDL_Joystick *joystick, zombye::config_system *config) : id_(id), joystick_(joystick) {
     zombye::log("opened joystick #" + std::to_string(id) + " " + std::string(SDL_JoystickNameForIndex(id)));

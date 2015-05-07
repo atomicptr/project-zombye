@@ -1,16 +1,17 @@
 #ifndef __ZOMBYE_JOYSTICK_HPP__
 #define __ZOMBYE_JOYSTICK_HPP__
 
-#include <iostream>
 #include <string>
 
 #include <SDL2/SDL.h>
 
 #include <zombye/input/button.hpp>
 #include <zombye/utils/os.h>
-#include <zombye/utils/logger.hpp>
 
-#include <zombye/config/config_system.hpp>
+namespace zombye {
+    class config_system;
+    class logger;
+}
 
 namespace zombye {
     struct stick {
