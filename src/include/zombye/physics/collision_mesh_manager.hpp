@@ -3,11 +3,11 @@
 
 #include <memory>
 
-#include <zombye/physics/collision_mesh.hpp>
 #include <zombye/utils/cached_resource_manager.hpp>
 
 namespace zombye {
     class game;
+    class collision_mesh;
 }
 
 namespace zombye {
