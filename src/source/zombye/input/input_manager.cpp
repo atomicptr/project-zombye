@@ -2,6 +2,7 @@
 #include <zombye/input/button.hpp>
 #include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
+#include <zombye/input/keyboard.hpp>
 
 zombye::input_manager::input_manager(input_system *input) : input_(input) {
 }

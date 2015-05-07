@@ -1,7 +1,6 @@
 #ifndef __ZOMBYE_INPUT_SYSTEM_HPP__
 #define __ZOMBYE_INPUT_SYSTEM_HPP__
 
-#include <iostream>
 #include <memory>
 #include <map>
 #include <utility>
@@ -9,17 +8,16 @@
 
 #include <SDL2/SDL.h>
 
-#include <zombye/input/keyboard.hpp>
-#include <zombye/input/joystick.hpp>
-#include <zombye/input/mouse.hpp>
-#include <zombye/input/input_manager.hpp>
-#include <zombye/utils/logger.hpp>
-
-#include <zombye/config/config_system.hpp>
+namespace zombye {
+    class config_system;
+    class input_manager;
+    class joystick;
+    class keyboard;
+    class logger;
+    class mouse;
+}
 
 namespace zombye {
-    class input_manager;
-
     class input_system {
     public:
         input_system(zombye::config_system*);

@@ -1,4 +1,10 @@
+#include <zombye/config/config_system.hpp>
+#include <zombye/input/keyboard.hpp>
+#include <zombye/input/joystick.hpp>
+#include <zombye/input/mouse.hpp>
+#include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::input_system::input_system(zombye::config_system *config) : config_system_(config) {
     if(!SDL_WasInit(SDL_INIT_JOYSTICK)) {

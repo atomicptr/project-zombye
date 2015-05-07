@@ -9,7 +9,10 @@
 #include <zombye/core/game.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
+#include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
+#include <zombye/input/keyboard.hpp>
+#include <zombye/input/mouse.hpp>
 #include <zombye/physics/physics_system.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
