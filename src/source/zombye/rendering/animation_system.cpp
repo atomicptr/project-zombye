@@ -1,4 +1,5 @@
 #include <zombye/core/game.hpp>
+#include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
 #include <zombye/utils/component_helper.hpp>
 
@@ -17,6 +18,6 @@ namespace zombye {
     }
 
     void animation_system::unregister_component(animation_component* component) {
-		remove(animation_components_, component);    	
+		remove(animation_components_, component);
     }
 }

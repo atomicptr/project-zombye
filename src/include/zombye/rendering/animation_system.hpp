@@ -3,9 +3,8 @@
 
 #include <vector>
 
-#include <zombye/rendering/animation_component.hpp>
-
 namespace zombye {
+	class animation_component;
 	class game;
 }
 
