@@ -6,7 +6,9 @@
 
 #include <GL/glew.h>
 
-#include <zombye/rendering/texture.hpp>
+namespace zombye {
+	class texture;
+}
 
 namespace zombye {
 	class framebuffer {

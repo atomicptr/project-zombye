@@ -1,4 +1,5 @@
 #include <zombye/rendering/framebuffer.hpp>
+#include <zombye/rendering/texture.hpp>
 
 namespace zombye {
 	framebuffer::framebuffer() noexcept {
