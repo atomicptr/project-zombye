@@ -1,3 +1,4 @@
+#include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/physics/collision_mesh_manager.hpp>
 

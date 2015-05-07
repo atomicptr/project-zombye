@@ -15,10 +15,6 @@
 #include <zombye/audio/music_collection.hpp>
 #include <zombye/audio/sound_collection.hpp>
 
-#include <zombye/assets/asset.hpp>
-#include <zombye/assets/asset_manager.hpp>
-#include <zombye/utils/logger.hpp>
-
 namespace zombye {
     class audio_system {
     public:
