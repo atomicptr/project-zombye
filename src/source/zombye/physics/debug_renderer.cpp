@@ -1,6 +1,7 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/debug_renderer.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
     debug_renderer::debug_renderer(game& game)

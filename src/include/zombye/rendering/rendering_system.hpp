@@ -8,19 +8,12 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
-#include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/buffer.hpp>
-#include <zombye/rendering/camera_component.hpp>
-#include <zombye/rendering/framebuffer.hpp>
-#include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/mesh_manager.hpp>
-#include <zombye/rendering/program.hpp>
-#include <zombye/rendering/screen_quad.hpp>
 #include <zombye/rendering/shader.hpp>
 #include <zombye/rendering/shader_manager.hpp>
 #include <zombye/rendering/skeleton_manager.hpp>
 #include <zombye/rendering/skinned_mesh_manager.hpp>
-#include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/texture_manager.hpp>
 #include <zombye/rendering/vertex_array.hpp>
@@ -28,6 +21,13 @@
 
 namespace zombye {
     class game;
+    class animation_component;
+    class camera_component;
+    class light_component;
+    class framebuffer;
+    class program;
+    class screen_quad;
+    class staticmesh_component;
 }
 
 namespace zombye {

@@ -6,6 +6,13 @@
 
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
+#include <zombye/rendering/animation_component.hpp>
+#include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/framebuffer.hpp>
+#include <zombye/rendering/light_component.hpp>
+#include <zombye/rendering/program.hpp>
+#include <zombye/rendering/screen_quad.hpp>
+#include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/component_helper.hpp>
