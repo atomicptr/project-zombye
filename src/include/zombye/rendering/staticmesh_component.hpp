@@ -7,20 +7,14 @@
 
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/reflective.hpp>
-#include <zombye/rendering/mesh.hpp>
-#include <zombye/rendering/texture.hpp>
 
 namespace zombye {
     class entity;
     class game;
+    class mesh;
 }
 
 namespace zombye {
-    struct material {
-        std::shared_ptr<const texture> color;
-        std::shared_ptr<const texture> specular;
-    };
-
     class staticmesh_component : public reflective<staticmesh_component, component> {
         friend class reflective<staticmesh_component, component>;
 
