@@ -4,14 +4,15 @@
 #include <btBulletDynamicsCommon.h>
 
 #include <zombye/physics/collision_mesh_manager.hpp>
-#include <zombye/physics/physics_component.hpp>
-#include <zombye/physics/debug_renderer.hpp>
-#include <zombye/physics/debug_render_bridge.hpp>
 
 namespace zombye {
     class game;
+    class debug_renderer;
+    class debug_render_bridge;
     class physics_component;
+}
 
+namespace zombye {
     class physics_system {
         friend class physics_component;
     public:

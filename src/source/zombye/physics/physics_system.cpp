@@ -1,6 +1,10 @@
-#include <zombye/core/game.hpp>
-#include <zombye/physics/physics_system.hpp>
 #include <algorithm>
+
+#include <zombye/core/game.hpp>
+#include <zombye/physics/debug_renderer.hpp>
+#include <zombye/physics/debug_render_bridge.hpp>
+#include <zombye/physics/physics_component.hpp>
+#include <zombye/physics/physics_system.hpp>
 
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
