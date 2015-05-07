@@ -4,10 +4,13 @@
 #include <glm/gtx/compatibility.hpp>
 
 #include <zombye/core/game.hpp>
-#include <zombye/ecs/component.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/rendering/skinned_mesh.hpp>
+#include <zombye/rendering/skeleton.hpp>
+#include <zombye/rendering/texture.hpp>
 #include <zombye/utils/logger.hpp>
 
 #include <glm/gtx/string_cast.hpp>

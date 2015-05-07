@@ -5,16 +5,17 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/reflective.hpp>
-#include <zombye/rendering/staticmesh_component.hpp>
-#include <zombye/rendering/skinned_mesh.hpp>
-#include <zombye/rendering/skeleton.hpp>
-#include <zombye/rendering/texture.hpp>
 
 namespace zombye {
     class entity;
     class game;
+    class skeleton;
+    class skinned_mesh;
+    class texture;
 }
 
 namespace zombye {
