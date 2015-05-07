@@ -1,5 +1,6 @@
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/audio/audio_system.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::audio_system::audio_system() {
     zombye::log("init audio system");
