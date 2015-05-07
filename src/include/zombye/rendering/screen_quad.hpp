@@ -5,7 +5,7 @@
 #include <zombye/rendering/buffer.hpp>
 
 namespace zombye {
-	class vertex_layout;;
+	class vertex_layout;
 }
 
 namespace zombye {
