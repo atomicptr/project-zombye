@@ -3,11 +3,11 @@
 
 #include <memory>
 
-#include <zombye/rendering/texture.hpp>
 #include <zombye/utils/cached_resource_manager.hpp>
 
 namespace zombye {
     class game;
+    class texture;
 }
 
 namespace zombye {

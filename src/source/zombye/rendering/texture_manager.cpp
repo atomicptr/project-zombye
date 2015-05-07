@@ -1,6 +1,7 @@
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
+#include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/texture_manager.hpp>
 #include <zombye/utils/load_dds.hpp>
 
