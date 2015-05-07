@@ -6,7 +6,6 @@
 
 #include <SDL2/SDL.h>
 
-#include <zombye/assets/asset_manager.hpp>
 #include <zombye/input/input_system.hpp>
 #include <zombye/audio/audio_system.hpp>
 #include <zombye/config/config_system.hpp>
@@ -21,6 +20,7 @@
 #include <zombye/utils/os.h>
 
 namespace zombye {
+    class asset_manager;
     class gameplay_system;
     class physics_system;
 }

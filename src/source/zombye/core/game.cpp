@@ -1,3 +1,7 @@
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
+#include <zombye/assets/asset_manager.hpp>
+#include <zombye/assets/native_loader.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/rendering/animation_component.hpp>

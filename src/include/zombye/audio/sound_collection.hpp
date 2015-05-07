@@ -7,7 +7,6 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include <zombye/assets/asset_manager.hpp>
 #include <zombye/audio/audiohelper.hpp>
 #include <zombye/utils/logger.hpp>
 

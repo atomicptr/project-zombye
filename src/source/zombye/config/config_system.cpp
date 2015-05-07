@@ -1,3 +1,8 @@
+
+
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
+#include <zombye/assets/asset_manager.hpp>
 #include <zombye/config/config_system.hpp>
 
 zombye::config_system::config_system() {

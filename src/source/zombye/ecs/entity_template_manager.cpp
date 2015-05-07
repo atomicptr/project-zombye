@@ -1,3 +1,7 @@
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
+#include <zombye/assets/asset_manager.hpp>
+#include <zombye/assets/native_loader.hpp>
 #include <zombye/ecs/entity_template_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/utils/assign.hpp>

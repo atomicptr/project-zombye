@@ -4,13 +4,15 @@
 #include <unordered_map>
 #include <utility>
 #include <memory>
+#include <fstream>
 
 #include <json/json.h>
 
-#include <zombye/assets/asset_manager.hpp>
-#include <zombye/assets/asset.hpp>
-
 #include <zombye/utils/os.h>
+
+namespace zombye {
+    class asset;
+}
 
 namespace zombye {
     class config_system {

@@ -5,12 +5,10 @@
 #include <memory>
 #include <string>
 
-#include <zombye/assets/asset_loader.hpp>
-#include <zombye/assets/asset.hpp>
-
-#include <zombye/assets/native_loader.hpp>
-
-#include <zombye/utils/logger.hpp>
+namespace zombye {
+    class asset_loader;
+    class asset;
+}
 
 namespace zombye {
     class asset_manager {

@@ -1,4 +1,8 @@
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
 #include <zombye/assets/asset_manager.hpp>
+#include <zombye/assets/native_loader.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::asset_manager::asset_manager() {
     // create asset loaders

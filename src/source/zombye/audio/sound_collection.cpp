@@ -1,3 +1,7 @@
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
+#include <zombye/assets/asset_manager.hpp>
+#include <zombye/assets/native_loader.hpp>
 #include <zombye/audio/sound_collection.hpp>
 
 zombye::sound_collection::sound_collection() {
