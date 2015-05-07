@@ -1,6 +1,9 @@
+#include <zombye/core/game.hpp>
+#include <zombye/gameplay/game_states.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/states/menu_state.hpp>
 #include <zombye/gameplay/states/play_state.hpp>
+#include <zombye/utils/state_machine.hpp>
 
 zombye::gameplay_system::gameplay_system(zombye::game *game) {
     sm_ = std::unique_ptr<zombye::state_machine>(new zombye::state_machine(game));

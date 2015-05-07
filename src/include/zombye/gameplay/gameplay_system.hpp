@@ -3,11 +3,6 @@
 
 #include <string>
 
-#include <zombye/gameplay/game_states.hpp>
-
-#include <zombye/core/game.hpp>
-#include <zombye/utils/state_machine.hpp>
-
 namespace zombye {
     class game;
     class state_machine;

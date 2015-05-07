@@ -18,6 +18,7 @@
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/utils/fps_counter.hpp>
 #include <zombye/utils/sdlhelper.hpp>
+#include <zombye/utils/state_machine.hpp>
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/os.h>
 
