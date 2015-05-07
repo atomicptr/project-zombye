@@ -1,6 +1,7 @@
 #ifndef __ZOMBEYE_ASSET_LOADER_HPP__
 #define __ZOMBEYE_ASSET_LOADER_HPP__
 
+#include <memory>
 #include <string>
 
 namespace zombye {
