@@ -1,4 +1,4 @@
-
+#include <fstream>
 
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_loader.hpp>
