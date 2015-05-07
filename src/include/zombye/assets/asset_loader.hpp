@@ -3,7 +3,9 @@
 
 #include <string>
 
-#include <zombye/assets/asset.hpp>
+namespace zombye {
+    class asset;
+}
 
 namespace zombye {
 
