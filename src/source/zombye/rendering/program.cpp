@@ -3,7 +3,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <zombye/rendering/program.hpp>
+#include <zombye/rendering/shader.hpp>
 #include <zombye/utils/logger.hpp>
+
 
 namespace zombye {
     program::program() noexcept {

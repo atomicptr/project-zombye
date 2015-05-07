@@ -7,7 +7,9 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-#include <zombye/rendering/shader.hpp>
+namespace zombye {
+    class shader;
+}
 
 namespace zombye {
     using shader_ptr = std::shared_ptr<const shader>;
