@@ -1,12 +1,11 @@
+#include <zombye/gameplay/game_states.hpp>
 #include <zombye/gameplay/states/menu_state.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/physics/physics_component.hpp>
-
 #include <zombye/physics/shapes.hpp>
-
-#include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
+#include <zombye/utils/state_machine.hpp>
+#include <zombye/utils/logger.hpp>
 
 using namespace std::string_literals;
 

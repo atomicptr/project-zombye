@@ -2,10 +2,12 @@
 #define __ZOMBYE_MENU_STATE_HPP__
 
 #include <zombye/utils/state.hpp>
-#include <zombye/utils/state_machine.hpp>
-#include <zombye/gameplay/game_states.hpp>
 
-#include <zombye/utils/logger.hpp>
+namespace zombye {
+    class game_states;
+    class logger;
+    class state_machine;
+}
 
 namespace zombye {
     class menu_state : public zombye::state {
