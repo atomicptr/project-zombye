@@ -1,13 +1,25 @@
+#include <zombye/audio/audio_system.hpp>
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_loader.hpp>
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/assets/native_loader.hpp>
-#include <zombye/core/game.hpp>
+#include <zombye/config/config_system.hpp>
+#include <zombye/ecs/entity_manager.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
+#include <zombye/core/game.hpp>
+#include <zombye/gameplay/gameplay_system.hpp>
+#include <zombye/gameplay/game_states.hpp>
+#include <zombye/input/input_system.hpp>
+#include <zombye/physics/physics_system.hpp>
 #include <zombye/rendering/animation_component.hpp>
+#include <zombye/rendering/animation_system.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/utils/fps_counter.hpp>
+#include <zombye/utils/sdlhelper.hpp>
+#include <zombye/utils/logger.hpp>
+#include <zombye/utils/os.h>
 
 zombye::game::game(std::string title) : title_(title), running_(false), window_(nullptr, SDL_DestroyWindow) {
 #ifdef ZOMBYE_DEBUG

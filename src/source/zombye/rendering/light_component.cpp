@@ -1,5 +1,7 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
+#include <zombye/rendering/light_component.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 
 namespace zombye {
     light_component::light_component(game& game, entity& owner, const glm::vec3& color, const glm::vec3& specular_color, float distance) noexcept

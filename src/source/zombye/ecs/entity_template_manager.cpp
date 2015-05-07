@@ -5,6 +5,7 @@
 #include <zombye/ecs/entity_template_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/utils/assign.hpp>
+#include <zombye/utils/logger.hpp>
 
 using namespace Json;
 

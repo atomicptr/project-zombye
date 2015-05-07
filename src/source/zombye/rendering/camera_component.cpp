@@ -1,7 +1,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <zombye/core/game.hpp>
+#include <zombye/ecs/entity.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 
 namespace zombye {
     camera_component::camera_component(game& game, entity& owner, const glm::vec3& look_at, const glm::vec3& up) noexcept

@@ -6,23 +6,18 @@
 
 #include <SDL2/SDL.h>
 
-#include <zombye/input/input_system.hpp>
-#include <zombye/audio/audio_system.hpp>
-#include <zombye/config/config_system.hpp>
-#include <zombye/ecs/entity_manager.hpp>
-#include <zombye/gameplay/gameplay_system.hpp>
-#include <zombye/gameplay/game_states.hpp>
-#include <zombye/physics/physics_system.hpp>
-#include <zombye/rendering/animation_system.hpp>
-#include <zombye/rendering/rendering_system.hpp>
-#include <zombye/utils/sdlhelper.hpp>
-#include <zombye/utils/logger.hpp>
-#include <zombye/utils/os.h>
-
 namespace zombye {
+    class animation_system;
     class asset_manager;
+    class audio_system;
+    class config_system;
+    class entity_manager;
     class gameplay_system;
+    class game_state;
+    class input_system;
     class physics_system;
+    class rendering_system;
+    class logger;
 }
 
 namespace zombye {

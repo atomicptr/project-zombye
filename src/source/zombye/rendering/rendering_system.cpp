@@ -5,6 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include <zombye/core/game.hpp>
+#include <zombye/ecs/entity.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/component_helper.hpp>

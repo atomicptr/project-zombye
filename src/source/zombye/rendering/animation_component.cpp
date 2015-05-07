@@ -6,6 +6,8 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/component.hpp>
 #include <zombye/rendering/animation_component.hpp>
+#include <zombye/rendering/animation_system.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
 
 #include <glm/gtx/string_cast.hpp>
@@ -99,7 +101,7 @@ namespace zombye {
                             auto& child = node->second;
                             pose[child] *= pose[i];
                             traversal.push(child);
-                        }   
+                        }
                     }
                 }
             } else {

@@ -1,6 +1,7 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
