@@ -1,3 +1,6 @@
+#include <zombye/core/game.hpp>
+#include <zombye/utils/state.hpp>
+#include <zombye/utils/logger.hpp>
 #include <zombye/utils/state_machine.hpp>
 
 zombye::state_machine::state_machine(zombye::game* game) : game_(game) {

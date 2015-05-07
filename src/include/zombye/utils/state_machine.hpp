@@ -1,11 +1,6 @@
 #ifndef __ZOMBYE_STATE_MACHINE_HPP__
 #define __ZOMBYE_STATE_MACHINE_HPP__
 
-#include <zombye/core/game.hpp>
-#include <zombye/utils/state.hpp>
-
-#include <zombye/utils/logger.hpp>
-
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -13,8 +8,11 @@
 
 namespace zombye {
     class game;
+    class logger;
     class state;
+}
 
+namespace zombye {
     class state_machine {
     public:
         state_machine(game*);

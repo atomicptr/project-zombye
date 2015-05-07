@@ -2,6 +2,7 @@
 
 #include <glm/gtx/string_cast.hpp>
 
+#include <zombye/core/game.hpp>
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/gameplay/states/play_state.hpp>
 #include <zombye/gameplay/command.hpp>
