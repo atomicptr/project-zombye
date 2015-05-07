@@ -3,8 +3,6 @@
 
 #include <string>
 
-#include <cxxabi.h>
-
 namespace zombye {
     std::string demangle(const char* name);
 }
