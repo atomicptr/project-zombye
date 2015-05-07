@@ -2,7 +2,9 @@
 #include <zombye/assets/asset_loader.hpp>
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/assets/native_loader.hpp>
+#include <zombye/audio/audiohelper.hpp>
 #include <zombye/audio/music_collection.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::music_collection::music_collection() {
 }

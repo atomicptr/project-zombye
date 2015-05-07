@@ -7,9 +7,6 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include <zombye/audio/audiohelper.hpp>
-#include <zombye/utils/logger.hpp>
-
 namespace zombye {
 
     class music_collection {
