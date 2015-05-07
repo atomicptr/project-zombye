@@ -1,6 +1,7 @@
 #include <mesh_converter/mesh_converter.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/rendering/texture.hpp>
 
 namespace zombye {
     mesh::mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept
@@ -13,7 +14,7 @@ namespace zombye {
         }
         auto vertex_size = head.vertex_count * sizeof(vertex);
         auto index_size = head.index_count * sizeof(unsigned int);
-        auto size = sizeof(header) 
+        auto size = sizeof(header)
             + vertex_size
             + index_size
             + head.submesh_count * sizeof(devtools::submesh);

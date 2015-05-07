@@ -7,11 +7,11 @@
 #include <glm/glm.hpp>
 
 #include <zombye/rendering/buffer.hpp>
-#include <zombye/rendering/texture.hpp>
 #include <zombye/rendering/vertex_array.hpp>
 
 namespace zombye {
     class rendering_system;
+    class texture;
 }
 
 namespace zombye {
