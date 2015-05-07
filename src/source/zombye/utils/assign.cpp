@@ -1,6 +1,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <zombye/ecs/abstract_property.hpp>
+#include <zombye/ecs/value_pack.hpp>
 #include <zombye/ecs/typed_value.hpp>
 #include <zombye/utils/assign.hpp>
 #include <zombye/utils/logger.hpp>

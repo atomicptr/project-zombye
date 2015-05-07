@@ -6,9 +6,11 @@
 
 #include <json/json.h>
 
-#include <zombye/ecs/abstract_property.hpp>
 #include <zombye/ecs/rtti.hpp>
-#include <zombye/ecs/value_pack.hpp>
+
+namespace zombye {
+    class abstract_property;
+}
 
 namespace zombye {
         std::string to_string(const Json::Value& value);
