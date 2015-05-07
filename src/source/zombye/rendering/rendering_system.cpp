@@ -12,6 +12,7 @@
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/program.hpp>
 #include <zombye/rendering/screen_quad.hpp>
+#include <zombye/rendering/skinned_mesh.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>

@@ -1,6 +1,7 @@
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
+#include <zombye/rendering/skinned_mesh.hpp>
 #include <zombye/rendering/skinned_mesh_manager.hpp>
 
 namespace zombye {
