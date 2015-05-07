@@ -8,8 +8,11 @@
 #include <GL/glew.h>
 
 #include <zombye/rendering/buffer.hpp>
-#include <zombye/rendering/program.hpp>
-#include <zombye/rendering/vertex_array.hpp>
+
+namespace zombye {
+    class program;
+    class vertex_array;
+}
 
 namespace zombye {
     struct vertex_attribute {

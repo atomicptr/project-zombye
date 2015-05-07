@@ -1,3 +1,5 @@
+#include <zombye/rendering/program.hpp>
+#include <zombye/rendering/vertex_array.hpp>
 #include <zombye/rendering/vertex_layout.hpp>
 
 namespace zombye {
