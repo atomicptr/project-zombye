@@ -3,8 +3,10 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include <zombye/assets/asset.hpp>
-#include <zombye/utils/logger.hpp>
+namespace zombye {
+    class asset;
+    class logger;
+}
 
 namespace zombye {
     SDL_RWops* get_raw_from_asset(asset*);
