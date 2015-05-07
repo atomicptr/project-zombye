@@ -3,7 +3,6 @@
 
 #include <string>
 #include <memory>
-#include <fstream>
 
 namespace zombye {
     class asset;
