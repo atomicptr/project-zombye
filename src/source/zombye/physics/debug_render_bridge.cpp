@@ -1,4 +1,6 @@
+#include <zombye/physics/debug_renderer.hpp>
 #include <zombye/physics/debug_render_bridge.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::debug_render_bridge::debug_render_bridge(debug_renderer& debug_renderer)
 : debug_mode_(0), debug_renderer_{debug_renderer} {}
