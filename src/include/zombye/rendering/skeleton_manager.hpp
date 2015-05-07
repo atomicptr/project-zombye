@@ -4,11 +4,11 @@
 #include <memory>
 #include <string>
 
-#include <zombye/rendering/skeleton.hpp>
 #include <zombye/utils/cached_resource_manager.hpp>
 
 namespace zombye {
     class game;
+    class skeleton;
 }
 
 namespace zombye {
