@@ -7,18 +7,17 @@
 #include <glm/glm.hpp>
 #include <btBulletDynamicsCommon.h>
 
-#include <zombye/core/game.hpp>
-
 #include <zombye/ecs/component.hpp>
-#include <zombye/ecs/entity.hpp>
 #include <zombye/ecs/reflective.hpp>
 
-#include <zombye/physics/physics_system.hpp>
-#include <zombye/physics/collision_shape.hpp>
+namespace zombye {
+    class collision_shape;
+    class entity;
+    class game;
+    class physics_system;
+}
 
 namespace zombye {
-    class physics_system;
-
     class physics_component : public reflective<physics_component, component> {
         friend class reflective<physics_component, component>;
 
