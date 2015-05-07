@@ -1,4 +1,6 @@
+#include <zombye/physics/collision_mesh.hpp>
 #include <zombye/physics/shapes/convex_hull_shape.hpp>
+#include <zombye/utils/logger.hpp>
 
 zombye::convex_hull_shape::convex_hull_shape(std::shared_ptr<const collision_mesh> mesh) : mesh_(mesh) {
     auto shape = new btConvexHullShape();

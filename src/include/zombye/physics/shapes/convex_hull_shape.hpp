@@ -6,9 +6,11 @@
 
 #include <btBulletDynamicsCommon.h>
 
-#include <zombye/utils/logger.hpp>
 #include <zombye/physics/collision_shape.hpp>
-#include <zombye/physics/collision_mesh.hpp>
+
+namespace zombye {
+    class collision_mesh;
+}
 
 namespace zombye {
 
