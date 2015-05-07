@@ -1,4 +1,7 @@
+#include <zombye/gameplay/command.hpp>
+#include <zombye/input/button.hpp>
 #include <zombye/input/input_manager.hpp>
+#include <zombye/input/input_system.hpp>
 
 zombye::input_manager::input_manager(input_system *input) : input_(input) {
 }

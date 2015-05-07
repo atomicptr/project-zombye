@@ -7,13 +7,13 @@
 #include <string>
 #include <queue>
 
-#include <zombye/input/input_system.hpp>
-#include <zombye/input/button.hpp>
-#include <zombye/gameplay/command.hpp>
+namespace zombye {
+    class button;
+    class command;
+    class input_system;
+}
 
 namespace zombye {
-    class input_system;
-
     class input_manager {
     public:
         input_manager(input_system*);
