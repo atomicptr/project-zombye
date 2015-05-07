@@ -5,8 +5,10 @@
 #include <memory>
 #include <fstream>
 
-#include <zombye/assets/asset.hpp>
-#include <zombye/assets/asset_loader.hpp>
+namespace zombye {
+    class asset;
+    class asset_loader;
+}
 
 namespace zombye {
     class native_loader : public zombye::asset_loader {

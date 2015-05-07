@@ -1,3 +1,5 @@
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_loader.hpp>
 #include <zombye/assets/native_loader.hpp>
 
 zombye::native_loader::native_loader(std::string path) {
