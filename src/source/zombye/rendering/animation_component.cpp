@@ -56,26 +56,10 @@ namespace zombye {
                     ++next_frame.qkey;
                     ++next_frame.skey;
 
-                    auto t1 = track.tkeys[current_frame.tkey].time * fps;
-                    auto t2 = track.tkeys[next_frame.tkey].time * fps;
-                    if (elapsed_time_ >= t2 && next_frame.tkey < track.tkeys.size() - 1) {
-                        ++current_frame.tkey;
-                        ++next_frame.tkey;
-                        t1 = track.tkeys[current_frame.tkey].time * fps;
-                        t2 = track.tkeys[next_frame.tkey].time * fps;
-                    }
+                    auto iv = interpolate_translation_keyframe(track, current_frame, next_frame, fps);
 
-                    auto v1 = track.tkeys[current_frame.tkey].translate;
-                    auto v2 = track.tkeys[next_frame.tkey].translate;
-
-                    auto delta = (elapsed_time_ - t1) / (t2 - t1);
-                    delta = delta > 1.f ? 1.f : delta;
-
-                    auto iv = glm::lerp(v1, v2, delta);
-
-
-                    t1 = track.qkeys[current_frame.qkey].time * fps;
-                    t2 = track.qkeys[next_frame.qkey].time * fps;
+                    auto t1 = track.qkeys[current_frame.qkey].time * fps;
+                    auto t2 = track.qkeys[next_frame.qkey].time * fps;
                     if (elapsed_time_ >= t2 && next_frame.qkey < track.qkeys.size() - 1) {
                         ++current_frame.qkey;
                         ++next_frame.qkey;
@@ -88,7 +72,7 @@ namespace zombye {
                     auto q2 = track.qkeys[next_frame.qkey].rotate;
                     q2 = glm::normalize(q2);
 
-                    delta = (elapsed_time_ - t1) / (t2 - t1);
+                    auto delta = (elapsed_time_ - t1) / (t2 - t1);
                     delta = delta > 1.f ? 1.f : delta;
 
                     auto iq = glm::normalize(glm::lerp(q1, q2, delta));
@@ -154,6 +138,25 @@ namespace zombye {
         }
 
         current_keyframes_.resize(bones.size());
+    }
+
+    glm::vec3 animation_component::interpolate_translation_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps) {
+        auto t1 = track.tkeys[current_frame.tkey].time * fps;
+        auto t2 = track.tkeys[next_frame.tkey].time * fps;
+        if (elapsed_time_ >= t2 && next_frame.tkey < track.tkeys.size() - 1) {
+            ++current_frame.tkey;
+            ++next_frame.tkey;
+            t1 = track.tkeys[current_frame.tkey].time * fps;
+            t2 = track.tkeys[next_frame.tkey].time * fps;
+        }
+
+        auto v1 = track.tkeys[current_frame.tkey].translate;
+        auto v2 = track.tkeys[next_frame.tkey].translate;
+
+        auto delta = (elapsed_time_ - t1) / (t2 - t1);
+        delta = delta > 1.f ? 1.f : delta;
+
+        return glm::lerp(v1, v2, delta);
     }
 
     animation_component::animation_component(game& game, entity& owner)

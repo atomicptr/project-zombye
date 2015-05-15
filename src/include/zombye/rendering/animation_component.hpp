@@ -16,6 +16,7 @@ namespace zombye {
     class skeleton;
     class skinned_mesh;
     class texture;
+    struct track;
 }
 
 namespace zombye {
@@ -31,8 +32,10 @@ namespace zombye {
         std::shared_ptr<const skinned_mesh> mesh_;
         std::shared_ptr<const zombye::skeleton> skeleton_;
         std::string current_state_;
+        std::string next_state_;
         float elapsed_time_;
         std::vector<frame> current_keyframes_;
+        std::vector<frame> next_keyframes_;
         std::vector<glm::mat4> pose_;
     public:
         animation_component(game& game, entity& owner, const std::string& mesh, const std::string& skeleton);
@@ -68,6 +71,8 @@ namespace zombye {
             elapsed_time_ = 0.f;
         }
     private:
+        glm::vec3 interpolate_translation_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
+
         animation_component(game& game, entity& owner);
         static void register_reflection();
     };
