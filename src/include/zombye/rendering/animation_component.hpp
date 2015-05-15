@@ -72,6 +72,7 @@ namespace zombye {
         }
     private:
         glm::vec3 interpolate_translation_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
+        glm::quat interpolate_quaternion_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
 
         animation_component(game& game, entity& owner);
         static void register_reflection();

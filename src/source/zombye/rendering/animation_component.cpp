@@ -58,24 +58,7 @@ namespace zombye {
 
                     auto iv = interpolate_translation_keyframe(track, current_frame, next_frame, fps);
 
-                    auto t1 = track.qkeys[current_frame.qkey].time * fps;
-                    auto t2 = track.qkeys[next_frame.qkey].time * fps;
-                    if (elapsed_time_ >= t2 && next_frame.qkey < track.qkeys.size() - 1) {
-                        ++current_frame.qkey;
-                        ++next_frame.qkey;
-                        t1 = track.qkeys[current_frame.qkey].time * fps;
-                        t2 = track.qkeys[next_frame.qkey].time * fps;
-                    }
-
-                    auto q1 = track.qkeys[current_frame.qkey].rotate;
-                    q1 = glm::normalize(q1);
-                    auto q2 = track.qkeys[next_frame.qkey].rotate;
-                    q2 = glm::normalize(q2);
-
-                    auto delta = (elapsed_time_ - t1) / (t2 - t1);
-                    delta = delta > 1.f ? 1.f : delta;
-
-                    auto iq = glm::normalize(glm::lerp(q1, q2, delta));
+                    auto iq = interpolate_quaternion_keyframe(track, current_frame, next_frame, fps);
 
                     auto p = glm::toMat4(iq);
                     p[3].x = iv.x;
@@ -157,6 +140,27 @@ namespace zombye {
         delta = delta > 1.f ? 1.f : delta;
 
         return glm::lerp(v1, v2, delta);
+    }
+
+    glm::quat animation_component::interpolate_quaternion_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps) {
+        auto t1 = track.qkeys[current_frame.qkey].time * fps;
+        auto t2 = track.qkeys[next_frame.qkey].time * fps;
+        if (elapsed_time_ >= t2 && next_frame.qkey < track.qkeys.size() - 1) {
+            ++current_frame.qkey;
+            ++next_frame.qkey;
+            t1 = track.qkeys[current_frame.qkey].time * fps;
+            t2 = track.qkeys[next_frame.qkey].time * fps;
+        }
+
+        auto q1 = track.qkeys[current_frame.qkey].rotate;
+        q1 = glm::normalize(q1);
+        auto q2 = track.qkeys[next_frame.qkey].rotate;
+        q2 = glm::normalize(q2);
+
+        auto delta = (elapsed_time_ - t1) / (t2 - t1);
+        delta = delta > 1.f ? 1.f : delta;
+
+        return glm::normalize(glm::lerp(q1, q2, delta));
     }
 
     animation_component::animation_component(game& game, entity& owner)
