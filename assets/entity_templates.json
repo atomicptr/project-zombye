@@ -1,8 +1,14 @@
 {
+    "dummy": {
+        "staticmesh_component": {
+            "mesh": "meshes/human.msh"
+        }
+    },
+
     "qdummy": {
         "animation_component": {
-            "mesh": "meshes/dummy.msh",
-            "skeleton": "anims/dummy.skl"
+            "mesh": "meshes/human.msh",
+            "skeleton": "anims/human.skl"
         }
     },
 

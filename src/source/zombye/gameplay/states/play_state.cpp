@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include <glm/gtx/string_cast.hpp>
+#include <SDL2/SDL.h>
 
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity_manager.hpp>
@@ -23,6 +24,26 @@ public:
 
     void execute() {
         zombye::log("FIRE!!!! PENG PENG!!!");
+    }
+};
+
+class switch_anim : public zombye::command {
+private:
+    zombye::game& game_;
+    bool toggle_ = true;
+public:
+    switch_anim(zombye::game& game) : game_{game} {}
+
+    void execute() {
+        auto anim = game_.entity_manager().resolve(2);
+        if (anim) {
+            if (toggle_) {
+                anim->component<zombye::animation_component>()->change_state("move");
+            } else {
+                anim->component<zombye::animation_component>()->change_state("walk");
+            }
+            toggle_ = !toggle_;
+        }
     }
 };
 
@@ -111,6 +132,7 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     input_->register_command("CAMBACKWARD", new cam_backward{*sm->get_game()});
     input_->register_command("CAMLEFT", new cam_left{*sm->get_game()});
     input_->register_command("CAMRIGHT", new cam_right{*sm->get_game()});
+    input_->register_command("switch_state", new switch_anim{*sm->get_game()});
 
     auto first_joystick = input->first_joystick();
 
@@ -125,17 +147,19 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     input_->register_keyboard_event("CAMBACKWARD", "s");
     input_->register_keyboard_event("CAMLEFT", "a");
     input_->register_keyboard_event("CAMRIGHT", "d");
+    input_->register_keyboard_event("switch_state", "x");
 }
 
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{0.f, 2.f, 10.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
+    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{5.f, 2.f, 0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
     camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
     auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
-    ani.component<animation_component>()->change_state("move");
+    ani.component<zombye::animation_component>()->change_state("walk");
+
     sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }
 
