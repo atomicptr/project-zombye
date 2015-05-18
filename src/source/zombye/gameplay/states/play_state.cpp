@@ -60,91 +60,11 @@ public:
     }
 };
 
-class cam_forward : public zombye::command {
-public:
-    cam_forward(zombye::game& game) : renderer_{game.rendering_system()} {}
-
-    void execute() {
-        auto cam = renderer_.active_camera();
-        if (cam) {
-            auto& owner = cam->owner();
-            auto pos = owner.position();
-            auto look_at = cam->look_at();
-            auto direction = glm::vec3{1.f, 0.f, 1.f};
-            owner.position(pos - 0.3f * direction);
-            cam->set_look_at(look_at - 0.3f * direction);
-        }
-    }
-private:
-    zombye::rendering_system& renderer_;
-};
-
-class cam_backward : public zombye::command {
-public:
-    cam_backward(zombye::game& game) : renderer_{game.rendering_system()} {}
-
-    void execute() {
-        auto cam = renderer_.active_camera();
-        if (cam) {
-            auto& owner = cam->owner();
-            auto pos = owner.position();
-            auto look_at = cam->look_at();
-            auto direction = glm::vec3{1.f, 0.f, 1.f};
-            owner.position(pos + 0.3f * direction);
-            cam->set_look_at(look_at + 0.3f * direction);
-        }
-    }
-private:
-    zombye::rendering_system& renderer_;
-};
-
-class cam_left : public zombye::command {
-public:
-    cam_left(zombye::game& game) : renderer_{game.rendering_system()} {}
-
-    void execute() {
-        auto cam = renderer_.active_camera();
-        if (cam) {
-            auto& owner = cam->owner();
-            auto pos = owner.position();
-            auto look_at = cam->look_at();
-            auto direction = glm::vec3{1.f, 0.f, -1.f};
-            owner.position(pos - 0.3f * direction);
-            cam->set_look_at(look_at - 0.3f * direction);
-        }
-    }
-private:
-    zombye::rendering_system& renderer_;
-};
-
-class cam_right : public zombye::command {
-public:
-    cam_right(zombye::game& game) : renderer_{game.rendering_system()} {}
-
-    void execute() {
-        auto cam = renderer_.active_camera();
-        if (cam) {
-            auto& owner = cam->owner();
-            auto pos = owner.position();
-            auto look_at = cam->look_at();
-            auto direction = glm::vec3{1.f, 0.f, -1.f};
-            owner.position(pos + 0.3f * direction);
-            cam->set_look_at(look_at + 0.3f * direction);
-        }
-    }
-private:
-    zombye::rendering_system& renderer_;
-};
-
 zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     auto input = sm->get_game()->input();
     input_ = input->create_manager();
 
     input_->register_command("FIRE", new test_command());
-    input_->register_command("CAMFOWARD", new cam_forward{*sm->get_game()});
-    input_->register_command("CAMBACKWARD", new cam_backward{*sm->get_game()});
-    input_->register_command("CAMLEFT", new cam_left{*sm->get_game()});
-    input_->register_command("CAMRIGHT", new cam_right{*sm->get_game()});
     input_->register_command("switch_state", new switch_anim{*sm->get_game()});
 
     auto first_joystick = input->first_joystick();
@@ -156,10 +76,6 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 
     input_->register_event("FIRE", input->mouse()->left_button());
     input_->register_keyboard_event("FIRE", "space");
-    input_->register_keyboard_event("CAMFOWARD", "w");
-    input_->register_keyboard_event("CAMBACKWARD", "s");
-    input_->register_keyboard_event("CAMLEFT", "a");
-    input_->register_keyboard_event("CAMRIGHT", "d");
     input_->register_keyboard_event("switch_state", "x");
 }
 
