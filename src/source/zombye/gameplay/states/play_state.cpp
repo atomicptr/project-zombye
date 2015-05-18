@@ -48,6 +48,9 @@ public:
                 auto comp = anim->component<zombye::animation_component>();
                 if (comp->is_playing("run") && !comp->is_blending()) {
                     comp->change_state_blend("walk");
+                } else if (comp->is_playing("stand") && !comp->is_blending()) {
+                    comp->change_state_blend("run");
+                    toggle_ = !toggle_;
                 } else {
                     return;
                 }
@@ -163,12 +166,12 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{5.f, 2.f, 0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
+    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{-5.f, 2.f, 5.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
     camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
     auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
-    ani.component<zombye::animation_component>()->change_state("run");
+    ani.component<zombye::animation_component>()->change_state("stand");
 
     sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }
