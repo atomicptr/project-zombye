@@ -30,7 +30,7 @@ public:
 class switch_anim : public zombye::command {
 private:
     zombye::game& game_;
-    bool toggle_ = true;
+    bool toggle_ = false;
 public:
     switch_anim(zombye::game& game) : game_{game} {}
 
@@ -38,9 +38,19 @@ public:
         auto anim = game_.entity_manager().resolve(2);
         if (anim) {
             if (toggle_) {
-                anim->component<zombye::animation_component>()->change_state("move");
+                auto comp = anim->component<zombye::animation_component>();
+                if (comp->is_playing("walk") && !comp->is_blending()) {
+                    comp->change_state_blend("move");
+                } else {
+                    return;
+                }
             } else {
-                anim->component<zombye::animation_component>()->change_state("walk");
+                auto comp = anim->component<zombye::animation_component>();
+                if (comp->is_playing("move") && !comp->is_blending()) {
+                    comp->change_state_blend("walk");
+                } else {
+                    return;
+                }
             }
             toggle_ = !toggle_;
         }
@@ -158,7 +168,7 @@ void zombye::play_state::enter() {
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
     auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
-    ani.component<zombye::animation_component>()->change_state("walk");
+    ani.component<zombye::animation_component>()->change_state("move");
 
     sm_->get_game()->entity_manager().emplace("light", glm::vec3{5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }

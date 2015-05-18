@@ -37,6 +37,8 @@ namespace zombye {
         std::vector<frame> current_keyframes_;
         std::vector<frame> next_keyframes_;
         std::vector<glm::mat4> pose_;
+        bool blend_;
+        bool blend_next_;
     public:
         animation_component(game& game, entity& owner, const std::string& mesh, const std::string& skeleton);
         ~animation_component() noexcept;
@@ -70,6 +72,21 @@ namespace zombye {
             }
             elapsed_time_ = 0.f;
         }
+
+        void change_state_blend(const std::string& state_b) {
+            next_state_ = state_b;
+            next_keyframes_.assign(next_keyframes_.size(), frame{});
+            blend_next_ = true;
+        }
+
+        bool is_playing(const std::string& state) const {
+            return current_state_ == state;
+        }
+
+        bool is_blending() const {
+            return blend_;
+        }
+
     private:
         glm::vec3 interpolate_translation_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
         glm::quat interpolate_quaternion_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
