@@ -7,6 +7,8 @@ solution "project-zombye"
         "deps/jsoncpp/include",
         "deps/gli/include",
         "deps/glm/include",
+        "deps/angelscript/include",
+        "deps/angelscript/source",
         "src/include",
         "mesh_converter/include",
         "animation_converter/include"
@@ -14,7 +16,8 @@ solution "project-zombye"
 
     libdirs {
         "deps/jsoncpp",
-        "deps/bullet3"
+        "deps/bullet3",
+        "deps/angelscript"
     }
 
     configuration "debug"
@@ -53,7 +56,7 @@ solution "project-zombye"
 
             linkoptions {"-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lglew32s -lopengl32"}
 
-            links {"jsoncpp", "bullet3"}
+            links {"jsoncpp", "bullet3", "angelscript"}
 
             postbuildcommands {
                 "cp deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/bin/SDL2.dll SDL2.dll",
@@ -66,10 +69,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
 
         configuration "debug"
             flags {"FatalWarnings"}

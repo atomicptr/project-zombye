@@ -7,6 +7,8 @@ solution "project-zombye"
         "deps/jsoncpp/include",
         "deps/gli/include",
         "deps/glm/include",
+        "deps/angelscript/include",
+        "deps/angelscript/source",
         "src/include",
         "mesh_converter/include",
         "animation_converter/include"
@@ -14,7 +16,8 @@ solution "project-zombye"
 
     libdirs {
         "deps/jsoncpp",
-        "deps/bullet3"
+        "deps/bullet3",
+        "deps/angelscript"
     }
 
     configuration "debug"
@@ -138,6 +141,27 @@ solution "project-zombye"
 
         configuration {"gmake", "macosx"}
 
+    project "angelscript"
+        kind "StaticLib"
+
+        buildoptions {"-x c++", "-std=c++1y", "-fno-strict-aliasing"}
+
+        files {
+            "deps/angelscript/source/**.cpp"
+        }
+
+        configuration {"gmake", "windows"}
+            linkoptions {"-lmingw32"}
+
+        configuration {"gmake", "linux"}
+            if _OPTIONS["cc"] == "clang" then
+                toolset "clang"
+                buildoptions "-stdlib=libc++"
+                links "c++"
+            end
+
+        configuration {"gmake", "macosx"}
+
     project "zombye"
         kind "WindowedApp"
 
@@ -167,7 +191,7 @@ solution "project-zombye"
 
             linkoptions {"-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lglew32s -lopengl32"}
 
-            links {"jsoncpp", "bullet3"}
+            links {"jsoncpp", "bullet3", "angelscript"}
 
             postbuildcommands {
                 "cp deps/mingw/SDL2-2.0.3/x86_64-w64-mingw32/bin/SDL2.dll SDL2.dll",
@@ -180,10 +204,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
 
         configuration "debug"
             flags {"FatalWarnings"}
