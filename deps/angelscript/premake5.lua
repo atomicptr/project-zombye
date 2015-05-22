@@ -20,7 +20,7 @@ solution "project-zombye"
         }
 
         configuration {"gmake", "windows"}
-            linkoptions {"-lmingw32"}
+            linkoptions {"-lmingw32", "-lpthread"}
 
         configuration {"gmake", "linux"}
             if _OPTIONS["cc"] == "clang" then
@@ -28,5 +28,7 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
+            links "pthread"
 
         configuration {"gmake", "macosx"}
+            links "pthread"

@@ -54,7 +54,7 @@ solution "project-zombye"
 
             defines {"GLEW_STATIC"}
 
-            linkoptions {"-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lglew32s -lopengl32"}
+            linkoptions {"-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lglew32s -lopengl32 -lpthread"}
 
             links {"jsoncpp", "bullet3", "angelscript"}
 
@@ -69,10 +69,10 @@ solution "project-zombye"
                 buildoptions "-stdlib=libc++"
                 links "c++"
             end
-            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
+            links { "GL", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript", "pthread" }
 
         configuration {"gmake", "macosx"}
-            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript" }
+            links { "OpenGL.framework", "GLEW", "SDL2", "SDL2_mixer", "jsoncpp", "bullet3", "angelscript", "pthread" }
 
         configuration "debug"
             flags {"FatalWarnings"}
