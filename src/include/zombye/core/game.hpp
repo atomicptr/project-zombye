@@ -18,6 +18,7 @@ namespace zombye {
     class physics_system;
     class rendering_system;
     class logger;
+    class scripting_system;
 }
 
 namespace zombye {
@@ -50,6 +51,10 @@ namespace zombye {
             return *rendering_system_;
         }
 
+        auto& scripting_system() noexcept {
+            return *scripting_system_;
+        }
+
         input_system* input();
         audio_system* audio();
         gameplay_system* gameplay();
@@ -73,6 +78,7 @@ namespace zombye {
         std::unique_ptr<zombye::animation_system> animation_system_;
         std::unique_ptr<zombye::rendering_system> rendering_system_;
         std::unique_ptr<gameplay_system> gameplay_system_;
+        std::unique_ptr<zombye::scripting_system> scripting_system_;
 
         // This MUST stay the last thing here, thank you :P
         std::unique_ptr<zombye::entity_manager> entity_manager_;

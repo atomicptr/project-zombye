@@ -19,6 +19,7 @@
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/fps_counter.hpp>
 #include <zombye/utils/sdlhelper.hpp>
 #include <zombye/utils/state_machine.hpp>
@@ -56,6 +57,7 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
 
     SDL_ClearError();
 
+    scripting_system_ = std::make_unique<zombye::scripting_system>(*this);
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
