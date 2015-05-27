@@ -10,7 +10,7 @@ namespace zombye {
 			+[](asIScriptEngine* se) { se->ShutDownAndRelease(); }
 		);
 
-		script_engine_->SetMessageCallback(
+		auto result = script_engine_->SetMessageCallback(
 			asFUNCTION(+[](const asSMessageInfo* msg, void* param) {
 				auto message = std::string{msg->message} + " in section " + msg->section + ":"
 					+ std::to_string(msg->row) + ":" + std::to_string(msg->col);
@@ -29,5 +29,8 @@ namespace zombye {
 			nullptr,
 			asCALL_CDECL
 		);
+		if (result < 0) {
+			log(LOG_ERROR, "Could not register message callback for script system");
+		}
 	}
 }
