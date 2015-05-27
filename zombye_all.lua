@@ -9,6 +9,9 @@ solution "project-zombye"
         "deps/glm/include",
         "deps/angelscript/include",
         "deps/angelscript/source",
+        "deps/angelscript/include/scriptbuilder",
+        "deps/angelscript/include/scriptstdstring",
+        "deps/angelscript/include/scriptarray",
         "src/include",
         "mesh_converter/include",
         "animation_converter/include"

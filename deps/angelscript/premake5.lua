@@ -4,7 +4,10 @@ solution "project-zombye"
 
     includedirs {
         "source/",
-		"include/"
+		"include/",
+        "include/scriptbuilder",
+        "include/scriptstdstring",
+        "include/scriptarray"
     }
 
     configuration "release"
