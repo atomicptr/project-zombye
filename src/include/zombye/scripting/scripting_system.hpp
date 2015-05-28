@@ -29,6 +29,7 @@ namespace zombye {
 		scripting_system& operator=(scripting_system&& rhs) = delete;
 
 		void begin_module(const std::string& module_name);
+		void load_script(const std::string& file_name);
 	};
 }
 

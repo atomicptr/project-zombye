@@ -1,5 +1,7 @@
 #include <scriptstdstring/scriptstdstring.h>
 
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/logger.hpp>
@@ -49,6 +51,18 @@ namespace zombye {
 		auto result = script_builder_->StartNewModule(script_engine_.get(), module_name.c_str());
 		if (result < 0) {
 			throw std::runtime_error("Could not create new module " + module_name);
+		}
+	}
+
+	void scripting_system::load_script(const std::string& file_name) {
+		auto asset = game_.asset_manager().load(file_name);
+		if (!asset) {
+			throw std::runtime_error("Could not load script " + file_name);
+		}
+		auto content = asset->content();
+		auto result = script_builder_->AddSectionFromMemory(file_name.c_str(), content.data(), content.size(), 0);
+		if (result < 0) {
+			throw std::runtime_error("Could not add section from memory " + file_name);
 		}
 	}
 }
