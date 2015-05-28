@@ -32,6 +32,14 @@ namespace zombye {
 		void load_script(const std::string& file_name);
 		void end_module();
 		void exec(const std::string& function_decl, const std::string& module_name);
+
+		template<typename t>
+		void register_function(const std::string function_decl, const t& function) {
+			auto result = script_engine_->RegisterGlobalFunction(function_decl.c_str(), asFUNCTION(function), asCALL_CDECL);
+			if (result < 0) {
+				throw std::runtime_error("Could not register function " + function_decl);
+			}
+		}
 	};
 }
 
