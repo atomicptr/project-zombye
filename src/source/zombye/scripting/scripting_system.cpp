@@ -1,3 +1,5 @@
+#include <scriptstdstring/scriptstdstring.h>
+
 #include <zombye/core/game.hpp>
 #include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/logger.hpp>
@@ -37,5 +39,7 @@ namespace zombye {
 			script_engine_->CreateContext(),
 			+[](asIScriptContext* context) {context->Release();}
 		};
+
+		RegisterStdString(script_engine_.get());
 	}
 }
