@@ -72,4 +72,23 @@ namespace zombye {
 			throw std::runtime_error("Could not build module");
 		}
 	}
+
+	void scripting_system::exec(const std::string& function_decl, const std::string& module_name) {
+		auto mod = script_engine_->GetModule(module_name.c_str());
+		if (!mod) {
+			throw std::runtime_error("No module named " + module_name);
+		}
+		auto func = mod->GetFunctionByDecl(function_decl.c_str());
+		if (!func) {
+			throw std::runtime_error("No function with signature " + function_decl + " in module " + module_name);
+		}
+
+		script_context_->Prepare(func);
+		auto result = script_context_->Execute();
+		if (result != asEXECUTION_FINISHED) {
+			if (result == asEXECUTION_EXCEPTION) {
+				throw std::runtime_error(script_context_->GetExceptionString());
+			}
+		}
+	}
 }
