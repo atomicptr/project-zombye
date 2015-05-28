@@ -34,7 +34,7 @@ solution "project-zombye"
 
         files "src/source/zombye/**.cpp"
 
-        defines "GLM_FORCE_RADIANS"
+        defines {"GLM_FORCE_RADIANS", "AS_CAN_USE_CPP11"}
 
         configuration {"gmake", "windows"}
             buildoptions "-std=gnu++1y"

@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 #include <scriptstdstring/scriptstdstring.h>
 
 #include <zombye/assets/asset.hpp>
@@ -45,6 +46,13 @@ namespace zombye {
 		RegisterStdString(script_engine_.get());
 
 		script_builder_ = std::make_unique<CScriptBuilder>();
+
+		register_function("void print(const string& in)", +[](const std::string& in) {log(in);});
+
+		begin_module("MyModule");
+		load_script("scripts/test.as");
+		end_module();
+		exec("void main()", "MyModule");
 	}
 
 	void scripting_system::begin_module(const std::string& module_name) {
