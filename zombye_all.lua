@@ -147,6 +147,8 @@ solution "project-zombye"
     project "angelscript"
         kind "StaticLib"
 
+        location "deps/angelscript"
+
         buildoptions {"-x c++", "-std=c++1y", "-fno-strict-aliasing"}
 
         files {
