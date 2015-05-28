@@ -48,6 +48,9 @@ namespace zombye {
 				throw std::runtime_error("Could not register type " + type_name);
 			}
 		}
+
+	private:
+		void register_glm();
 	};
 }
 

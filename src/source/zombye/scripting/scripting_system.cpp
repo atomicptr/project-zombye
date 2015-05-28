@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <scriptstdstring/scriptstdstring.h>
 
 #include <zombye/assets/asset.hpp>
@@ -48,6 +49,7 @@ namespace zombye {
 		script_builder_ = std::make_unique<CScriptBuilder>();
 
 		register_function("void print(const string& in)", +[](const std::string& in) {log(in);});
+		register_glm();
 
 		begin_module("MyModule");
 		load_script("scripts/test.as");
@@ -98,5 +100,74 @@ namespace zombye {
 				throw std::runtime_error(script_context_->GetExceptionString());
 			}
 		}
+	}
+
+	void scripting_system::register_glm() {
+		script_engine_->SetDefaultNamespace("glm");
+		register_type<glm::vec3>("vec3");
+		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_CONSTRUCT, "void f(float a, float b, float c)",
+			asFUNCTION(+[](void* memory, float a, float b, float c) {
+				*reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c);
+			}),
+			asCALL_CDECL_OBJLAST
+		);
+
+		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_CONSTRUCT, "void f()",
+			asFUNCTION(+[](void* memory) {
+				*reinterpret_cast<glm::vec3*>(memory) = glm::vec3{};
+			}),
+			asCALL_CDECL_OBJLAST
+		);
+		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_DESTRUCT, "void f()",
+			asFUNCTION(+[](void* memory) {}), asCALL_CDECL_OBJLAST);
+		script_engine_->RegisterObjectMethod("vec3", "vec3& opAssign(const vec3& in)",
+			asMETHODPR(glm::vec3, operator=, (const glm::vec3&), glm::vec3&),
+			asCALL_THISCALL
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3& opAddAssign(const vec3& in)",
+			asMETHODPR(glm::vec3, operator+=, (const glm::vec3&), glm::vec3&),
+			asCALL_THISCALL
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3& opMulAssign(float)",
+			asMETHODPR(glm::vec3, operator*=, (float), glm::vec3&),
+			asCALL_THISCALL
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3& opDivAssign(float)",
+			asMETHODPR(glm::vec3, operator/=, (float), glm::vec3&),
+			asCALL_THISCALL
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3& opSubAssign(const vec3& in)",
+			asMETHODPR(glm::vec3, operator-=, (const glm::vec3&), glm::vec3&),
+			asCALL_THISCALL
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3 opAdd(const vec3& in)",
+			asFUNCTION(+[](const glm::vec3& v1, const glm::vec3& v2) {return v1 + v2;}),
+			asCALL_CDECL_OBJFIRST
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3 opSub(const vec3& in)",
+			asFUNCTION(+[](const glm::vec3& v1, const glm::vec3& v2) {return v1 - v2;}),
+			asCALL_CDECL_OBJFIRST
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3 opMul(float)",
+			asFUNCTION(+[](float f, const glm::vec3& v) {return f * v;}),
+			asCALL_CDECL_OBJLAST
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3 opMul_r(float)",
+			asFUNCTION(+[](const glm::vec3& v, float f) {return v * f;}),
+			asCALL_CDECL_OBJLAST
+		);
+		script_engine_->RegisterObjectMethod("vec3", "vec3 opDiv(float)",
+			asFUNCTION(+[](const glm::vec3& v, float f) {return v / f;}),
+			asCALL_CDECL_OBJLAST
+		);
+		register_function("float length(const vec3& in)", +[](const glm::vec3& v) {return glm::length(v);});
+		register_function("float dot(const vec3& in, const vec3& in)",
+			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::dot(v1, v2);});
+		register_function("vec3 cross(const vec3& in, const vec3& in)",
+			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::cross(v1, v2);});
+		register_function("vec3 normalize(const vec3& in)", +[](const glm::vec3& v) {return glm::normalize(v);});
+
+		script_engine_->SetDefaultNamespace("");
+		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
 	}
 }
