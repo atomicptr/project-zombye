@@ -44,4 +44,11 @@ namespace zombye {
 
 		script_builder_ = std::make_unique<CScriptBuilder>();
 	}
+
+	void scripting_system::begin_module(const std::string& module_name) {
+		auto result = script_builder_->StartNewModule(script_engine_.get(), module_name.c_str());
+		if (result < 0) {
+			throw std::runtime_error("Could not create new module " + module_name);
+		}
+	}
 }

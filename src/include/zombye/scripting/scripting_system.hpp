@@ -27,6 +27,8 @@ namespace zombye {
 
 		scripting_system(scripting_system&& rhs) = delete;
 		scripting_system& operator=(scripting_system&& rhs) = delete;
+
+		void begin_module(const std::string& module_name);
 	};
 }
 
