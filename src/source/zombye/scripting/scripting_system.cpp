@@ -41,5 +41,7 @@ namespace zombye {
 		};
 
 		RegisterStdString(script_engine_.get());
+
+		script_builder_ = std::make_unique<CScriptBuilder>();
 	}
 }

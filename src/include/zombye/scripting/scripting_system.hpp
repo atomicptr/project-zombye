@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <angelscript.h>
+#include <scriptbuilder/scriptbuilder.h>
 
 namespace zombye {
 	class game;
@@ -15,6 +16,7 @@ namespace zombye {
 		game& game_;
 		std::unique_ptr<asIScriptEngine, void(*)(asIScriptEngine*)> script_engine_;
 		std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)> script_context_;
+		std::unique_ptr<CScriptBuilder> script_builder_;
 
 	public:
 		scripting_system(game& game);
