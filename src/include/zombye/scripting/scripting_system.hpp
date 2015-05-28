@@ -30,6 +30,7 @@ namespace zombye {
 
 		void begin_module(const std::string& module_name);
 		void load_script(const std::string& file_name);
+		void end_module();
 	};
 }
 

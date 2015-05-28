@@ -65,4 +65,11 @@ namespace zombye {
 			throw std::runtime_error("Could not add section from memory " + file_name);
 		}
 	}
+
+	void scripting_system::end_module() {
+		auto result = script_builder_->BuildModule();
+		if (result < 0) {
+			throw std::runtime_error("Could not build module");
+		}
+	}
 }
