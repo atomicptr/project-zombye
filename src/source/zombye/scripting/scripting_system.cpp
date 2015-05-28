@@ -4,7 +4,7 @@
 
 namespace zombye {
 	scripting_system::scripting_system(game& game)
-	: game_{game}, script_engine_{nullptr, +[](asIScriptEngine*){}} {
+	: game_{game}, script_engine_{nullptr, +[](asIScriptEngine*){}}, script_context_{nullptr, +[](asIScriptContext*){}} {
 		script_engine_ = std::unique_ptr<asIScriptEngine, void(*)(asIScriptEngine*)>(
 			asCreateScriptEngine(ANGELSCRIPT_VERSION),
 			+[](asIScriptEngine* se) { se->ShutDownAndRelease(); }
@@ -32,5 +32,10 @@ namespace zombye {
 		if (result < 0) {
 			log(LOG_ERROR, "Could not register message callback for script system");
 		}
+
+		script_context_ = std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>{
+			script_engine_->CreateContext(),
+			+[](asIScriptContext* context) {context->Release();}
+		};
 	}
 }

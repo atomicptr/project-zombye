@@ -14,6 +14,7 @@ namespace zombye {
 	private:
 		game& game_;
 		std::unique_ptr<asIScriptEngine, void(*)(asIScriptEngine*)> script_engine_;
+		std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)> script_context_;
 
 	public:
 		scripting_system(game& game);
