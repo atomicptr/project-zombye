@@ -51,11 +51,12 @@ namespace zombye {
 
 		register_function("void print(const string& in)", +[](const std::string& in) {log(in);});
 		register_glm();
-
+/*
 		begin_module("MyModule");
 		load_script("scripts/test.as");
 		end_module();
 		exec("void main()", "MyModule");
+*/
 	}
 
 	void scripting_system::begin_module(const std::string& module_name) {

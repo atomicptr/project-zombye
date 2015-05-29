@@ -1,10 +1,15 @@
 #ifndef __ZOMBYE_SCRIPTING_SYSTEM_HPP__
 #define __ZOMBYE_SCRIPTING_SYSTEM_HPP__
 
+#include <functional>
 #include <memory>
+#include <type_traits>
 
 #include <angelscript.h>
 #include <scriptbuilder/scriptbuilder.h>
+
+#include <zombye/ecs/entity.hpp>
+#include <zombye/utils/logger.hpp>
 
 namespace zombye {
 	class game;
@@ -63,6 +68,18 @@ namespace zombye {
 				function_decl.c_str(), asFUNCTION(function), asCALL_CDECL_OBJFIRST);
 			if (result < 0) {
 				throw std::runtime_error("Could not register constructor " + function_decl + " at type " + type_name);
+			}
+		}
+
+		template <typename t>
+		void register_factory(const std::string& type_name, const std::string& function_decl, std::function<t>& function) {
+			auto result = script_engine_->RegisterObjectBehaviour(type_name.c_str(), asBEHAVE_FACTORY,
+				function_decl.c_str(),
+				asMETHOD(std::remove_reference<typename std::remove_const<decltype(function)>::type>::type, operator()),
+				asCALL_THISCALL_ASGLOBAL,
+				reinterpret_cast<void*>(&function));
+			if (result < 0) {
+				throw std::runtime_error("Could not register factory function " + function_decl + " at type " + type_name);
 			}
 		}
 
