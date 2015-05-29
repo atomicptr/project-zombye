@@ -126,6 +126,8 @@ namespace zombye {
 
 		register_constructor("vec3", "void f()",
 			+[](void* memory) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3{}; });
+		register_constructor("vec3", "void f(float a)",
+			+[](void* memory, float a) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a); });
 		register_constructor("vec3", "void f(float a, float b, float c)",
 			+[](void* memory, float a, float b, float c) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c); });
 
