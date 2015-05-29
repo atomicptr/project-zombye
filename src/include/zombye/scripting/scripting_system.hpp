@@ -50,6 +50,12 @@ namespace zombye {
 		}
 
 		template <typename t>
+		void register_constructor(const std::string type_name, const std::string& function_decl, const t& function) {
+			auto result = script_engine_->RegisterObjectBehaviour(type_name.c_str(), asBEHAVE_CONSTRUCT,
+				function_decl.c_str(), asFUNCTION(function), asCALL_CDECL_OBJFIRST);
+		}
+
+		template <typename t>
 		void register_member_function(const std::string& type_name, const std::string& function_decl, const t& function, asDWORD call_conv = asCALL_CDECL_OBJFIRST) {
 			auto result = script_engine_->RegisterObjectMethod(type_name.c_str(), function_decl.c_str(), asFUNCTION(function), call_conv);
 			if (result < 0) {

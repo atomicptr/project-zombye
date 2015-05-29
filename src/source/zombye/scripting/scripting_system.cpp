@@ -104,20 +104,14 @@ namespace zombye {
 
 	void scripting_system::register_glm() {
 		script_engine_->SetDefaultNamespace("glm");
-		register_type<glm::vec3>("vec3");
-		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_CONSTRUCT, "void f(float a, float b, float c)",
-			asFUNCTION(+[](void* memory, float a, float b, float c) {
-				*reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c);
-			}),
-			asCALL_CDECL_OBJLAST
-		);
 
-		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_CONSTRUCT, "void f()",
-			asFUNCTION(+[](void* memory) {
-				*reinterpret_cast<glm::vec3*>(memory) = glm::vec3{};
-			}),
-			asCALL_CDECL_OBJLAST
-		);
+		register_type<glm::vec3>("vec3");
+
+		register_constructor("vec3", "void f()",
+			+[](void* memory) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3{}; });
+		register_constructor("vec3", "void f(float a, float b, float c)",
+			+[](void* memory, float a, float b, float c) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c); });
+
 		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_DESTRUCT, "void f()",
 			asFUNCTION(+[](void* memory) {}), asCALL_CDECL_OBJLAST);
 

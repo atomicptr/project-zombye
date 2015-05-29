@@ -1,4 +1,5 @@
 void main() {
+    glm::vec3 v0;
     glm::vec3 v1(1, 5, 2);
     glm::vec3 v2 = 5 * v1;
     glm::vec3 v3 = v2 / 5;
