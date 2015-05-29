@@ -102,6 +102,14 @@ namespace zombye {
 		}
 	}
 
+	void scripting_system::register_destructor(const std::string& type_name, void(*function)(void*)) {
+		auto result = script_engine_->RegisterObjectBehaviour(type_name.c_str(), asBEHAVE_DESTRUCT,
+			"void f()", asFUNCTION(function), asCALL_CDECL_OBJFIRST);
+		if (result < 0) {
+			throw std::runtime_error("Could not register destructor at type " + type_name);
+		}
+	}
+
 	void scripting_system::register_glm() {
 		script_engine_->SetDefaultNamespace("glm");
 
@@ -112,8 +120,7 @@ namespace zombye {
 		register_constructor("vec3", "void f(float a, float b, float c)",
 			+[](void* memory, float a, float b, float c) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c); });
 
-		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_DESTRUCT, "void f()",
-			asFUNCTION(+[](void* memory) {}), asCALL_CDECL_OBJLAST);
+		register_destructor("vec3", +[](void* memory) {});
 
 		register_member_function("vec3", "vec3& opAssign(const vec3& in)",
 			+[](glm::vec3& lhs, const glm::vec3& rhs) -> glm::vec3& { return lhs = rhs; });
