@@ -1,4 +1,5 @@
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <scriptstdstring/scriptstdstring.h>
 
@@ -163,6 +164,24 @@ namespace zombye {
 			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::cross(v1, v2);});
 		register_function("vec3 normalize(const vec3& in)",
 			+[](const glm::vec3& v) {return glm::normalize(v);});
+
+
+		register_type<glm::quat>("quat");
+
+		register_constructor("quat", "void f()",
+			+[](void* memory) { *reinterpret_cast<glm::quat*>(memory) = glm::quat{}; });
+		register_constructor("quat", "void f(float w, float x, float y, float z)",
+			+[](void* memory, float w, float x, float y, float z) { *reinterpret_cast<glm::quat*>(memory) = glm::quat(w, x, y, z); });
+
+		register_destructor("quat", +[](void* memory) {});
+
+		register_member("quat", "float x", asOFFSET(glm::quat, x));
+		register_member("quat", "float y", asOFFSET(glm::quat, y));
+		register_member("quat", "float z", asOFFSET(glm::quat, z));
+		register_member("quat", "float w", asOFFSET(glm::quat, w));
+
+		register_member_function("quat", "quat& opAssign(const quat& in)",
+			+[](glm::quat& lhs, const glm::quat& rhs) -> glm::quat& { return lhs = rhs; });
 
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
