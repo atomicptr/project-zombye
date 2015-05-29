@@ -1,9 +1,14 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity_manager.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 
 
 namespace zombye {
-    entity_manager::entity_manager(game& game) noexcept : game_(game), template_manager_(game) { }
+    entity_manager::entity_manager(game& game) noexcept : game_(game), template_manager_(game) {
+        auto& scripting_system = game.scripting_system();
+
+        scripting_system.register_type<entity>("entity");
+    }
 
     zombye::entity& entity_manager::emplace(const glm::vec3& position, const glm::quat& rotation,
     const glm::vec3& scalation) {
