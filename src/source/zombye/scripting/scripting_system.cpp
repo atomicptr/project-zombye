@@ -121,7 +121,7 @@ namespace zombye {
 	void scripting_system::register_glm() {
 		script_engine_->SetDefaultNamespace("glm");
 
-		register_type<glm::vec3>("vec3");
+		register_pod_type<glm::vec3>("vec3");
 
 		register_constructor("vec3", "void f()",
 			+[](void* memory) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3{}; });
@@ -166,7 +166,7 @@ namespace zombye {
 			+[](const glm::vec3& v) {return glm::normalize(v);});
 
 
-		register_type<glm::quat>("quat");
+		register_pod_type<glm::quat>("quat");
 
 		register_constructor("quat", "void f()",
 			+[](void* memory) { *reinterpret_cast<glm::quat*>(memory) = glm::quat{}; });
