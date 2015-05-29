@@ -59,6 +59,7 @@ namespace zombye {
 		}
 
 		void register_destructor(const std::string& type_name, void(*function)(void*));
+		void register_member(const std::string& type_name, const std::string& member_decl, size_t offset);
 
 		template <typename t>
 		void register_member_function(const std::string& type_name, const std::string& function_decl, const t& function, asDWORD call_conv = asCALL_CDECL_OBJFIRST) {

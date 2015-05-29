@@ -110,6 +110,13 @@ namespace zombye {
 		}
 	}
 
+	void scripting_system::register_member(const std::string& type_name, const std::string& member_decl, size_t offset) {
+		auto result = script_engine_->RegisterObjectProperty(type_name.c_str(), member_decl.c_str(), offset);
+		if (result < 0 ) {
+			throw std::runtime_error("Could not register member " + member_decl + " at type " + type_name);
+		}
+	}
+
 	void scripting_system::register_glm() {
 		script_engine_->SetDefaultNamespace("glm");
 
@@ -121,6 +128,10 @@ namespace zombye {
 			+[](void* memory, float a, float b, float c) { *reinterpret_cast<glm::vec3*>(memory) = glm::vec3(a, b, c); });
 
 		register_destructor("vec3", +[](void* memory) {});
+
+		register_member("vec3", "float x", asOFFSET(glm::vec3, x));
+		register_member("vec3", "float y", asOFFSET(glm::vec3, y));
+		register_member("vec3", "float z", asOFFSET(glm::vec3, z));
 
 		register_member_function("vec3", "vec3& opAssign(const vec3& in)",
 			+[](glm::vec3& lhs, const glm::vec3& rhs) -> glm::vec3& { return lhs = rhs; });
@@ -152,10 +163,6 @@ namespace zombye {
 			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::cross(v1, v2);});
 		register_function("vec3 normalize(const vec3& in)",
 			+[](const glm::vec3& v) {return glm::normalize(v);});
-
-		script_engine_->RegisterObjectProperty("vec3", "float x", asOFFSET(glm::vec3, x));
-		script_engine_->RegisterObjectProperty("vec3", "float y", asOFFSET(glm::vec3, y));
-		script_engine_->RegisterObjectProperty("vec3", "float z", asOFFSET(glm::vec3, z));
 
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
