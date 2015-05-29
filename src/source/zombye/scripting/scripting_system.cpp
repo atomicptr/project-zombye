@@ -172,6 +172,8 @@ namespace zombye {
 			+[](void* memory) { *reinterpret_cast<glm::quat*>(memory) = glm::quat{}; });
 		register_constructor("quat", "void f(float w, float x, float y, float z)",
 			+[](void* memory, float w, float x, float y, float z) { *reinterpret_cast<glm::quat*>(memory) = glm::quat(w, x, y, z); });
+		register_constructor("quat", "void f(float angle, const vec3& in axis)",
+			+[](void* memory, float angle, const glm::vec3& axis) { *reinterpret_cast<glm::quat*>(memory) = glm::angleAxis(angle, axis); } );
 
 		register_destructor("quat", +[](void* memory) {});
 

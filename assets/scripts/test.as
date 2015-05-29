@@ -16,4 +16,9 @@ void main() {
     print(formatFloat(q2.y, '0', 10, 10));
     print(formatFloat(q2.z, '0', 10, 10));
     print(formatFloat(q2.w, '0', 10, 10));
+    glm::quat q3(0.5, glm::vec3(1, 0, 0));
+    print(formatFloat(q3.x, '0', 10, 10));
+    print(formatFloat(q3.y, '0', 10, 10));
+    print(formatFloat(q3.z, '0', 10, 10));
+    print(formatFloat(q3.w, '0', 10, 10));
 }

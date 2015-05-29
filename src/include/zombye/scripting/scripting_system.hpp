@@ -43,7 +43,7 @@ namespace zombye {
 
 		template <typename t>
 		void register_type(const std::string& type_name) {
-			auto result = script_engine_->RegisterObjectType(type_name.c_str(), sizeof(t), asOBJ_VALUE | asGetTypeTraits<t>());
+			auto result = script_engine_->RegisterObjectType(type_name.c_str(), sizeof(t), asOBJ_VALUE | asOBJ_POD | asGetTypeTraits<t>());
 			if (result < 0) {
 				throw std::runtime_error("Could not register type " + type_name);
 			}
