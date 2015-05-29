@@ -120,52 +120,38 @@ namespace zombye {
 		);
 		script_engine_->RegisterObjectBehaviour("vec3", asBEHAVE_DESTRUCT, "void f()",
 			asFUNCTION(+[](void* memory) {}), asCALL_CDECL_OBJLAST);
-		script_engine_->RegisterObjectMethod("vec3", "vec3& opAssign(const vec3& in)",
-			asMETHODPR(glm::vec3, operator=, (const glm::vec3&), glm::vec3&),
-			asCALL_THISCALL
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3& opAddAssign(const vec3& in)",
-			asMETHODPR(glm::vec3, operator+=, (const glm::vec3&), glm::vec3&),
-			asCALL_THISCALL
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3& opMulAssign(float)",
-			asMETHODPR(glm::vec3, operator*=, (float), glm::vec3&),
-			asCALL_THISCALL
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3& opDivAssign(float)",
-			asMETHODPR(glm::vec3, operator/=, (float), glm::vec3&),
-			asCALL_THISCALL
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3& opSubAssign(const vec3& in)",
-			asMETHODPR(glm::vec3, operator-=, (const glm::vec3&), glm::vec3&),
-			asCALL_THISCALL
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3 opAdd(const vec3& in)",
-			asFUNCTION(+[](const glm::vec3& v1, const glm::vec3& v2) {return v1 + v2;}),
-			asCALL_CDECL_OBJFIRST
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3 opSub(const vec3& in)",
-			asFUNCTION(+[](const glm::vec3& v1, const glm::vec3& v2) {return v1 - v2;}),
-			asCALL_CDECL_OBJFIRST
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3 opMul(float)",
-			asFUNCTION(+[](float f, const glm::vec3& v) {return f * v;}),
-			asCALL_CDECL_OBJLAST
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3 opMul_r(float)",
-			asFUNCTION(+[](const glm::vec3& v, float f) {return v * f;}),
-			asCALL_CDECL_OBJLAST
-		);
-		script_engine_->RegisterObjectMethod("vec3", "vec3 opDiv(float)",
-			asFUNCTION(+[](const glm::vec3& v, float f) {return v / f;}),
-			asCALL_CDECL_OBJLAST
-		);
-		register_function("float length(const vec3& in)", +[](const glm::vec3& v) {return glm::length(v);});
+
+		register_member_function("vec3", "vec3& opAssign(const vec3& in)",
+			+[](glm::vec3& lhs, const glm::vec3& rhs) -> glm::vec3& { return lhs = rhs; });
+		register_member_function("vec3", "vec3& opAddAssign(const vec3& in)",
+			+[](glm::vec3& lhs, const glm::vec3& rhs) -> glm::vec3& { return lhs += rhs; });
+		register_member_function("vec3", "vec3& opSubAssign(const vec3& in)",
+			+[](glm::vec3& lhs, const glm::vec3& rhs) -> glm::vec3& { return lhs -= rhs; });
+		register_member_function("vec3", "vec3& opMulAssign(float)",
+			+[](glm::vec3& lhs, float rhs) -> glm::vec3& { return lhs *= rhs; });
+		register_member_function("vec3", "vec3& opDivAssign(float)",
+			+[](glm::vec3& lhs, float rhs) -> glm::vec3& { return lhs /= rhs; });
+		register_member_function("vec3", "vec3 opAdd(const vec3& in)",
+			+[](const glm::vec3& lhs, const glm::vec3& rhs) { return lhs + rhs; });
+		register_member_function("vec3", "vec3 opSub(const vec3& in)",
+			+[](const glm::vec3& lhs, const glm::vec3& rhs) { return lhs - rhs; });
+		register_member_function("vec3", "vec3 opMul(float)",
+			+[](float lhs, const glm::vec3& rhs) { return lhs * rhs; },
+			asCALL_CDECL_OBJLAST);
+		register_member_function("vec3", "vec3 opMul_r(float)",
+			+[](const glm::vec3& lhs, float rhs) { return lhs * rhs; });
+		register_member_function("vec3", "vec3 opDiv(float)",
+			+[](const glm::vec3& lhs, float rhs) { return lhs / rhs; });
+
+		register_function("float length(const vec3& in)",
+			+[](const glm::vec3& v) {return glm::length(v);});
 		register_function("float dot(const vec3& in, const vec3& in)",
 			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::dot(v1, v2);});
 		register_function("vec3 cross(const vec3& in, const vec3& in)",
 			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::cross(v1, v2);});
-		register_function("vec3 normalize(const vec3& in)", +[](const glm::vec3& v) {return glm::normalize(v);});
+		register_function("vec3 normalize(const vec3& in)",
+			+[](const glm::vec3& v) {return glm::normalize(v);});
+
 		script_engine_->RegisterObjectProperty("vec3", "float x", asOFFSET(glm::vec3, x));
 		script_engine_->RegisterObjectProperty("vec3", "float y", asOFFSET(glm::vec3, y));
 		script_engine_->RegisterObjectProperty("vec3", "float z", asOFFSET(glm::vec3, z));
