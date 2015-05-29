@@ -185,6 +185,10 @@ namespace zombye {
 		register_member_function("quat", "quat& opAssign(const quat& in)",
 			+[](glm::quat& lhs, const glm::quat& rhs) -> glm::quat& { return lhs = rhs; });
 
+
+		register_function("float glm::radians(float)",
+			+[](float degree) { return glm::radians(degree); });
+
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
 	}
