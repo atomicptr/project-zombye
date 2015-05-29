@@ -53,6 +53,9 @@ namespace zombye {
 		void register_constructor(const std::string type_name, const std::string& function_decl, const t& function) {
 			auto result = script_engine_->RegisterObjectBehaviour(type_name.c_str(), asBEHAVE_CONSTRUCT,
 				function_decl.c_str(), asFUNCTION(function), asCALL_CDECL_OBJFIRST);
+			if (result < 0) {
+				throw std::runtime_error("Could not register constructor " + function_decl + " at type " + type_name);
+			}
 		}
 
 		template <typename t>
