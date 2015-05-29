@@ -8,6 +8,36 @@ namespace zombye {
         auto& scripting_system = game.scripting_system();
 
         scripting_system.register_type<entity>("entity");
+
+        static std::function<entity&(const glm::vec3&, const glm::quat&, const glm::vec3&)> entity_factory
+            = [this](const glm::vec3& pos, const glm::quat& rot, const glm::vec3& scale) -> entity& {
+                return emplace(pos, rot, scale);
+            };
+        scripting_system.register_factory("entity",
+            "entity@ f(const glm::vec3& in, const glm::quat& in, const glm::vec3& in)",
+            entity_factory
+        );
+
+        scripting_system.register_member_function("entity", "uint64 id()",
+            +[](entity& e) { return e.id(); });
+        scripting_system.register_member_function("entity", "const glm::vec3& position() const",
+            +[](const entity& e) -> const glm::vec3& { return e.position(); });
+        scripting_system.register_member_function("entity", "void position(const glm::vec3& in value)",
+            +[](entity& e, const glm::vec3& value) { e.position(value); });
+        scripting_system.register_member_function("entity", "const glm::quat& rotation() const",
+            +[](const entity& e) -> const glm::quat& { return e.rotation(); });
+        scripting_system.register_member_function("entity", "void rotation(const glm::quat& in value)",
+            +[](entity& e, const glm::quat& value) { e.rotation(value); });
+        scripting_system.register_member_function("entity", "const glm::vec3& scale() const",
+            +[](const entity& e) -> const glm::vec3& { return e.scalation(); });
+        scripting_system.register_member_function("entity", "void scale(const glm::vec3& in value)",
+            +[](entity& e, const glm::vec3& value) { e.scalation(value); });
+
+
+        scripting_system.begin_module("MyModule");
+        scripting_system.load_script("scripts/test.as");
+        scripting_system.end_module();
+        scripting_system.exec("void main()", "MyModule");
     }
 
     zombye::entity& entity_manager::emplace(const glm::vec3& position, const glm::quat& rotation,
