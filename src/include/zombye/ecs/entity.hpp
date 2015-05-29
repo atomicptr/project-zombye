@@ -148,7 +148,7 @@ namespace zombye {
             rotation_ = rotation;
         }
 
-        const glm::vec3 scalation() const noexcept {
+        const glm::vec3& scalation() const noexcept {
             return scalation_;
         }
 
