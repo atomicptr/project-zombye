@@ -28,4 +28,5 @@ void main() {
     print(glm::cross(glm::vec3(1,0,0), glm::vec3(0,1,0)));
     print(glm::normalize(pos));
     print(formatFloat(glm::length(glm::normalize(pos)), '0', 10, 10));
+    print(formatFloat(pos5.z, '0', 10, 10));
 }

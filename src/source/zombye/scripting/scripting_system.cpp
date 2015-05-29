@@ -166,6 +166,9 @@ namespace zombye {
 		register_function("vec3 cross(const vec3& in, const vec3& in)",
 			+[](const glm::vec3& v1, const glm::vec3& v2) {return glm::cross(v1, v2);});
 		register_function("vec3 normalize(const vec3& in)", +[](const glm::vec3& v) {return glm::normalize(v);});
+		script_engine_->RegisterObjectProperty("vec3", "float x", asOFFSET(glm::vec3, x));
+		script_engine_->RegisterObjectProperty("vec3", "float y", asOFFSET(glm::vec3, y));
+		script_engine_->RegisterObjectProperty("vec3", "float z", asOFFSET(glm::vec3, z));
 
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
