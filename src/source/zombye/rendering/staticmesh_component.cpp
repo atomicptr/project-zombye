@@ -3,6 +3,7 @@
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/logger.hpp>
 
 namespace zombye {
@@ -27,6 +28,20 @@ namespace zombye {
         if (!mesh_) {
             log(LOG_FATAL, "could not load mesh from file " + mesh);
         }
+    }
+
+    void staticmesh_component::register_at_script_engine(game& game) {
+        auto& scripting_system = game.scripting_system();
+
+        scripting_system.register_type<staticmesh_component>("staticmesh_component");
+
+        scripting_system.register_member_function("entity_impl",
+            "staticmesh_component& add_staticmesh_component(const string& in mesh)",
+            +[](entity& owner, const std::string& mesh) -> staticmesh_component& {
+                return owner.emplace<staticmesh_component>(mesh);
+            });
+        scripting_system.register_member_function("entity_impl", "staticmesh_component@ get_staticmesh_component()",
+            +[](entity& owner) { return owner.component<staticmesh_component>(); });
     }
 
     staticmesh_component::staticmesh_component(game& game, entity& owner)

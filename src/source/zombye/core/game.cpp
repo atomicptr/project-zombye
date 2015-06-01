@@ -145,6 +145,7 @@ void zombye::game::register_components() {
 
     animation_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
+    staticmesh_component::register_at_script_engine(*this);
 }
 
 int zombye::game::width() const {

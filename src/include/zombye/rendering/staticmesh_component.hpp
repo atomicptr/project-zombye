@@ -30,6 +30,8 @@ namespace zombye {
         }
 
         void load(const std::string& mesh);
+
+        static void register_at_script_engine(game& game);
     private:
         staticmesh_component(game& game, entity& owner);
         static void register_reflection();
