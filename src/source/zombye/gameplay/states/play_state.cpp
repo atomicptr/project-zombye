@@ -87,8 +87,8 @@ void zombye::play_state::enter() {
     camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
     sm_->get_game()->rendering_system().activate_camera(camera.id());
 
-    auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
-    ani.component<zombye::animation_component>()->change_state("stand");
+    //auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
+    //ani.component<zombye::animation_component>()->change_state("stand");
 
     auto& scripting_system = sm_->get_game()->scripting_system();
     scripting_system.begin_module("MyModule");

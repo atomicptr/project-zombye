@@ -87,6 +87,8 @@ namespace zombye {
             return blend_;
         }
 
+        static void register_at_script_engine(game& game);
+
     private:
         glm::vec3 interpolate_translation_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);
         glm::quat interpolate_quaternion_keyframe(const track& track, frame& current_frame, frame& next_frame, float fps);

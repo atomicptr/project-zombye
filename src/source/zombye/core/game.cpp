@@ -143,6 +143,7 @@ void zombye::game::register_components() {
     rtti_manager::register_type(light_component::type_rtti());
     rtti_manager::register_type(staticmesh_component::type_rtti());
 
+    animation_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
 }
 

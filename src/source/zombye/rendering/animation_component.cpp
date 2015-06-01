@@ -11,6 +11,7 @@
 #include <zombye/rendering/skinned_mesh.hpp>
 #include <zombye/rendering/skeleton.hpp>
 #include <zombye/rendering/texture.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/logger.hpp>
 
 #include <glm/gtx/string_cast.hpp>
@@ -248,6 +249,29 @@ namespace zombye {
         } else {
             return track.qkeys[current_frame.qkey].rotate;
         }
+    }
+
+    void animation_component::register_at_script_engine(game& game) {
+        auto& scripting_system = game.scripting_system();
+
+        scripting_system.register_type<animation_component>("animation_component");
+
+        scripting_system.register_member_function("animation_component", "void play_ani(const string& in)",
+            +[](animation_component& component, const std::string& state) { component.change_state(state); });
+        scripting_system.register_member_function("animation_component", "void blend_ani(const string& in)",
+            +[](animation_component& component, const std::string& state) { component.change_state_blend(state); });
+        scripting_system.register_member_function("animation_component", "void is_playing(const string& in)",
+            +[](animation_component& component, const std::string& state) { return component.is_playing(state); });
+        scripting_system.register_member_function("animation_component", "void is_blending()",
+            +[](animation_component& component) { component.is_blending(); });
+
+        scripting_system.register_member_function("entity_impl",
+            "animation_component& add_animation_component(const string& in mesh, const string& in skeleton)",
+            +[](entity& owner, const std::string& mesh, const std::string& skeleton) -> animation_component& {
+                return owner.emplace<animation_component>(mesh, skeleton);
+            });
+        scripting_system.register_member_function("entity_impl", "animation_component@ get_animation_component()",
+            +[](entity& owner) { return owner.component<animation_component>(); });
     }
 
     animation_component::animation_component(game& game, entity& owner)
