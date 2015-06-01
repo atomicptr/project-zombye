@@ -42,6 +42,8 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
+    scripting_system_ = std::make_unique<zombye::scripting_system>(*this);
+    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     register_components();
 
     auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
@@ -57,10 +59,8 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
 
     SDL_ClearError();
 
-    scripting_system_ = std::make_unique<zombye::scripting_system>(*this);
     input_system_ = std::unique_ptr<zombye::input_system>(new zombye::input_system(config()));
     audio_system_ = std::unique_ptr<zombye::audio_system>(new zombye::audio_system());
-    entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     rendering_system_ = std::unique_ptr<zombye::rendering_system>(new zombye::rendering_system(*this, window_.get()));
     animation_system_ = std::make_unique<zombye::animation_system>(*this);
     physics_system_ = std::unique_ptr<zombye::physics_system>(new zombye::physics_system(*this));
@@ -142,6 +142,8 @@ void zombye::game::register_components() {
     rtti_manager::register_type(animation_component::type_rtti());
     rtti_manager::register_type(light_component::type_rtti());
     rtti_manager::register_type(staticmesh_component::type_rtti());
+
+    light_component::register_at_script_engine(*this);
 }
 
 int zombye::game::width() const {

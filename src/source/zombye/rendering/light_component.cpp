@@ -2,6 +2,7 @@
 #include <zombye/ecs/entity.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 
 namespace zombye {
     light_component::light_component(game& game, entity& owner, const glm::vec3& color, const glm::vec3& specular_color, float distance) noexcept
@@ -18,9 +19,30 @@ namespace zombye {
         game_.rendering_system().register_component(this);
     }
 
+    void light_component::register_at_script_engine(game& game) {
+        auto& scripting_system = game.scripting_system();
+
+        scripting_system.register_type<light_component>("light_component");
+
+        scripting_system.register_member_function("light_component", "const glm::vec3& color() const",
+            +[](light_component& component) -> const glm::vec3& { return component.color(); });
+        scripting_system.register_member_function("light_component", "void color(const glm::vec3& in)",
+            +[](light_component& component, const glm::vec3& color) { component.color(color); });
+        scripting_system.register_member_function("light_component", "float radius() const",
+            +[](light_component& component) { return component.distance(); });
+        scripting_system.register_member_function("light_component", "void radius(float)",
+            +[](light_component& component, float radius) { component.distance(radius); });
+
+        scripting_system.register_member_function("entity_impl",
+            "light_component& add_light_component(const glm::vec3& in, float radius)",
+            +[](entity& owner, const glm::vec3& color, float radius) -> light_component& {
+                return owner.emplace<light_component>(color, color, radius);
+            });
+        scripting_system.register_member_function("entity_impl", "light_component@ get_light_component()",
+            +[](entity& owner) { return owner.component<light_component>(); });
+    }
+
     void light_component::register_reflection() {
-        register_property<glm::vec3>("color", &light_component::color, &light_component::set_color);
-        register_property<glm::vec3>("specular_color", &light_component::specular_color, &light_component::set_specular_color);
-        register_property<float>("distance", &light_component::distance, &light_component::set_distance);
+
     }
 }

@@ -15,6 +15,7 @@
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/state_machine.hpp>
 
@@ -89,7 +90,13 @@ void zombye::play_state::enter() {
     auto& ani = sm_->get_game()->entity_manager().emplace("qdummy", glm::vec3{0.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
     ani.component<zombye::animation_component>()->change_state("stand");
 
-    sm_->get_game()->entity_manager().emplace("light", glm::vec3{-5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
+    auto& scripting_system = sm_->get_game()->scripting_system();
+    scripting_system.begin_module("MyModule");
+    scripting_system.load_script("scripts/test.as");
+    scripting_system.end_module();
+    scripting_system.exec("void main()", "MyModule");
+
+    //sm_->get_game()->entity_manager().emplace("light", glm::vec3{-5.f, 20.f, 10.f}, glm::quat{0.f, 0.f, 1.f, 0.f}, glm::vec3{1.f});
 }
 
 void zombye::play_state::leave() {

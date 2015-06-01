@@ -1,4 +1,5 @@
+#include "../assets/scripts/entities/light.as"
+
 void main() {
-    entity e(glm::vec3(0), glm::quat(glm::radians(45), glm::vec3(1, 0, 0)), glm::vec3(1));
-    print(e.position());
+    light l(glm::vec3(-5.f, 20.f, 10.f), glm::vec3(1), 100);
 }

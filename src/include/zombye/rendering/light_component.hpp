@@ -22,29 +22,31 @@ namespace zombye {
         light_component(game& game, entity& owner, const glm::vec3& color, const glm::vec3& specular_color, float distance) noexcept;
         ~light_component() noexcept;
 
-        auto color() const noexcept {
+        auto& color() const noexcept {
             return color_;
         }
 
-        void set_color(const glm::vec3& color) noexcept {
+        void color(const glm::vec3& color) noexcept {
             color_ = color;
         }
 
-        auto specular_color() const noexcept {
+        auto& specular_color() const noexcept {
             return specular_color_;
         }
 
-        void set_specular_color(const glm::vec3& specular_color) noexcept {
+        void specular_color(const glm::vec3& specular_color) noexcept {
             specular_color_ = specular_color;
         }
 
-        auto distance() const noexcept {
+        auto& distance() const noexcept {
             return distance_;
         }
 
-        void set_distance(const float& distance) {
+        void distance(const float& distance) {
             distance_ = distance;
         }
+
+        static void register_at_script_engine(game& game);
 
     private:
         light_component(game& game, entity& owner) noexcept;
