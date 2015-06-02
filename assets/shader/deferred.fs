@@ -36,7 +36,7 @@ void main() {
 	vec3 N = normalize(2.0 * texture(normal_texture, texcoord_).xyz - vec3(0, 0, 0));
 	vec3 V = normalize(view_vector - p);
 	vec3 diffuse_color = texture(albedo_texture, texcoord_).rgb;
-	float specular_power = texture(specular_texture, texcoord_).r * 255;
+	vec3 spec_color = texture(specular_texture, texcoord_).rrr;
 	vec3 final_color = vec3(0.0);
 	for (int i = 0; i < point_light_num; ++i) {
 		vec3 L = point_light_positions[i] - p;
@@ -49,7 +49,7 @@ void main() {
 		float attenuation_denominator = ac + al * d + ae * pow(d, 2.0);
 
 		L = normalize(L);
-		final_color += blinn_phong(N, L, V, point_light_colors[i], diffuse_color, point_light_colors[i], specular_power) / attenuation_denominator;
+		final_color += blinn_phong(N, L, V, point_light_colors[i], diffuse_color, spec_color, 50) / attenuation_denominator;
 	}
 
 	frag_color = vec4(final_color, 1.0);
