@@ -74,10 +74,17 @@ void zombye::physics_component::sync() const {
     owner().rotation(rot);
 }
 
+void zombye::physics_component::apply_central_impulse(const glm::vec3& force) {
+    body_->applyCentralImpulse(btVector3(force.x, force.y, force.z));
+}
+
 void zombye::physics_component::register_at_script_engine(game& game) {
     auto& scripting_system = game.scripting_system();
 
     scripting_system.register_type<physics_component>("physics_component");
+
+    scripting_system.register_member_function("physics_component", "void apply_central_impulse(const glm::vec3& in)",
+        +[](physics_component& component, const glm::vec3& force) { component.apply_central_impulse(force); });
 
     scripting_system.register_member_function("entity_impl", "physics_component@ get_physics_component()",
         +[](entity& owner) { return owner.component<physics_component>(); });

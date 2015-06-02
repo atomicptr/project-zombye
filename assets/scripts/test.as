@@ -11,4 +11,5 @@ void main() {
     auto anim = p.impl().get_animation_component();
     anim.play_ani("walk");
     anim.blend_ani("run");
+    d.impl().get_physics_component().apply_central_impulse(glm::vec3(0, 5, 5));
 }

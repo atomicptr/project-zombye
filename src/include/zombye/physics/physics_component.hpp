@@ -27,6 +27,7 @@ namespace zombye {
         ~physics_component();
 
         void sync() const;
+        void apply_central_impulse(const glm::vec3& force);
 
         static void register_at_script_engine(game& game);
     private:
