@@ -12,6 +12,7 @@
 #include <zombye/input/joystick.hpp>
 #include <zombye/input/mouse.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
+#include <zombye/physics/physics_component.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>

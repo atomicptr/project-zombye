@@ -83,6 +83,15 @@ namespace zombye {
 			}
 		}
 
+		template <typename t>
+		void register_factory(const std::string& type_name, const std::string& function_decl, const t& function) {
+			auto result = script_engine_->RegisterObjectBehaviour(type_name.c_str(), asBEHAVE_FACTORY,
+				function_decl.c_str(), asFUNCTION(function), asCALL_CDECL);
+			if (result < 0) {
+				throw std::runtime_error("Could not register factory function " + function_decl + " at type " + type_name);
+			}
+		}
+
 		void register_destructor(const std::string& type_name, void(*function)(void*));
 		void register_member(const std::string& type_name, const std::string& member_decl, size_t offset);
 

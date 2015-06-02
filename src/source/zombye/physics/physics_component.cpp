@@ -3,6 +3,7 @@
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/collision_shape.hpp>
 #include <zombye/physics/physics_system.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 
 zombye::physics_component::physics_component(game& game, entity& owner)
 : reflective{game, owner}, body_{nullptr}, motion_state_{nullptr}, colshape_{nullptr} {
@@ -71,4 +72,13 @@ void zombye::physics_component::sync() const {
 
     owner().position(pos);
     owner().rotation(rot);
+}
+
+void zombye::physics_component::register_at_script_engine(game& game) {
+    auto& scripting_system = game.scripting_system();
+
+    scripting_system.register_type<physics_component>("physics_component");
+
+    scripting_system.register_member_function("entity_impl", "physics_component@ get_physics_component()",
+        +[](entity& owner) { return owner.component<physics_component>(); });
 }

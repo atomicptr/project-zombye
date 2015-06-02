@@ -27,6 +27,8 @@ namespace zombye {
         ~physics_component();
 
         void sync() const;
+
+        static void register_at_script_engine(game& game);
     private:
         physics_system* physics_;
         btDiscreteDynamicsWorld* world_;

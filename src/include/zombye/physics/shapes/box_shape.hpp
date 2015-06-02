@@ -10,6 +10,10 @@
 #include <btBulletDynamicsCommon.h>
 
 namespace zombye {
+    class game;
+}
+
+namespace zombye {
     class box_shape : public collision_shape {
     public:
         box_shape(float, float, float);
@@ -17,6 +21,7 @@ namespace zombye {
 
         btCollisionShape* shape();
 
+        static void register_at_script_engine(game& game);
     private:
         std::unique_ptr<btCollisionShape> shape_;
     };
