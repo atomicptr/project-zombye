@@ -67,6 +67,8 @@ namespace zombye {
         std::unique_ptr<screen_quad> screen_quad_;
         std::unique_ptr<program> composition_program_;
 
+        std::unique_ptr<framebuffer> shadow_map_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;

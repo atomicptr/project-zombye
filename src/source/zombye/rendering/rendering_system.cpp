@@ -146,6 +146,9 @@ namespace zombye {
 		composition_program_->link();
 
 		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height), glm::vec2(width, 0.f));
+
+		shadow_map_ = std::make_unique<framebuffer>();
+		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, 1024, 1024, GL_DEPTH_COMPONENT, GL_FLOAT);
 	}
 
 	rendering_system::~rendering_system() {
