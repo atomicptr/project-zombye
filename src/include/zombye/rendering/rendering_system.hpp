@@ -24,6 +24,7 @@ namespace zombye {
     class animation_component;
     class camera_component;
     class light_component;
+    class directional_light_component;
     class framebuffer;
     class program;
     class screen_quad;
@@ -34,6 +35,7 @@ namespace zombye {
     class rendering_system {
         friend class animation_component;
         friend class camera_component;
+        friend class directional_light_component;
         friend class light_component;
         friend class staticmesh_component;
 
@@ -44,6 +46,7 @@ namespace zombye {
         std::vector<animation_component*> animation_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;
         std::vector<light_component*> light_components_;
+        std::vector<directional_light_component*> directional_light_components_;
         std::vector<staticmesh_component*> staticmesh_components_;
 
         std::unique_ptr<program> animation_program_;
@@ -143,6 +146,8 @@ namespace zombye {
         void unregister_component(animation_component* component);
         void register_component(camera_component* component);
         void unregister_component(camera_component* component);
+        void register_component(directional_light_component* component);
+        void unregister_component(directional_light_component* component);
         void register_component(light_component* component);
         void unregister_component(light_component* component);
         void register_component(staticmesh_component* component);

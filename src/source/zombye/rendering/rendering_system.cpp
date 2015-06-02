@@ -8,6 +8,7 @@
 #include <zombye/ecs/entity.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/camera_component.hpp>
+#include <zombye/rendering/directional_light_component.hpp>
 #include <zombye/rendering/framebuffer.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/program.hpp>
@@ -259,6 +260,15 @@ namespace zombye {
 			point_light_radii.emplace_back(l->distance());
 		}
 
+		std::vector<glm::vec3> directional_light_directions;
+		std::vector<glm::vec3> directional_light_colors;
+		std::vector<float> directional_light_energy;
+		for (auto& l : directional_light_components_) {
+			directional_light_directions.emplace_back(l->owner().position());
+			directional_light_colors.emplace_back(l->color());
+			directional_light_energy.emplace_back(l->energy());
+		}
+
 		auto camera = camera_components_.find(active_camera_);
 		auto camera_position = glm::vec3{0.f};
 		if (camera != camera_components_.end()) {
@@ -278,6 +288,10 @@ namespace zombye {
 		composition_program_->uniform("point_light_positions", light_components_.size(), point_light_positions);
 		composition_program_->uniform("point_light_colors", light_components_.size(), point_light_colors);
 		composition_program_->uniform("point_light_radii", light_components_.size(), point_light_radii);
+		composition_program_->uniform("directional_light_num", static_cast<int32_t>(directional_light_components_.size()));
+		composition_program_->uniform("directional_light_directions", directional_light_components_.size(), directional_light_directions);
+		composition_program_->uniform("directional_light_colors", directional_light_components_.size(), directional_light_colors);
+		composition_program_->uniform("directional_light_energy", directional_light_components_.size(), directional_light_energy);
 
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
@@ -306,6 +320,14 @@ namespace zombye {
 		if (it != camera_components_.end()) {
 			camera_components_.erase(it);
 		}
+	}
+
+	void rendering_system::register_component(directional_light_component* component) {
+		directional_light_components_.emplace_back(component);
+	}
+
+	void rendering_system::unregister_component(directional_light_component* component) {
+		remove(directional_light_components_, component);
 	}
 
 	void rendering_system::register_component(light_component* component) {

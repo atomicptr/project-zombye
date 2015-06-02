@@ -15,6 +15,11 @@ uniform int point_light_num;
 uniform vec3 point_light_positions[83];
 uniform vec3 point_light_colors[83];
 uniform float point_light_radii[83];
+uniform int directional_light_num;
+// uniform arry size is a magic magic number. super magic.
+uniform vec3 directional_light_directions[83];
+uniform vec3 directional_light_colors[83];
+uniform float directional_light_energy[83];
 
 vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3 spec_color, float shininess) {
 	vec3 H = normalize(L + V);
@@ -50,6 +55,13 @@ void main() {
 
 		L = normalize(L);
 		final_color += blinn_phong(N, L, V, point_light_colors[i], diffuse_color, spec_color, 50) / attenuation_denominator;
+	}
+
+	for (int i = 0; i < directional_light_num; ++i) {
+		vec3 L = normalize(-directional_light_directions[i]);
+		float energy = directional_light_energy[i];
+
+		final_color += blinn_phong(N, L, V, directional_light_colors[i], diffuse_color, spec_color, 50) *  energy;
 	}
 
 	frag_color = vec4(final_color, 1.0);

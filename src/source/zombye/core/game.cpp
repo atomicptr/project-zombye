@@ -18,6 +18,7 @@
 #include <zombye/physics/shapes/box_shape.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
+#include <zombye/rendering/directional_light_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
@@ -117,7 +118,7 @@ void zombye::game::run() {
 
         rendering_system_->begin_scene();
         rendering_system_->update(delta_time);
-        physics_system_->debug_draw();
+        //physics_system_->debug_draw();
         rendering_system_->end_scene();
 
         entity_manager_->clear();
@@ -147,6 +148,7 @@ void zombye::game::register_components() {
 
     animation_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
+    directional_light_component::register_at_script_engine(*this);
     physics_component::register_at_script_engine(*this);
     box_shape::register_at_script_engine(*this);
     staticmesh_component::register_at_script_engine(*this);
