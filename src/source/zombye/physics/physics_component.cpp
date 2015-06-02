@@ -23,7 +23,7 @@ zombye::physics_component::physics_component(game &g, entity &owner, collision_s
     auto mass = isstatic ? 0.0f : 1.0f;
 
     auto bt_position = btVector3(position.x, position.y, position.z);
-    auto bt_rotation = btQuaternion(btVector3(rotation.x, rotation.y, rotation.z), rotation.w);
+    auto bt_rotation = btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
     auto transform = btTransform(bt_rotation, bt_position);
 
