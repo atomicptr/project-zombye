@@ -29,6 +29,7 @@ namespace zombye {
     class program;
     class screen_quad;
     class staticmesh_component;
+    class shadow_component;
 }
 
 namespace zombye {
@@ -38,6 +39,7 @@ namespace zombye {
         friend class directional_light_component;
         friend class light_component;
         friend class staticmesh_component;
+        friend class shadow_component;
 
         game& game_;
         SDL_Window* window_;
@@ -48,6 +50,7 @@ namespace zombye {
         std::vector<light_component*> light_components_;
         std::vector<directional_light_component*> directional_light_components_;
         std::vector<staticmesh_component*> staticmesh_components_;
+        std::vector<shadow_component*> shadow_components_;
 
         std::unique_ptr<program> animation_program_;
         std::unique_ptr<program> staticmesh_program_;
@@ -152,6 +155,8 @@ namespace zombye {
         void unregister_component(light_component* component);
         void register_component(staticmesh_component* component);
         void unregister_component(staticmesh_component* component);
+        void register_component(shadow_component* component);
+        void unregister_component(shadow_component* component);
     };
 }
 

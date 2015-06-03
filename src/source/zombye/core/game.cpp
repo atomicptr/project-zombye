@@ -21,6 +21,7 @@
 #include <zombye/rendering/directional_light_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
+#include <zombye/rendering/shadow_component.hpp>
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/fps_counter.hpp>
@@ -151,6 +152,7 @@ void zombye::game::register_components() {
     directional_light_component::register_at_script_engine(*this);
     physics_component::register_at_script_engine(*this);
     box_shape::register_at_script_engine(*this);
+    shadow_component::register_at_script_engine(*this);
     staticmesh_component::register_at_script_engine(*this);
 }
 

@@ -17,6 +17,7 @@
 #include <zombye/rendering/staticmesh_component.hpp>
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
+#include <zombye/rendering/shadow_component.hpp>
 #include <zombye/utils/component_helper.hpp>
 #include <zombye/utils/logger.hpp>
 
@@ -344,5 +345,13 @@ namespace zombye {
 
 	void rendering_system::unregister_component(staticmesh_component* component) {
 		remove(staticmesh_components_, component);
+	}
+
+	void rendering_system::register_component(shadow_component* component) {
+		shadow_components_.emplace_back(component);
+	}
+
+	void rendering_system::unregister_component(shadow_component* component) {
+		remove(shadow_components_, component);
 	}
 }
