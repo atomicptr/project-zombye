@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <scriptstdstring/scriptstdstring.h>
 
@@ -191,6 +192,13 @@ namespace zombye {
 
 		register_function("float glm::radians(float)",
 			+[](float degree) { return glm::radians(degree); });
+
+		register_pod_type<glm::mat4>("mat4");
+
+		register_function("mat4 glm::ortho(float, float, float, float, float, float)",
+			+[](float left, float right, float bottom, float top, float z_near, float z_far) {
+				return glm::ortho(left, right, bottom, top, z_near, z_far);
+			});
 
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
