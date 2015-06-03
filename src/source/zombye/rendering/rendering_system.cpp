@@ -151,6 +151,9 @@ namespace zombye {
 
 		shadow_map_ = std::make_unique<framebuffer>();
 		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, 1024, 1024, GL_DEPTH_COMPONENT, GL_FLOAT);
+		shadow_map_->bind();
+		glDrawBuffer(GL_NONE);
+		shadow_map_->bind_default();
 	}
 
 	rendering_system::~rendering_system() {
@@ -174,6 +177,8 @@ namespace zombye {
 			view_ = camera->second->transform();
 			camera_position = camera->second->owner().position();
 		}
+
+		render_shadowmap();
 
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_->bind();
@@ -298,6 +303,33 @@ namespace zombye {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
 		screen_quad_->draw();
+	}
+
+	void rendering_system::render_shadowmap()  {
+		auto dir_light = directional_light_components_.front();
+		auto& owner = dir_light->owner();
+		auto dir_light_shadow = owner.component<shadow_component>();
+		if (!dir_light_shadow) {
+			return;
+		}
+
+		shadow_map_->bind();
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		glm::vec3 proj_z = owner.position();
+		glm::vec3 up{0.f, 1.f, 0.f};
+		glm::vec3 proj_x = glm::cross(up, proj_z);
+		glm::vec3 proj_y = glm::cross(proj_z, proj_x);
+		float r = 100;
+		proj_x = glm::normalize(proj_x) * r;
+		proj_y = glm::normalize(proj_y) * r;
+		proj_z = glm::normalize(proj_z) * r;
+		glm::mat3 proj_inv_tmp{proj_x, proj_y, proj_z};
+		glm::mat4 proj_inv{proj_inv_tmp};
+		proj_inv[3].x = 0.f;
+		proj_inv[3].y = 0.f;
+		proj_inv[3].z = 0.f;
+		shadow_projection_ = glm::inverse(proj_inv);
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

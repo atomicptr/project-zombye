@@ -74,6 +74,7 @@ namespace zombye {
         std::unique_ptr<program> composition_program_;
 
         std::unique_ptr<framebuffer> shadow_map_;
+        glm::mat4 shadow_projection_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
@@ -144,6 +145,7 @@ namespace zombye {
     private:
         void render_debug_screen_quads() const;
         void render_screen_quad();
+        void render_shadowmap();
 
         void register_component(animation_component* component);
         void unregister_component(animation_component* component);
