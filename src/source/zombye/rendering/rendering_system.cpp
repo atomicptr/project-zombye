@@ -154,6 +154,34 @@ namespace zombye {
 		shadow_map_->bind();
 		glDrawBuffer(GL_NONE);
 		shadow_map_->bind_default();
+
+		shadow_staticmesh_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error{"could not load staticmesh.vs"};
+		}
+		shadow_staticmesh_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/shadow.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error{"could not load shadow.fs"};
+		}
+		shadow_staticmesh_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*shadow_staticmesh_program_, "frag_color");
+		shadow_staticmesh_program_->link();
+
+		shadow_animation_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/animation.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error{"could not load animation.vs"};
+		}
+		shadow_animation_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/shadow.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error{"could not load shadow.fs"};
+		}
+		shadow_animation_program_->attach_shader(fragment_shader);
+		skinnedmesh_layout_.setup_program(*shadow_animation_program_, "frag_color");
+		shadow_animation_program_->link();
 	}
 
 	rendering_system::~rendering_system() {
@@ -313,6 +341,7 @@ namespace zombye {
 			return;
 		}
 
+		glEnable(GL_DEPTH_TEST);
 		shadow_map_->bind();
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -330,6 +359,23 @@ namespace zombye {
 		proj_inv[3].y = 0.f;
 		proj_inv[3].z = 0.f;
 		shadow_projection_ = glm::inverse(proj_inv);
+
+		shadow_staticmesh_program_->use();
+		for (auto& s : staticmesh_components_) {
+			auto model = s->owner().transform();
+			staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
+			s->draw();
+		}
+
+		shadow_animation_program_->use();
+		for (auto& a: animation_components_) {
+			auto model = a->owner().transform();
+			animation_program_->uniform("mvp", false, shadow_projection_ * model);
+			animation_program_->uniform("pose", a->pose().size(), false, a->pose());
+			a->draw();
+		}
+
+		glDisable(GL_DEPTH_TEST);
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

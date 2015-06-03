@@ -75,6 +75,8 @@ namespace zombye {
 
         std::unique_ptr<framebuffer> shadow_map_;
         glm::mat4 shadow_projection_;
+        std::unique_ptr<program> shadow_staticmesh_program_;
+        std::unique_ptr<program> shadow_animation_program_;
 
     public:
         rendering_system(game& game, SDL_Window* window);
