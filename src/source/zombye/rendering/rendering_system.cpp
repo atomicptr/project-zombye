@@ -56,10 +56,10 @@ namespace zombye {
 		staticmesh_program_->attach_shader(vertex_shader);
 		staticmesh_program_->attach_shader(fragment_shader);
 
-		staticmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-		staticmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
-		staticmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
-		staticmesh_layout_.emplace_back("tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
+		staticmesh_layout_.emplace_back("_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+		staticmesh_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), 3 * sizeof(float));
+		staticmesh_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 5 * sizeof(float));
+		staticmesh_layout_.emplace_back("_tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
 
 		staticmesh_layout_.setup_program(*staticmesh_program_, "albedo_color");
 		staticmesh_program_->bind_frag_data_location("normal_color", 1);
@@ -73,12 +73,12 @@ namespace zombye {
 		animation_program_->attach_shader(vertex_shader);
 		animation_program_->attach_shader(fragment_shader);
 
-		skinnedmesh_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
-		skinnedmesh_layout_.emplace_back("texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 3 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 5 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 11 * sizeof(float));
-		skinnedmesh_layout_.emplace_back("weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 15 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_position", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 0);
+		skinnedmesh_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 3 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 5 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), 8 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_index", 4, GL_INT, GL_FALSE, sizeof(skinned_vertex), 11 * sizeof(float));
+		skinnedmesh_layout_.emplace_back("_weight", 4, GL_FLOAT, GL_FALSE, sizeof(skinned_vertex), 15 * sizeof(float));
 
 		skinnedmesh_layout_.setup_program(*animation_program_, "albedo_color");
 		animation_program_->bind_frag_data_location("normal_color", 1);
@@ -150,7 +150,7 @@ namespace zombye {
 		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height), glm::vec2(width, 0.f));
 
 		shadow_map_ = std::make_unique<framebuffer>();
-		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, 1024, 1024, GL_DEPTH_COMPONENT, GL_FLOAT);
+		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, 800, 600, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_->bind();
 		glDrawBuffer(GL_NONE);
 		shadow_map_->bind_default();
@@ -216,7 +216,6 @@ namespace zombye {
 		staticmesh_program_->uniform("diffuse_texture", 0);
 		staticmesh_program_->uniform("specular_texture", 1);
 		staticmesh_program_->uniform("normal_texture", 2);
-		staticmesh_program_->uniform("view", camera_position);
 		for (auto& s : staticmesh_components_) {
 			auto model = s->owner().transform();
 			auto model_it = glm::inverse(glm::transpose(model));
@@ -230,7 +229,6 @@ namespace zombye {
 		animation_program_->uniform("diffuse_texture", 0);
 		animation_program_->uniform("specular_texture", 1);
 		animation_program_->uniform("normal_texture", 2);
-		animation_program_->uniform("view", camera_position);
 		for (auto& a: animation_components_) {
 			auto model = a->owner().transform();
 			auto model_it = glm::inverse(glm::transpose(model));
@@ -271,6 +269,7 @@ namespace zombye {
 			screen_quad_program_->uniform("linearize", false);
 			if (attachments[i] == GL_DEPTH_ATTACHMENT) {
 				screen_quad_program_->uniform("linearize", true);
+				shadow_map_->attachment(GL_DEPTH_ATTACHMENT).bind(0);
 			}
 
 			debug_screen_quads_[i]->draw();
@@ -316,6 +315,7 @@ namespace zombye {
 		composition_program_->uniform("normal_texture", 1);
 		composition_program_->uniform("specular_texture", 2);
 		composition_program_->uniform("depth_texture", 3);
+		composition_program_->uniform("shadow_texture", 4);
 		composition_program_->uniform("inv_view_projection", false, glm::inverse(projection_ * view_));
 		composition_program_->uniform("view_vector", camera_position);
 		composition_program_->uniform("point_light_num", static_cast<int32_t>(light_components_.size()));
@@ -326,14 +326,19 @@ namespace zombye {
 		composition_program_->uniform("directional_light_directions", directional_light_components_.size(), directional_light_directions);
 		composition_program_->uniform("directional_light_colors", directional_light_components_.size(), directional_light_colors);
 		composition_program_->uniform("directional_light_energy", directional_light_components_.size(), directional_light_energy);
+		composition_program_->uniform("shadow_projection", false, shadow_projection_);
 
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
+		shadow_map_->attachment(GL_DEPTH_ATTACHMENT).bind(4);
 		screen_quad_->draw();
 	}
 
 	void rendering_system::render_shadowmap()  {
+		if (directional_light_components_.size() == 0) {
+			return;
+		}
 		auto dir_light = directional_light_components_.front();
 		auto& owner = dir_light->owner();
 		auto dir_light_shadow = owner.component<shadow_component>();
@@ -342,14 +347,19 @@ namespace zombye {
 		}
 
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_CLAMP);
+		glFrontFace(GL_CW);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+
 		shadow_map_->bind();
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::vec3 proj_z = owner.position();
 		glm::vec3 up{0.f, 1.f, 0.f};
 		glm::vec3 proj_x = glm::cross(up, proj_z);
 		glm::vec3 proj_y = glm::cross(proj_z, proj_x);
-		float r = 100;
+		float r = 20;
 		proj_x = glm::normalize(proj_x) * r;
 		proj_y = glm::normalize(proj_y) * r;
 		proj_z = glm::normalize(proj_z) * r;
@@ -360,22 +370,38 @@ namespace zombye {
 		proj_inv[3].z = 0.f;
 		shadow_projection_ = glm::inverse(proj_inv);
 
+		shadow_projection_ = glm::ortho(-20.f, 20.f, -20.f, 20.f, -20.f, 20.f);
+		shadow_projection_ *= glm::lookAt(glm::vec3{0.f, 1.f, 1.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
+
 		shadow_staticmesh_program_->use();
+		shadow_staticmesh_program_->uniform("diffuse_texture", 0);
+		shadow_staticmesh_program_->uniform("specular_texture", 1);
+		shadow_staticmesh_program_->uniform("normal_texture", 2);
+		shadow_staticmesh_program_->uniform("m", false, glm::mat4{1.f});
+		shadow_staticmesh_program_->uniform("mit", false, glm::mat4{1.f});
 		for (auto& s : staticmesh_components_) {
 			auto model = s->owner().transform();
-			staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
+			shadow_staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
 			s->draw();
 		}
 
 		shadow_animation_program_->use();
-		for (auto& a: animation_components_) {
+		shadow_animation_program_->uniform("diffuse_texture", 0);
+		shadow_animation_program_->uniform("specular_texture", 1);
+		shadow_animation_program_->uniform("normal_texture", 2);
+		shadow_animation_program_->uniform("m", false, glm::mat4{1.f});
+		shadow_animation_program_->uniform("mit", false, glm::mat4{1.f});
+		for (auto& a : animation_components_) {
 			auto model = a->owner().transform();
-			animation_program_->uniform("mvp", false, shadow_projection_ * model);
-			animation_program_->uniform("pose", a->pose().size(), false, a->pose());
+			shadow_animation_program_->uniform("mvp", false, shadow_projection_ * model);
+			shadow_animation_program_->uniform("pose", a->pose().size(), false, a->pose());
 			a->draw();
 		}
 
+		shadow_map_->bind_default();
+
 		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

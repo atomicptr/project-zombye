@@ -1,23 +1,21 @@
 #version 330
 
-in vec3 position;
-in vec3 normal;
-in vec3 tangent;
-in vec2 texcoord;
+in vec3 _position;
+in vec3 _normal;
+in vec3 _tangent;
+in vec2 _texcoord;
 
-out vec2 f_texcoord;
-out vec3 f_normal;
-out vec3 f_tangent;
-out vec3 f_world_position;
+out vec2 texcoord_;
+out vec3 normal_;
+out vec3 tangent_;
 
 uniform mat4 m;
 uniform mat4 mit;
 uniform mat4 mvp;
 
 void main() {
-    f_texcoord = texcoord;
-    f_normal = (mit * vec4(normal, 0.0)).xyz;
-    f_tangent = (mit * vec4(tangent, 0.0)).xyz;
-    f_world_position = (m * vec4(position, 1.0)).xyz;
-    gl_Position = mvp * vec4(position, 1.0);
+    texcoord_ = _texcoord;
+    normal_ = (mit * vec4(_normal, 0.0)).xyz;
+    tangent_ = (mit * vec4(_tangent, 0.0)).xyz;
+    gl_Position = mvp * vec4(_position, 1.0);
 }

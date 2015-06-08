@@ -1,16 +1,15 @@
 #version 330
 
-in vec3 position;
-in vec2 texcoord;
-in vec3 normal;
-in vec3 tangent;
-in ivec4 index;
-in vec4 weight;
+in vec3 _position;
+in vec2 _texcoord;
+in vec3 _normal;
+in vec3 _tangent;
+in ivec4 _index;
+in vec4 _weight;
 
-out vec2 f_texcoord;
-out vec3 f_normal;
-out vec3 f_tangent;
-out vec3 f_world_position;
+out vec2 texcoord_;
+out vec3 normal_;
+out vec3 tangent_;
 
 uniform mat4 m;
 uniform mat4 mit;
@@ -18,20 +17,19 @@ uniform mat4 mvp;
 uniform mat4 pose[250];
 
 void main() {
-    f_texcoord = texcoord;
+    texcoord_ = _texcoord;
 
     vec4 pos = vec4(0.0, 0.0, 0.0, 0.0);
     vec4 nor = vec4(0.0, 0.0, 0.0, 0.0);
     vec4 tan = vec4(0.0, 0.0, 0.0, 0.0);
     for (int i = 0; i < 4; ++i) {
-        pos += weight[i] * pose[index[i]] * vec4(position, 1.0);
-        nor += weight[i] * pose[index[i]] * vec4(normal, 0.0);
-        tan += weight[i] * pose[index[i]] * vec4(tangent, 0.0);
+        pos += _weight[i] * pose[_index[i]] * vec4(_position, 1.0);
+        nor += _weight[i] * pose[_index[i]] * vec4(_normal, 0.0);
+        tan += _weight[i] * pose[_index[i]] * vec4(_tangent, 0.0);
     }
 
-    f_normal = (mit * nor).xyz;
-    f_tangent = (mit * tan).xyz;
-    f_world_position = (m * pos).xyz;
+    normal_ = (mit * nor).xyz;
+    tangent_ = (mit * tan).xyz;
 
     gl_Position = mvp * vec4(pos.xyz, 1.0);
 }
