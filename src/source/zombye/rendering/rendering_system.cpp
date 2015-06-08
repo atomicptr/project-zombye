@@ -102,13 +102,13 @@ namespace zombye {
 
 		g_buffer_->bind();
 		glClearColor(0.4f, 0.6f, 0.9f, 1.f);
-		GLenum buf[5] = {
+		GLenum buf[4] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2,
 			GL_NONE
 		};
-		glDrawBuffers(5, buf);
+		glDrawBuffers(4, buf);
 		g_buffer_->bind_default();
 
 		screen_quad_program_ = std::make_unique<program>();
@@ -263,12 +263,12 @@ namespace zombye {
 		screen_quad_program_->uniform("far_plane", 1000.f);
 		screen_quad_program_->uniform("color_texture", 0);
 
-		for (auto i = 0; i < debug_screen_quads_.size(); ++i) {
+		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(0);
 
 			screen_quad_program_->uniform("linearize", false);
 			if (attachments[i] == GL_DEPTH_ATTACHMENT) {
-				screen_quad_program_->uniform("linearize", true);
+				screen_quad_program_->uniform("linearize", false);
 				shadow_map_->attachment(GL_DEPTH_ATTACHMENT).bind(0);
 			}
 
@@ -277,7 +277,7 @@ namespace zombye {
 	}
 
 	void rendering_system::render_screen_quad()  {
-		const static GLenum attachments[4] = {
+		const static GLenum attachments[5] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2,
