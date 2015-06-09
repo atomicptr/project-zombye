@@ -2,5 +2,5 @@
    "fullscreen" : false,
    "height" : 600,
    "width" : 800,
-   "shadow_resolution": 1024
+   "shadow_resolution": 3072
 }

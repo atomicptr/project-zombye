@@ -33,7 +33,7 @@ vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3
 }
 
 float sample_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
-	return step(compare, texture2D(shadow_map, texcoord).r);
+	return step(compare - 0.005, texture2D(shadow_map, texcoord).r);
 }
 
 float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
