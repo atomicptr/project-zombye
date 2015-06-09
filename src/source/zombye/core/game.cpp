@@ -50,10 +50,12 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     register_components();
 
-    auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+    auto mask = SDL_WINDOW_OPENGL | (fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
         height_, mask);
+
+    SDL_GetWindowSize(window_.get(), &width_, &height_);
 
     auto error = std::string{ SDL_GetError() };
 
