@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <zombye/config/config_system.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
 #include <zombye/rendering/animation_component.hpp>
@@ -150,6 +151,8 @@ namespace zombye {
 
 		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height_), glm::vec2(width_, 0.f));
 
+		auto config = game.config();
+		shadow_resolution_ = config->get("main", "shadow_resolution").asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
 		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_->bind();

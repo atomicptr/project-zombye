@@ -1,5 +1,6 @@
 {
    "fullscreen" : false,
    "height" : 600,
-   "width" : 800
+   "width" : 800,
+   "shadow_resolution": 1024
 }
