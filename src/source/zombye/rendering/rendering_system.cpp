@@ -24,7 +24,8 @@
 namespace zombye {
 	rendering_system::rendering_system(game& game, SDL_Window* window)
 	: game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, skinned_mesh_manager_{game_},
-	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, projection_{1.f}, view_{1.f} {
+	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, projection_{1.f}, view_{1.f},
+	shadow_resolution_{3072} {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -86,19 +87,19 @@ namespace zombye {
 		animation_program_->link();
 
 		float fovy = 45.f * 3.1415f / 180.f;
-		auto width = float(game_.width());
-		auto height = float(game_.height());
-		float aspect = width / height;
+		width_ = float(game_.width());
+		height_ = float(game_.height());
+		float aspect = width_ / height_;
 		float near = 0.01f;
 		float far = 1000.f;
 		projection_ = glm::perspective(fovy, aspect, near, far);
-		ortho_projection_ = glm::ortho(0.f, width, 0.f, height);
+		ortho_projection_ = glm::ortho(0.f, width_, 0.f, height_);
 
 		g_buffer_ = std::make_unique<framebuffer>();
-		g_buffer_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, width, height, GL_DEPTH_COMPONENT, GL_FLOAT);
-		g_buffer_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
-		g_buffer_->attach(GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
-		g_buffer_->attach(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, GL_RGBA32F, width, height, GL_RGBA, GL_FLOAT);
+		g_buffer_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT);
+		g_buffer_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RGBA32F, width_, height_, GL_RGBA, GL_FLOAT);
+		g_buffer_->attach(GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, GL_RGBA32F, width_, height_, GL_RGBA, GL_FLOAT);
+		g_buffer_->attach(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, GL_RGBA32F, width_, height_, GL_RGBA, GL_FLOAT);
 
 		g_buffer_->bind();
 		glClearColor(0.4f, 0.6f, 0.9f, 1.f);
@@ -128,8 +129,8 @@ namespace zombye {
 		for (auto i = 0; i < 4; ++i) {
 			debug_screen_quads_.emplace_back(std::make_unique<screen_quad>(
 				staticmesh_layout_,
-				glm::vec2{(i * width / 4.f) + 0.01f * width, (1 * height / 4) + 0.01f * height},
-				glm::vec2{((i + 1) * width / 4.f) - 0.01f * width, 0.01f * height}
+				glm::vec2{(i * width_ / 4.f) + 0.01f * width_, (1 * height_ / 4) + 0.01f * height_},
+				glm::vec2{((i + 1) * width_ / 4.f) - 0.01f * width_, 0.01f * height_}
 			));
 		}
 
@@ -147,10 +148,10 @@ namespace zombye {
 		staticmesh_layout_.setup_program(*composition_program_, "frag_color");
 		composition_program_->link();
 
-		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height), glm::vec2(width, 0.f));
+		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height_), glm::vec2(width_, 0.f));
 
 		shadow_map_ = std::make_unique<framebuffer>();
-		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, 800, 600, GL_DEPTH_COMPONENT, GL_FLOAT);
+		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_->bind();
 		glDrawBuffer(GL_NONE);
 		shadow_map_->bind_default();
@@ -351,6 +352,7 @@ namespace zombye {
 		glFrontFace(GL_CW);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
+		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
 
 		shadow_map_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -402,6 +404,7 @@ namespace zombye {
 
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
+		glViewport(0, 0, width_, height_);
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

@@ -44,6 +44,8 @@ namespace zombye {
         game& game_;
         SDL_Window* window_;
         SDL_GLContext context_;
+        float width_;
+        float height_;
 
         std::vector<animation_component*> animation_components_;
         std::unordered_map<unsigned long, camera_component*> camera_components_;
@@ -73,6 +75,7 @@ namespace zombye {
         std::unique_ptr<screen_quad> screen_quad_;
         std::unique_ptr<program> composition_program_;
 
+        float shadow_resolution_;
         std::unique_ptr<framebuffer> shadow_map_;
         glm::mat4 shadow_projection_;
         std::unique_ptr<program> shadow_staticmesh_program_;
