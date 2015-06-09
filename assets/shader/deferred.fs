@@ -33,12 +33,12 @@ vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3
 }
 
 float sample_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
-	return step(compare - 0.005, texture2D(shadow_map, texcoord).r);
+	return step(compare, texture2D(shadow_map, texcoord).r);
 }
 
-float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
+float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord, float bias) {
 	vec3 shadow_coord = initial_shadow_coord.xyz / initial_shadow_coord.w;
-	return sample_shadow(shadow_map, shadow_coord.xy, shadow_coord.z);
+	return sample_shadow(shadow_map, shadow_coord.xy, shadow_coord.z - bias);
 }
 
 void main() {
@@ -52,8 +52,9 @@ void main() {
 	mat4 bias = mat4(0.5);
 	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
 	vec4 position_shadow = bias * shadow_projection * vec4(p, 1.0);
+	float depth_bias = 0.005;
 	float shadow_amount = 1.0;
-	shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow);
+	shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow, depth_bias);
 
 	vec3 N = normalize(texture(normal_texture, texcoord_).xyz);
 	vec3 V = normalize(view_vector - p);
