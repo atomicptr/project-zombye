@@ -352,8 +352,8 @@ namespace zombye {
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_CLAMP);
-		glFrontFace(GL_CW);
-		glCullFace(GL_FRONT);
+		glFrontFace(GL_CCW);
+		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
 		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
 

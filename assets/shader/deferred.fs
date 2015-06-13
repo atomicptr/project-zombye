@@ -36,9 +36,21 @@ float sample_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
 	return step(compare, texture2D(shadow_map, texcoord).r);
 }
 
-float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord, float bias) {
+float sample_variance_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
+	vec2 moments = texture2D(shadow_map, texcoord).xy;
+
+	float p = step(compare, moments.x);
+	float variance = max(moments.y - moments.x * moments.x, 0.00002);
+
+	float d = compare - moments.x;
+	float p_max = variance / (variance - d * d);
+
+	return min(max(p, p_max), 1.0);
+}
+
+float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
 	vec3 shadow_coord = initial_shadow_coord.xyz / initial_shadow_coord.w;
-	return sample_shadow(shadow_map, shadow_coord.xy, shadow_coord.z - bias);
+	return sample_variance_shadow(shadow_map, shadow_coord.xy, shadow_coord.z);
 }
 
 void main() {
@@ -52,9 +64,8 @@ void main() {
 	mat4 bias = mat4(0.5);
 	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
 	vec4 position_shadow = bias * shadow_projection * vec4(p, 1.0);
-	float depth_bias = 0.005;
 	float shadow_amount = 1.0;
-	shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow, depth_bias);
+	shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow);
 
 	vec3 N = normalize(texture(normal_texture, texcoord_).xyz);
 	vec3 V = normalize(view_vector - p);
