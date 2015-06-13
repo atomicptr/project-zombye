@@ -154,9 +154,9 @@ namespace zombye {
 		auto config = game.config();
 		shadow_resolution_ = config->get("main", "shadow_resolution").asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
-		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT24, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
+		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		shadow_map_->bind();
-		glDrawBuffer(GL_NONE);
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 		shadow_map_->bind_default();
 
 		shadow_staticmesh_program_ = std::make_unique<program>();
@@ -273,7 +273,7 @@ namespace zombye {
 			screen_quad_program_->uniform("linearize", false);
 			if (attachments[i] == GL_DEPTH_ATTACHMENT) {
 				screen_quad_program_->uniform("linearize", false);
-				shadow_map_->attachment(GL_DEPTH_ATTACHMENT).bind(0);
+				shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 			}
 
 			debug_screen_quads_[i]->draw();
@@ -335,7 +335,7 @@ namespace zombye {
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
-		shadow_map_->attachment(GL_DEPTH_ATTACHMENT).bind(4);
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
 		screen_quad_->draw();
 	}
 
@@ -352,7 +352,7 @@ namespace zombye {
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_CLAMP);
-		//glFrontFace(GL_CW);
+		glFrontFace(GL_CW);
 		glCullFace(GL_FRONT);
 		glEnable(GL_CULL_FACE);
 		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
