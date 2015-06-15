@@ -356,7 +356,7 @@ namespace zombye {
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
-		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
 		screen_quad_->draw();
 	}
 
@@ -396,7 +396,7 @@ namespace zombye {
 		proj_inv[3].z = 0.f;
 		shadow_projection_ = glm::inverse(proj_inv);
 
-		shadow_projection_ = glm::ortho(-20.f, 20.f, -20.f, 20.f, -20.f, 20.f);
+		shadow_projection_ = glm::ortho(-10.f, 10.f, -10.f, 10.f, -10.f, 10.f);
 		shadow_projection_ *= glm::lookAt(glm::vec3{0.f, 1.f, 1.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
 
 		shadow_staticmesh_program_->use();
@@ -439,7 +439,18 @@ namespace zombye {
 		shadow_blur_program_->use();
 		shadow_blur_program_->uniform("projection", false, ortho_projection_);
 		shadow_blur_program_->uniform("shadow_texture", 0);
+		shadow_blur_program_->uniform("blur_scale", glm::vec2(1.f / shadow_resolution_, 0.f));
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+		screen_quad_->draw();
+
+		shadow_map_->bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shadow_blur_program_->use();
+		shadow_blur_program_->uniform("projection", false, ortho_projection_);
+		shadow_blur_program_->uniform("shadow_texture", 0);
+		shadow_blur_program_->uniform("blur_scale", glm::vec2(0.f, 1.f / shadow_resolution_));
+		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 		screen_quad_->draw();
 
 		shadow_map_blured_->bind_default();
