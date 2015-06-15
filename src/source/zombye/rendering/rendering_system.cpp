@@ -186,6 +186,26 @@ namespace zombye {
 		shadow_animation_program_->attach_shader(fragment_shader);
 		skinnedmesh_layout_.setup_program(*shadow_animation_program_, "frag_color");
 		shadow_animation_program_->link();
+
+		shadow_map_blured_ = std::make_unique<framebuffer>();
+		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
+		shadow_map_blured_->bind();
+		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		shadow_map_blured_->bind_default();
+
+		shadow_blur_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/screen_quad.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error("could not load screen_quad.vs");
+		}
+		shadow_blur_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/gaussian_blur.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error("could not load gaussian_blur.fs");
+		}
+		shadow_blur_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*shadow_blur_program_, "frag_color");
+		shadow_blur_program_->link();
 	}
 
 	rendering_system::~rendering_system() {
@@ -211,6 +231,7 @@ namespace zombye {
 		}
 
 		render_shadowmap();
+		apply_gaussian_blur();
 
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_->bind();
@@ -335,7 +356,7 @@ namespace zombye {
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
-		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
+		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
 		screen_quad_->draw();
 	}
 
@@ -407,6 +428,21 @@ namespace zombye {
 
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
+		glViewport(0, 0, width_, height_);
+	}
+
+	void rendering_system::apply_gaussian_blur() {
+		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
+		shadow_map_blured_->bind();
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shadow_blur_program_->use();
+		shadow_blur_program_->uniform("projection", false, ortho_projection_);
+		shadow_blur_program_->uniform("shadow_texture", 0);
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+		screen_quad_->draw();
+
+		shadow_map_blured_->bind_default();
 		glViewport(0, 0, width_, height_);
 	}
 

@@ -81,6 +81,9 @@ namespace zombye {
         std::unique_ptr<program> shadow_staticmesh_program_;
         std::unique_ptr<program> shadow_animation_program_;
 
+        std::unique_ptr<framebuffer> shadow_map_blured_;
+        std::unique_ptr<program> shadow_blur_program_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
@@ -151,6 +154,7 @@ namespace zombye {
         void render_debug_screen_quads() const;
         void render_screen_quad();
         void render_shadowmap();
+        void apply_gaussian_blur();
 
         void register_component(animation_component* component);
         void unregister_component(animation_component* component);
