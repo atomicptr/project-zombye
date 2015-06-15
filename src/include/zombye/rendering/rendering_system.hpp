@@ -75,7 +75,7 @@ namespace zombye {
         std::unique_ptr<screen_quad> screen_quad_;
         std::unique_ptr<program> composition_program_;
 
-        float shadow_resolution_;
+        int shadow_resolution_;
         std::unique_ptr<framebuffer> shadow_map_;
         glm::mat4 shadow_projection_;
         std::unique_ptr<program> shadow_staticmesh_program_;
