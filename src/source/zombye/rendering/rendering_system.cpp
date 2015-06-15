@@ -352,6 +352,7 @@ namespace zombye {
 		composition_program_->uniform("directional_light_colors", directional_light_components_.size(), directional_light_colors);
 		composition_program_->uniform("directional_light_energy", directional_light_components_.size(), directional_light_energy);
 		composition_program_->uniform("shadow_projection", false, shadow_projection_);
+		composition_program_->uniform("ambient_term", glm::vec3(0.1));
 
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
