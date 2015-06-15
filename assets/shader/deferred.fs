@@ -47,7 +47,7 @@ float sample_variance_shadow(sampler2D shadow_map, vec2 texcoord, float compare)
 	float variance = max(moments.y - moments.x * moments.x, 0.000002);
 
 	float d = compare - moments.x;
-	float p_max = linstep(0.2, 1.0, variance / (variance - d * d));
+	float p_max = linstep(0.2, 1.0, variance / (variance + d * d));
 
 	return min(max(p, p_max), 1.0);
 }

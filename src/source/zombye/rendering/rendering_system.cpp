@@ -439,7 +439,7 @@ namespace zombye {
 		shadow_blur_program_->use();
 		shadow_blur_program_->uniform("projection", false, ortho_projection_);
 		shadow_blur_program_->uniform("shadow_texture", 0);
-		shadow_blur_program_->uniform("blur_scale", glm::vec2(1.f / shadow_resolution_, 0.f));
+		shadow_blur_program_->uniform("blur_scale", glm::vec2(2.f / shadow_resolution_, 0.f));
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 		screen_quad_->draw();
 
@@ -449,7 +449,7 @@ namespace zombye {
 		shadow_blur_program_->use();
 		shadow_blur_program_->uniform("projection", false, ortho_projection_);
 		shadow_blur_program_->uniform("shadow_texture", 0);
-		shadow_blur_program_->uniform("blur_scale", glm::vec2(0.f, 1.f / shadow_resolution_));
+		shadow_blur_program_->uniform("blur_scale", glm::vec2(0.f, 2.f / shadow_resolution_));
 		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 		screen_quad_->draw();
 
