@@ -293,8 +293,7 @@ namespace zombye {
 
 			screen_quad_program_->uniform("linearize", false);
 			if (attachments[i] == GL_DEPTH_ATTACHMENT) {
-				screen_quad_program_->uniform("linearize", false);
-				shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+				screen_quad_program_->uniform("linearize", true);
 			}
 
 			debug_screen_quads_[i]->draw();
