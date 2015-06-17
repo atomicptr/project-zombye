@@ -34,7 +34,7 @@ vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3
 }
 
 float sample_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
-	return step(compare, texture2D(shadow_map, texcoord).r);
+	return step(compare, texture(shadow_map, texcoord).r);
 }
 
 float linstep(float low, float high, float v) {
@@ -42,7 +42,7 @@ float linstep(float low, float high, float v) {
 }
 
 float sample_variance_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
-	vec2 moments = texture2D(shadow_map, texcoord).xy;
+	vec2 moments = texture(shadow_map, texcoord).xy;
 
 	float p = step(compare, moments.x);
 	float variance = max(moments.y - moments.x * moments.x, 0.000002);
@@ -99,8 +99,6 @@ void main() {
 		final_color += blinn_phong(N, L, V, directional_light_colors[i], diffuse_color, spec_color, 50)
 			* energy * shadow_amount;
 	}
-
-	//final_color = texture2D(shadow_texture, position_shadow.xy).rgb;
 
 	frag_color = vec4(final_color, 1.0);
 }
