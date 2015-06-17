@@ -199,6 +199,11 @@ namespace zombye {
 			+[](float left, float right, float bottom, float top, float z_near, float z_far) {
 				return glm::ortho(left, right, bottom, top, z_near, z_far);
 			});
+		register_function("mat4 glm::perspectiveFov(float, float, float, float, float)",
+			+[](float fov, float width, float height, float z_near, float z_far) {
+				return glm::perspectiveFov(fov, width, height, z_near, z_far);
+			}
+		);
 
 		script_engine_->SetDefaultNamespace("");
 		register_function("void print(const glm::vec3& in)", +[](const glm::vec3& in) {log(glm::to_string(in));});
