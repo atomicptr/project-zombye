@@ -65,8 +65,6 @@ namespace zombye {
         zombye::skeleton_manager skeleton_manager_;
         unsigned long active_camera_;
 
-        glm::mat4 projection_;
-        glm::mat4 view_;
         glm::mat4 ortho_projection_;
 
         std::unique_ptr<framebuffer> g_buffer_;
@@ -140,14 +138,6 @@ namespace zombye {
 
         auto& texture_manager() noexcept {
             return texture_manager_;
-        }
-
-        auto projection() const noexcept {
-            return projection_;
-        }
-
-        auto view() const noexcept {
-            return view_;
         }
 
     private:

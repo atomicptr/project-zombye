@@ -25,8 +25,7 @@
 namespace zombye {
 	rendering_system::rendering_system(game& game, SDL_Window* window)
 	: game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, skinned_mesh_manager_{game_},
-	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, projection_{1.f}, view_{1.f},
-	shadow_resolution_{3072} {
+	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, shadow_resolution_{3072} {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -47,6 +46,9 @@ namespace zombye {
 
 		auto version = std::string{reinterpret_cast<const char*>(glGetString(GL_VERSION))};
 		log("OpenGL version " + version);
+
+		width_ = static_cast<float>(game.width());
+		height_ = static_cast<float>(game.height());
 
 		glEnable(GL_DEPTH_TEST);
 		clear_color(0.4, 0.5, 0.9, 1.0);
@@ -87,13 +89,6 @@ namespace zombye {
 		animation_program_->bind_frag_data_location("specular_color", 2);
 		animation_program_->link();
 
-		float fovy = 45.f * 3.1415f / 180.f;
-		width_ = float(game_.width());
-		height_ = float(game_.height());
-		float aspect = width_ / height_;
-		float near = 0.01f;
-		float far = 1000.f;
-		projection_ = glm::perspective(fovy, aspect, near, far);
 		ortho_projection_ = glm::ortho(0.f, width_, 0.f, height_);
 
 		g_buffer_ = std::make_unique<framebuffer>();
@@ -223,11 +218,9 @@ namespace zombye {
 
 	void rendering_system::update(float delta_time) {
 		auto camera = camera_components_.find(active_camera_);
-		view_ = glm::mat4{1.f};
-		auto camera_position = glm::vec3{0.f};
+		auto projection_view = glm::mat4{1.f};
 		if (camera != camera_components_.end()) {
-			view_ = camera->second->transform();
-			camera_position = camera->second->owner().position();
+			projection_view = camera->second->projection_view();
 		}
 
 		render_shadowmap();
@@ -246,7 +239,7 @@ namespace zombye {
 			auto model_it = glm::inverse(glm::transpose(model));
 			staticmesh_program_->uniform("m", false, model);
 			staticmesh_program_->uniform("mit", false, model_it);
-			staticmesh_program_->uniform("mvp", false, projection_ * view_ * model);
+			staticmesh_program_->uniform("mvp", false, projection_view * model);
 			s->draw();
 		}
 
@@ -259,7 +252,7 @@ namespace zombye {
 			auto model_it = glm::inverse(glm::transpose(model));
 			animation_program_->uniform("m", false, model);
 			animation_program_->uniform("mit", false, model_it);
-			animation_program_->uniform("mvp", false, projection_ * view_ * model);
+			animation_program_->uniform("mvp", false, projection_view * model);
 			animation_program_->uniform("pose", a->pose().size(), false, a->pose());
 			a->draw();
 		}
@@ -301,7 +294,7 @@ namespace zombye {
 	}
 
 	void rendering_system::render_screen_quad()  {
-		const static GLenum attachments[5] = {
+		const static GLenum attachments[4] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2,
@@ -327,9 +320,10 @@ namespace zombye {
 		}
 
 		auto camera = camera_components_.find(active_camera_);
+		auto projection_view = glm::mat4{1.f};
 		auto camera_position = glm::vec3{0.f};
 		if (camera != camera_components_.end()) {
-			view_ = camera->second->transform();
+			projection_view = camera->second->projection_view();
 			camera_position = camera->second->owner().position();
 		}
 
@@ -340,7 +334,7 @@ namespace zombye {
 		composition_program_->uniform("specular_texture", 2);
 		composition_program_->uniform("depth_texture", 3);
 		composition_program_->uniform("shadow_texture", 4);
-		composition_program_->uniform("inv_view_projection", false, glm::inverse(projection_ * view_));
+		composition_program_->uniform("inv_view_projection", false, glm::inverse(projection_view));
 		composition_program_->uniform("view_vector", camera_position);
 		composition_program_->uniform("point_light_num", static_cast<int32_t>(light_components_.size()));
 		composition_program_->uniform("point_light_positions", light_components_.size(), point_light_positions);
@@ -381,23 +375,8 @@ namespace zombye {
 		shadow_map_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec3 proj_z = owner.position();
-		glm::vec3 up{0.f, 1.f, 0.f};
-		glm::vec3 proj_x = glm::cross(up, proj_z);
-		glm::vec3 proj_y = glm::cross(proj_z, proj_x);
-		float r = 20;
-		proj_x = glm::normalize(proj_x) * r;
-		proj_y = glm::normalize(proj_y) * r;
-		proj_z = glm::normalize(proj_z) * r;
-		glm::mat3 proj_inv_tmp{proj_x, proj_y, proj_z};
-		glm::mat4 proj_inv{proj_inv_tmp};
-		proj_inv[3].x = 0.f;
-		proj_inv[3].y = 0.f;
-		proj_inv[3].z = 0.f;
-		shadow_projection_ = glm::inverse(proj_inv);
-
 		shadow_projection_ = glm::ortho(-20.f, 20.f, -20.f, 20.f, -20.f, 20.f);
-		shadow_projection_ *= glm::lookAt(glm::vec3{0.f, 1.f, 1.f}, glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
+		shadow_projection_ *= glm::lookAt(owner.position(), glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
 
 		shadow_staticmesh_program_->use();
 		shadow_staticmesh_program_->uniform("diffuse_texture", 0);

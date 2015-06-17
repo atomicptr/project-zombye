@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <SDL2/SDL.h>
 
 #include <zombye/core/game.hpp>
@@ -49,11 +49,19 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
 void zombye::play_state::enter() {
     zombye::log("enter play state");
 
-    auto& camera = sm_->get_game()->entity_manager().emplace(glm::vec3{7.f, 10.f, -7.f}, glm::angleAxis(0.f, glm::vec3{0.f, 0.f, 0.f}), glm::vec3{1.f});
-    camera.emplace<camera_component>(glm::vec3{0.f, 0.f, 0.f}, glm::vec3{0.f, 1.f, 0.f});
-    sm_->get_game()->rendering_system().activate_camera(camera.id());
+    auto& game = *sm_->get_game();
 
-    auto& scripting_system = sm_->get_game()->scripting_system();
+    auto fovy = 45.f * 3.1415f / 180.f;
+    auto width = float(game.width());
+    auto height = float(game.height());
+    auto near = 0.01f;
+    auto far = 1000.f;
+
+    auto& camera = game.entity_manager().emplace(glm::vec3{0.f, 4.f, 20.f}, glm::angleAxis(glm::radians(-15.f), glm::vec3{1.f, 0.f, 0.f}), glm::vec3{1.f});
+    camera.emplace<camera_component>(glm::perspectiveFov(fovy, width, height, near, far));
+    game.rendering_system().activate_camera(camera.id());
+
+    auto& scripting_system = game.scripting_system();
     scripting_system.begin_module("MyModule");
     scripting_system.load_script("scripts/test.as");
     scripting_system.end_module();

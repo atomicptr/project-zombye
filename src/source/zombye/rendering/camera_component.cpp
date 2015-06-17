@@ -6,21 +6,15 @@
 #include <zombye/rendering/rendering_system.hpp>
 
 namespace zombye {
-    camera_component::camera_component(game& game, entity& owner, const glm::vec3& look_at, const glm::vec3& up) noexcept
-    : reflective{game, owner}, look_at_{look_at}, up_{up} {
+    camera_component::camera_component(game& game, entity& owner, const glm::mat4& projection) noexcept
+    : reflective{game, owner}, projection_{projection} {
         game_.rendering_system().register_component(this);
     }
 
     camera_component::camera_component(game& game, entity& owner) noexcept
-    : reflective{game, owner}, look_at_{0.f}, up_{0.f} {}
+    : reflective{game, owner}, projection_{glm::mat4{1.f}} {}
 
     camera_component::~camera_component() noexcept {
         game_.rendering_system().unregister_component(this);
-    }
-
-    glm::mat4 camera_component::transform() const {
-        auto pos = owner_.position();
-        auto position = glm::vec3{pos.x, pos.y, pos.z};
-        return glm::lookAt(position, look_at_, up_);
     }
 }

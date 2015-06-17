@@ -13,6 +13,6 @@ void main() {
     auto anim = p.impl().get_animation_component();
     anim.play_ani("walk");
     anim.blend_ani("run");
-    directional_light dl(glm::vec3(0, 1, 1), glm::vec3(1), 1, true);
+    directional_light dl(glm::vec3(1, 0.3, 1), glm::vec3(1), 1, true);
     //d.impl().get_physics_component().apply_central_impulse(glm::vec3(5, 5, 0));
 }

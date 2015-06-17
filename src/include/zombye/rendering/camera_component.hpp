@@ -2,40 +2,38 @@
 #define __ZOMBYE_CAMERA_COMPONENT_HPP__
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <zombye/ecs/component.hpp>
+#include <zombye/ecs/entity.hpp>
 #include <zombye/ecs/reflective.hpp>
 
 namespace zombye {
-    class entity;
     class game;
 }
 
 namespace zombye {
     class camera_component : public reflective<camera_component, component> {
         friend class reflective<camera_component, component>;
-        glm::vec3 look_at_;
-        glm::vec3 up_;
+        glm::mat4 projection_;
     public:
-        camera_component(game& game, entity& owner, const glm::vec3& look_at, const glm::vec3& up) noexcept;
+        camera_component(game& game, entity& owner, const glm::mat4& projection) noexcept;
         ~camera_component() noexcept;
 
-        glm::mat4 transform() const;
-
-        glm::vec3 look_at() const {
-            return look_at_;
+        auto& projection() const {
+            return projection_;
         }
 
-        void set_look_at(const glm::vec3& look_at) {
-            look_at_ = look_at;
+        void projection(const glm::mat4 projection) {
+            projection_ = projection;
         }
 
-        glm::vec3 up() const {
-            return up_;
+        auto view() const {
+            return glm::inverse(owner_.transform());
         }
 
-        void set_up(const glm::vec3& up) {
-            up_ = up;
+        auto projection_view() const {
+            return projection() * view();
         }
 
     private:

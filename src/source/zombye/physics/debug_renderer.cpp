@@ -1,5 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/debug_renderer.hpp>
+#include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/utils/logger.hpp>
 
@@ -46,16 +47,22 @@ namespace zombye {
 
 
     void debug_renderer::draw() {
+        auto camera = rs_.active_camera();
+        auto projection_view = glm::mat4{1.f};
+        if (camera) {
+            projection_view = camera->projection_view();
+        }
+
         vbo_.data(line_buffer_.size() * sizeof(debug_vertex), line_buffer_.data());
         vao_.bind();
         debug_program_.use();
-        debug_program_.uniform("vp", GL_FALSE, rs_.projection() * rs_.view());
+        debug_program_.uniform("vp", GL_FALSE, projection_view);
         glDrawArrays(GL_LINES, 0, line_buffer_.size());
         line_buffer_.clear();
 
         vbo_.data(point_buffer_.size() * sizeof(debug_vertex), point_buffer_.data());
         vao_.bind();
-        debug_program_.uniform("vp", GL_FALSE, rs_.projection() * rs_.view());
+        debug_program_.uniform("vp", GL_FALSE, projection_view);
         glDrawArrays(GL_POINTS, 0, point_buffer_.size());
         point_buffer_.clear();
     }
