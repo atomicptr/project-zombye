@@ -7,6 +7,7 @@
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/ecs/rtti_manager.hpp>
 #include <zombye/core/game.hpp>
+#include <zombye/gameplay/camera_follow_component.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
 #include <zombye/input/input_manager.hpp>
@@ -152,6 +153,7 @@ void zombye::game::register_components() {
 
     animation_component::register_at_script_engine(*this);
     camera_component::register_at_script_engine(*this);
+    camera_follow_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
     directional_light_component::register_at_script_engine(*this);
     physics_component::register_at_script_engine(*this);
