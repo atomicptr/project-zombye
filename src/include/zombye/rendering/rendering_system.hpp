@@ -146,6 +146,8 @@ namespace zombye {
         void render_shadowmap();
         void apply_gaussian_blur();
 
+        void register_at_script_engine();
+
         void register_component(animation_component* component);
         void unregister_component(animation_component* component);
         void register_component(camera_component* component);

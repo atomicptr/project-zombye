@@ -19,6 +19,7 @@
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/shadow_component.hpp>
+#include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/component_helper.hpp>
 #include <zombye/utils/logger.hpp>
 
@@ -201,6 +202,8 @@ namespace zombye {
 		shadow_blur_program_->attach_shader(fragment_shader);
 		staticmesh_layout_.setup_program(*shadow_blur_program_, "frag_color");
 		shadow_blur_program_->link();
+
+		register_at_script_engine();
 	}
 
 	rendering_system::~rendering_system() {
@@ -438,6 +441,14 @@ namespace zombye {
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {
 		glClearColor(red, green, blue, alpha);
+	}
+
+	void rendering_system::register_at_script_engine() {
+		auto& scripting_system = game_.scripting_system();
+
+		static std::function<void(unsigned long long)> activate_camera_ptr =
+			[this](unsigned long long id) { activate_camera(id); };
+		scripting_system.register_function("void activate_camera(uint64)", activate_camera_ptr);
 	}
 
 	void rendering_system::register_component(animation_component* component) {
