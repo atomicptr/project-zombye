@@ -151,6 +151,8 @@ namespace zombye {
 		shadow_resolution_ = config->get("main", "shadow_resolution").asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
 		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_->bind();
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 		shadow_map_->bind_default();
@@ -185,6 +187,8 @@ namespace zombye {
 
 		shadow_map_blured_ = std::make_unique<framebuffer>();
 		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_blured_->bind();
 		glDrawBuffer(GL_COLOR_ATTACHMENT0);
 		shadow_map_blured_->bind_default();
@@ -408,6 +412,9 @@ namespace zombye {
 
 		shadow_map_->bind_default();
 
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glViewport(0, 0, width_, height_);
@@ -425,6 +432,9 @@ namespace zombye {
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 		screen_quad_->draw();
 
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
 		shadow_map_->bind();
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -434,6 +444,9 @@ namespace zombye {
 		shadow_blur_program_->uniform("blur_scale", glm::vec2(0.f, 1.f / shadow_resolution_));
 		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
 		screen_quad_->draw();
+
+		shadow_map_blured_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 		shadow_map_blured_->bind_default();
 		glViewport(0, 0, width_, height_);

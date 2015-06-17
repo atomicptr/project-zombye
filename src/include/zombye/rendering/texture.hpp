@@ -33,9 +33,9 @@ namespace zombye {
             return height_;
         }
 
-    private:
         void apply_settings() const noexcept;
 
+    private:
         friend class framebuffer;
     };
 }
