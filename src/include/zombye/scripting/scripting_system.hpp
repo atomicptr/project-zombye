@@ -47,6 +47,17 @@ namespace zombye {
 		}
 
 		template <typename t>
+		void register_function(const std::string function_decl, std::function<t>& function) {
+			auto result = script_engine_->RegisterGlobalFunction(function_decl.c_str(),
+				asMETHOD(std::remove_reference<typename std::remove_const<decltype(function)>::type>::type, operator()),
+				asCALL_THISCALL_ASGLOBAL,
+				reinterpret_cast<void*>(&function));
+			if (result < 0) {
+				throw std::runtime_error("Could not register function " + function_decl);
+			}
+		}
+
+		template <typename t>
 		void register_type(const std::string& type_name) {
 			auto result = script_engine_->RegisterObjectType(type_name.c_str(), sizeof(t), asOBJ_REF | asOBJ_NOCOUNT);
 			if (result < 0) {
