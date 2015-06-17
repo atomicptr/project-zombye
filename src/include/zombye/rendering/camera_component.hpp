@@ -36,6 +36,8 @@ namespace zombye {
             return projection() * view();
         }
 
+        static void register_at_script_engine(game& game);
+
     private:
         camera_component(game& game, entity& owner) noexcept;
     };

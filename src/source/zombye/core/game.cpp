@@ -18,6 +18,7 @@
 #include <zombye/physics/shapes/box_shape.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
+#include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/directional_light_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
@@ -150,6 +151,7 @@ void zombye::game::register_components() {
     rtti_manager::register_type(staticmesh_component::type_rtti());
 
     animation_component::register_at_script_engine(*this);
+    camera_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
     directional_light_component::register_at_script_engine(*this);
     physics_component::register_at_script_engine(*this);
