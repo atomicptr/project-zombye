@@ -55,7 +55,7 @@ namespace zombye {
 		static std::function<float()> width_function_ptr = [this]() { return game_.width(); };
 		register_function("float width()", width_function_ptr);
 		static std::function<float()> height_function_ptr = [this]() { return game_.height(); };
-		register_function("float height()", width_function_ptr);
+		register_function("float height()", height_function_ptr);
 
 		register_glm();
 /*
