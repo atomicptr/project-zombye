@@ -4,6 +4,7 @@
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/states/menu_state.hpp>
 #include <zombye/gameplay/states/play_state.hpp>
+#include <zombye/gameplay/state_component.hpp>
 #include <zombye/utils/state_machine.hpp>
 #include <zombye/utils/component_helper.hpp>
 
@@ -40,4 +41,12 @@ void zombye::gameplay_system::register_component(camera_follow_component* compon
 
 void zombye::gameplay_system::unregister_component(camera_follow_component* component) {
     remove(camera_follow_components_, component);
+}
+
+void zombye::gameplay_system::register_component(state_component* component) {
+    state_components_.emplace_back(component);
+}
+
+void zombye::gameplay_system::unregister_component(state_component* component) {
+    remove(state_components_, component);
 }
