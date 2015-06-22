@@ -10,6 +10,7 @@
 #include <zombye/gameplay/camera_follow_component.hpp>
 #include <zombye/gameplay/gameplay_system.hpp>
 #include <zombye/gameplay/game_states.hpp>
+#include <zombye/gameplay/state_component.hpp>
 #include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
 #include <zombye/input/keyboard.hpp>
@@ -159,6 +160,7 @@ void zombye::game::register_components() {
     physics_component::register_at_script_engine(*this);
     box_shape::register_at_script_engine(*this);
     shadow_component::register_at_script_engine(*this);
+    state_component::register_at_script_engine(*this);
     staticmesh_component::register_at_script_engine(*this);
 }
 

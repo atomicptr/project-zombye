@@ -39,6 +39,8 @@ namespace zombye {
         void emplace(const std::string& state_name, const std::string& file_name);
         void change_state(const std::string& state_name);
         void update(float delta_time);
+
+        static void register_at_script_engine(game& game);
     };
 }
 

@@ -92,4 +92,25 @@ namespace zombye {
             }
         }
     }
+
+    void state_component::register_at_script_engine(game& game) {
+        auto& scripting_system = game.scripting_system();
+
+        scripting_system.register_type<state_component>("state_component");
+
+        scripting_system.register_member_function("state_component", "void emplace(const string& in, const string& in)",
+            +[](state_component& component, const std::string& state_name, const std::string& file_name) {
+                component.emplace(state_name, file_name);
+            });
+        scripting_system.register_member_function("state_component", "void change_state(const string& in)",
+            +[](state_component& component, const std::string& state_name) { component.change_state(state_name); });
+
+        scripting_system.register_member_function("entity_impl",
+            "state_component& add_state_component()",
+            +[](entity& owner) -> state_component& {
+                return owner.emplace<state_component>();
+            });
+        scripting_system.register_member_function("entity_impl", "state_component@ get_state_component()",
+            +[](entity& owner) { return owner.component<state_component>(); });
+    }
 }
