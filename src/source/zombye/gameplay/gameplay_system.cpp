@@ -33,6 +33,10 @@ void zombye::gameplay_system::update(float delta_time) {
     for (auto& c : camera_follow_components_) {
         c->update(delta_time);
     }
+
+    for (auto& s : state_components_) {
+        s->update(delta_time);
+    }
 }
 
 void zombye::gameplay_system::register_component(camera_follow_component* component) {
