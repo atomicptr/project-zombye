@@ -114,6 +114,14 @@ namespace zombye {
 			}
 		}
 
+		auto& script_engine() {
+			return *script_engine_;
+		}
+
+		auto& script_context() {
+			return *script_context_;
+		}
+
 	private:
 		void register_glm();
 	};
