@@ -1,5 +1,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
+#include <zombye/physics/character_physics_component.hpp>
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/scripting/scripting_system.hpp>
 
@@ -28,5 +29,11 @@ void zombye::box_shape::register_at_script_engine(game& game) {
         "physics_component& add_physics_component(box_shape@ collison_shape, bool is_static = false)",
         +[](entity& owner, box_shape* collison_shape, bool is_static) -> physics_component& {
             return owner.emplace<physics_component>(collison_shape, is_static);
+        });
+
+    scripting_system.register_member_function("entity_impl",
+        "character_physics_component& add_character_physics_component(box_shape@ collison_shape)",
+        +[](entity& owner, box_shape* collison_shape) -> character_physics_component& {
+            return owner.emplace<character_physics_component>(collison_shape);
         });
 }

@@ -15,6 +15,7 @@
 #include <zombye/input/input_system.hpp>
 #include <zombye/input/keyboard.hpp>
 #include <zombye/input/mouse.hpp>
+#include <zombye/physics/character_physics_component.hpp>
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/physics_system.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
@@ -155,6 +156,7 @@ void zombye::game::register_components() {
     animation_component::register_at_script_engine(*this);
     camera_component::register_at_script_engine(*this);
     camera_follow_component::register_at_script_engine(*this);
+    character_physics_component::register_at_script_engine(*this);
     light_component::register_at_script_engine(*this);
     directional_light_component::register_at_script_engine(*this);
     physics_component::register_at_script_engine(*this);

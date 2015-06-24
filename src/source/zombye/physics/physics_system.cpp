@@ -1,10 +1,12 @@
 #include <algorithm>
 
 #include <zombye/core/game.hpp>
+#include <zombye/physics/character_physics_component.hpp>
 #include <zombye/physics/debug_renderer.hpp>
 #include <zombye/physics/debug_render_bridge.hpp>
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/physics_system.hpp>
+#include <zombye/utils/component_helper.hpp>
 
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
@@ -49,12 +51,15 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
 }
 
 void zombye::physics_system::update(float delta_time) {
-    static auto cm = collision_mesh_manager_.load("physics/dummy.col");
-
     world_->stepSimulation(delta_time);
 
     for(auto comp : components_) {
         comp->sync();
+    }
+
+    for (auto& cp : character_physics_components_) {
+        cp->update(delta_time);
+        cp->sync();
     }
 }
 
@@ -99,4 +104,12 @@ void zombye::physics_system::unregister_component(physics_component* comp) {
 
         components_.pop_back();
     }
+}
+
+void zombye::physics_system::register_component(character_physics_component* component) {
+    character_physics_components_.emplace_back(component);
+}
+
+void zombye::physics_system::unregister_component(character_physics_component* component) {
+    remove(character_physics_components_, component);
 }

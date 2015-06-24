@@ -10,11 +10,13 @@ namespace zombye {
     class debug_renderer;
     class debug_render_bridge;
     class physics_component;
+    class character_physics_component;
 }
 
 namespace zombye {
     class physics_system {
         friend class physics_component;
+        friend class character_physics_component;
     public:
         physics_system(game& game);
         ~physics_system();
@@ -27,6 +29,10 @@ namespace zombye {
         void toggle_debug();
         void enable_debug();
         void disable_debug();
+
+        auto& broadphase() noexcept {
+            return *broadphase_;
+        }
 
         auto& collision_mesh_manager() noexcept {
             return collision_mesh_manager_;
@@ -43,12 +49,15 @@ namespace zombye {
         std::unique_ptr<btDiscreteDynamicsWorld> world_;
 
         std::vector<physics_component*> components_;
+        std::vector<character_physics_component*> character_physics_components_;
 
         std::unique_ptr<debug_render_bridge> bt_debug_drawer_;
         std::unique_ptr<debug_renderer> debug_renderer_;
 
         void register_component(physics_component*);
         void unregister_component(physics_component*);
+        void register_component(character_physics_component* component);
+        void unregister_component(character_physics_component* component);
     };
 }
 
