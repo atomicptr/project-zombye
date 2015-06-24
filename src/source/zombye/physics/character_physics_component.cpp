@@ -22,18 +22,18 @@ namespace zombye {
 
         auto transform = btTransform(bt_rotation, bt_position);
 
-        ghost_object_ = std::make_unique<btPairCachingGhostObject>();
-        ghost_object_->setWorldTransform(transform);
+        auto ghost_object = new btPairCachingGhostObject{};
+        ghost_object->setWorldTransform(transform);
         auto convex_collision_shape = static_cast<btConvexShape*>(collision_shape_->shape());
-        ghost_object_->setCollisionShape(convex_collision_shape);
-        ghost_object_->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
+        ghost_object->setCollisionShape(convex_collision_shape);
+        ghost_object->setCollisionFlags(btCollisionObject::CF_CHARACTER_OBJECT);
 
         character_controller_ = std::make_unique<btKinematicCharacterController>(
-            ghost_object_.get(), convex_collision_shape, btScalar{0.35f});
+            ghost_object, convex_collision_shape, btScalar{0.35f});
 
         physics_.broadphase().getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback{});
 
-        world_.addCollisionObject(ghost_object_.get(), btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+        world_.addCollisionObject(ghost_object, btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
         world_.addAction(character_controller_.get());
 
         sync();
@@ -51,7 +51,7 @@ namespace zombye {
         static glm::vec3 pos{};
         static glm::quat rot{};
 
-        auto trans = ghost_object_->getWorldTransform();
+        auto trans = character_controller_->getGhostObject()->getWorldTransform();
 
         auto origin = trans.getOrigin();
         auto rotation = trans.getRotation();

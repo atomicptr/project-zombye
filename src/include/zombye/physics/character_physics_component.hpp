@@ -24,7 +24,6 @@ namespace zombye {
     private:
         physics_system& physics_;
         btDiscreteDynamicsWorld& world_;
-        std::unique_ptr<btPairCachingGhostObject> ghost_object_;
         std::unique_ptr<collision_shape> collision_shape_;
         std::unique_ptr<btKinematicCharacterController> character_controller_;
 
