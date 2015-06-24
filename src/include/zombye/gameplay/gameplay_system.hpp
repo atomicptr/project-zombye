@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <angelscript.h>
+
 namespace zombye {
     class camera_follow_component;
     class state_component;
@@ -24,6 +26,10 @@ namespace zombye {
 
         void update(float);
 
+        auto& script_context() noexcept {
+            return *script_context_;
+        }
+
     private:
         void register_component(camera_follow_component* component);
         void unregister_component(camera_follow_component* component);
@@ -34,6 +40,7 @@ namespace zombye {
         std::unique_ptr<zombye::state_machine> sm_;
         std::vector<camera_follow_component*> camera_follow_components_;
         std::vector<state_component*> state_components_;
+        std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)> script_context_;
 
         void init_game_states();
     };

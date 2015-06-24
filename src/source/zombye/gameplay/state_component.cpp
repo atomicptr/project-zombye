@@ -16,7 +16,7 @@ namespace zombye {
 
     void state_component::emplace(const std::string& state_name, const std::string& file_name) {
         auto it = states_.find(state_name);
-        if (it == states_.end()) {
+        if (it != states_.end()) {
             throw std::runtime_error("state " + state_name + " already exists in " + std::to_string(owner_.id()));
         }
 
@@ -32,17 +32,17 @@ namespace zombye {
             throw std::runtime_error("no module named " + module_name);
         }
 
-        auto enter_ptr = module->GetFunctionByDecl("void enter()");
+        auto enter_ptr = module->GetFunctionByName("enter");
         if (!enter_ptr) {
             throw std::runtime_error("no function callback for enter state in " + file_name);
         }
 
-        auto update_ptr = module->GetFunctionByDecl("void update(float delta_time)");
+        auto update_ptr = module->GetFunctionByName("update");
         if (!update_ptr) {
             throw std::runtime_error("no function callback for update state in " + file_name);
         }
 
-        auto leave_ptr = module->GetFunctionByDecl("void leave()");
+        auto leave_ptr = module->GetFunctionByName("leave");
         if (!leave_ptr) {
             throw std::runtime_error("no function callback for leave state in " + file_name);
         }
@@ -51,15 +51,16 @@ namespace zombye {
     }
 
     void state_component::change_state(const std::string& state_name) {
-        auto it = states_.find(std::to_string(owner_.id()) + "_" + state_name);
+        auto it = states_.find(state_name);
         if (it == states_.end()) {
             throw std::runtime_error("entity " + std::to_string(owner_.id()) + " has no state " + state_name);
         }
 
-        static auto& script_context = scripting_system_.script_context();
+        static auto& script_context = game_.gameplay()->script_context();
 
         if (current_state_) {
             script_context.Prepare(current_state_->leave);
+            script_context.SetArgObject(0, &owner_);
             auto result = script_context.Execute();
             if (result != asEXECUTION_FINISHED) {
                 if (result == asEXECUTION_EXCEPTION) {
@@ -70,6 +71,7 @@ namespace zombye {
 
         current_state_ = &(it->second);
         script_context.Prepare(current_state_->enter);
+        script_context.SetArgObject(0, &owner_);
         auto result = script_context.Execute();
         if (result != asEXECUTION_FINISHED) {
             if (result == asEXECUTION_EXCEPTION) {
@@ -79,11 +81,12 @@ namespace zombye {
     }
 
     void state_component::update(float delta_time) {
-        static auto& script_context = scripting_system_.script_context();
+        static auto& script_context = game_.gameplay()->script_context();
 
         if (current_state_) {
             script_context.Prepare(current_state_->update);
             script_context.SetArgFloat(0, delta_time);
+            script_context.SetArgObject(1, &owner_);
             auto result = script_context.Execute();
             if (result != asEXECUTION_FINISHED) {
                 if (result == asEXECUTION_EXCEPTION) {
