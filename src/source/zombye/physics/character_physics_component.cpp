@@ -52,6 +52,14 @@ namespace zombye {
         auto velocity = glm::vec3{direction} * current_velocity_ * delta_time;
         character_controller_->setWalkDirection(btVector3{velocity.x, velocity.y, velocity.z});
 
+        auto angular_velocity = glm::quat{0.f, 0.f, current_angular_velocity_, 0.f};
+        auto new_rotation = rotation + delta_time * 0.5f * angular_velocity * rotation;
+        new_rotation = glm::normalize(new_rotation);
+        auto ghost_object = character_controller_->getGhostObject();
+        auto transformation = ghost_object->getWorldTransform();
+        transformation.setRotation(btQuaternion{new_rotation.x, new_rotation.y, new_rotation.z, new_rotation.w});
+        ghost_object->setWorldTransform(transformation);
+
         character_controller_->updateAction(&world_, delta_time);
     }
 
