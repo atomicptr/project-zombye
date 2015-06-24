@@ -32,8 +32,8 @@ void zombye::box_shape::register_at_script_engine(game& game) {
         });
 
     scripting_system.register_member_function("entity_impl",
-        "character_physics_component& add_character_physics_component(box_shape@ collison_shape)",
-        +[](entity& owner, box_shape* collison_shape) -> character_physics_component& {
-            return owner.emplace<character_physics_component>(collison_shape);
+        "character_physics_component& add_character_physics_component(box_shape@ collison_shape, float, float)",
+        +[](entity& owner, box_shape* collison_shape, float max_velocity, float max_angular_velocity) -> character_physics_component& {
+            return owner.emplace<character_physics_component>(collison_shape, max_velocity, max_angular_velocity);
         });
 }

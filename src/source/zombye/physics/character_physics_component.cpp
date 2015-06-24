@@ -8,8 +8,10 @@
 #include <zombye/scripting/scripting_system.hpp>
 
 namespace zombye {
-    character_physics_component::character_physics_component(game& game, entity& owner, collision_shape* shape)
-    : reflective{game, owner}, physics_{*game_.physics()}, world_{*physics_.world()} {
+    character_physics_component::character_physics_component(game& game, entity& owner, collision_shape* shape,
+    float max_velocity, float max_angular_velocity)
+    : reflective{game, owner}, physics_{*game_.physics()}, world_{*physics_.world()}, max_velocity_{max_velocity},
+    max_angular_velocity_{max_angular_velocity}, current_velocity_{0.f}, current_angular_velocity_{0.f} {
         physics_.register_component(this);
 
         collision_shape_ = std::unique_ptr<collision_shape>(shape);
