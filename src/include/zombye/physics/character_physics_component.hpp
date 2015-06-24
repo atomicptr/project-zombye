@@ -5,6 +5,7 @@
 
 #include <btBulletDynamicsCommon.h>
 #include <BulletDynamics/Character/btKinematicCharacterController.h>
+#include <glm/glm.hpp>
 
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/reflective.hpp>
@@ -33,6 +34,7 @@ namespace zombye {
 
         void update(float delta_time);
         void sync();
+        void linear_velocity(const glm::vec3& velocity);
 
         static void register_at_script_engine(game& game);
 

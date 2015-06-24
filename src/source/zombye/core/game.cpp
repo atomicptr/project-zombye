@@ -125,7 +125,7 @@ void zombye::game::run() {
 
         rendering_system_->begin_scene();
         rendering_system_->update(delta_time);
-        //physics_system_->debug_draw();
+        physics_system_->debug_draw();
         rendering_system_->end_scene();
 
         entity_manager_->clear();

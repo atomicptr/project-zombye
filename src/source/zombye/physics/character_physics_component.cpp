@@ -69,10 +69,17 @@ namespace zombye {
         owner().rotation(rot);
     }
 
+    void character_physics_component::linear_velocity(const glm::vec3& velocity) {
+        character_controller_->setWalkDirection(btVector3{velocity.x, velocity.y, velocity.z});
+    }
+
     void character_physics_component::register_at_script_engine(game& game) {
         auto& scripting_system = game.scripting_system();
 
         scripting_system.register_type<character_physics_component>("character_physics_component");
+
+        scripting_system.register_member_function("character_physics_component", "void linear_velocity(const glm::vec3& in)",
+            +[](character_physics_component& component, const glm::vec3& velocity) { component.linear_velocity(velocity); });
 
         scripting_system.register_member_function("entity_impl", "character_physics_component@ get_character_physics_component()",
             +[](entity& owner) { return owner.component<character_physics_component>(); });
