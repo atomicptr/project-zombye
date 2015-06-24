@@ -1,4 +1,5 @@
 #include <BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <glm/gtc/quaternion.hpp>
 
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
@@ -46,6 +47,11 @@ namespace zombye {
     }
 
     void character_physics_component::update(float delta_time) {
+        auto rotation = owner_.rotation();
+        auto direction = glm::rotate(rotation, glm::vec3{0.f, 0.f, 1.f});
+        auto velocity = glm::vec3{direction} * current_velocity_ * delta_time;
+        character_controller_->setWalkDirection(btVector3{velocity.x, velocity.y, velocity.z});
+
         character_controller_->updateAction(&world_, delta_time);
     }
 
