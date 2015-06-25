@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <type_traits>
+#include <vector>
 
 #include <angelscript.h>
 #include <scriptbuilder/scriptbuilder.h>
@@ -20,8 +21,9 @@ namespace zombye {
 	private:
 		game& game_;
 		std::unique_ptr<asIScriptEngine, void(*)(asIScriptEngine*)> script_engine_;
-		std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)> script_context_;
 		std::unique_ptr<CScriptBuilder> script_builder_;
+		std::vector<std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>> context_pool_;
+		std::vector<std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>> used_context_;
 
 	public:
 		scripting_system(game& game);
@@ -37,6 +39,14 @@ namespace zombye {
 		void load_script(const std::string& file_name);
 		void end_module();
 		void exec(const std::string& function_decl, const std::string& module_name);
+		void exec();
+		void prepare(asIScriptFunction& function);
+
+		template <typename t>
+		void argument(int position, t& arg) {
+			allocate_context();
+			used_context_.back()->SetArgObject(position, &arg);
+		}
 
 		template <typename t>
 		void register_function(const std::string function_decl, const t& function) {
@@ -118,11 +128,9 @@ namespace zombye {
 			return *script_engine_;
 		}
 
-		auto& script_context() {
-			return *script_context_;
-		}
-
 	private:
+		void allocate_context();
+
 		void register_glm();
 	};
 }

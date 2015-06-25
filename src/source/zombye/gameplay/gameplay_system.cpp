@@ -9,16 +9,10 @@
 #include <zombye/utils/state_machine.hpp>
 #include <zombye/utils/component_helper.hpp>
 
-zombye::gameplay_system::gameplay_system(zombye::game *game)
-: script_context_{nullptr, +[](asIScriptContext*){}} {
+zombye::gameplay_system::gameplay_system(zombye::game *game) {
     sm_ = std::unique_ptr<zombye::state_machine>(new zombye::state_machine(game));
 
     init_game_states();
-
-    script_context_ = std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>{
-        game->scripting_system().script_engine().CreateContext(),
-        +[](asIScriptContext* context) {context->Release();}
-    };
 }
 
 void zombye::gameplay_system::init_game_states() {

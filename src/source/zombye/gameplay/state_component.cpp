@@ -56,43 +56,24 @@ namespace zombye {
             throw std::runtime_error("entity " + std::to_string(owner_.id()) + " has no state " + state_name);
         }
 
-        static auto& script_context = game_.gameplay()->script_context();
-
         if (current_state_) {
-            script_context.Prepare(current_state_->leave);
-            script_context.SetArgObject(0, &owner_);
-            auto result = script_context.Execute();
-            if (result != asEXECUTION_FINISHED) {
-                if (result == asEXECUTION_EXCEPTION) {
-                    throw std::runtime_error(script_context.GetExceptionString());
-                }
-            }
+            scripting_system_.prepare(*current_state_->leave);
+            scripting_system_.argument(0, owner_);
+            scripting_system_.exec();
         }
 
         current_state_ = &(it->second);
-        script_context.Prepare(current_state_->enter);
-        script_context.SetArgObject(0, &owner_);
-        auto result = script_context.Execute();
-        if (result != asEXECUTION_FINISHED) {
-            if (result == asEXECUTION_EXCEPTION) {
-                throw std::runtime_error(script_context.GetExceptionString());
-            }
-        }
+        scripting_system_.prepare(*current_state_->enter);
+        scripting_system_.argument(0, owner_);
+        scripting_system_.exec();
     }
 
     void state_component::update(float delta_time) {
-        static auto& script_context = game_.gameplay()->script_context();
-
         if (current_state_) {
-            script_context.Prepare(current_state_->update);
-            script_context.SetArgFloat(0, delta_time);
-            script_context.SetArgObject(1, &owner_);
-            auto result = script_context.Execute();
-            if (result != asEXECUTION_FINISHED) {
-                if (result == asEXECUTION_EXCEPTION) {
-                    throw std::runtime_error(script_context.GetExceptionString());
-                }
-            }
+            scripting_system_.prepare(*current_state_->update);
+            scripting_system_.argument(0, delta_time);
+            scripting_system_.argument(1, owner_);
+            scripting_system_.exec();
         }
     }
 

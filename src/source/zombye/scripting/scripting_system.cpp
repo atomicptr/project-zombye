@@ -12,7 +12,7 @@
 
 namespace zombye {
 	scripting_system::scripting_system(game& game)
-	: game_{game}, script_engine_{nullptr, +[](asIScriptEngine*){}}, script_context_{nullptr, +[](asIScriptContext*){}} {
+	: game_{game}, script_engine_{nullptr, +[](asIScriptEngine*){}} {
 		script_engine_ = std::unique_ptr<asIScriptEngine, void(*)(asIScriptEngine*)>(
 			asCreateScriptEngine(ANGELSCRIPT_VERSION),
 			+[](asIScriptEngine* se) { se->ShutDownAndRelease(); }
@@ -41,10 +41,15 @@ namespace zombye {
 			log(LOG_ERROR, "Could not register message callback for script system");
 		}
 
-		script_context_ = std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>{
-			script_engine_->CreateContext(),
-			+[](asIScriptContext* context) {context->Release();}
-		};
+		context_pool_.reserve(10);
+		for (auto i = 0; i < 10; ++i) {
+			context_pool_.emplace_back(
+				script_engine_->RequestContext(),
+				+[](asIScriptContext* context) {context->Release();}
+			);
+		}
+
+		used_context_.reserve(15);
 
 		RegisterStdString(script_engine_.get());
 
@@ -58,12 +63,6 @@ namespace zombye {
 		register_function("float height()", height_function_ptr);
 
 		register_glm();
-/*
-		begin_module("MyModule");
-		load_script("scripts/test.as");
-		end_module();
-		exec("void main()", "MyModule");
-*/
 	}
 
 	void scripting_system::begin_module(const std::string& module_name) {
@@ -102,13 +101,38 @@ namespace zombye {
 			throw std::runtime_error("No function with signature " + function_decl + " in module " + module_name);
 		}
 
-		script_context_->Prepare(func);
-		auto result = script_context_->Execute();
+		allocate_context();
+
+		prepare(*func);
+		exec();
+	}
+
+	void scripting_system::exec() {
+		auto& script_context = used_context_.back();
+
+		auto result = script_context->Execute();
 		if (result != asEXECUTION_FINISHED) {
 			if (result == asEXECUTION_EXCEPTION) {
-				throw std::runtime_error(script_context_->GetExceptionString());
+				throw std::runtime_error(script_context->GetExceptionString());
 			}
 		}
+
+		context_pool_.emplace_back(std::move(used_context_.back()));
+		used_context_.pop_back();
+	}
+
+	void scripting_system::prepare(asIScriptFunction& function) {
+		used_context_.emplace_back(std::move(context_pool_.back()));
+		context_pool_.pop_back();
+		auto& script_context = used_context_.back();
+
+		script_context->Prepare(&function);
+	}
+
+	template <>
+	void scripting_system::argument<float>(int position, float& arg) {
+		allocate_context();
+		used_context_.back()->SetArgFloat(position, arg);
 	}
 
 	void scripting_system::register_destructor(const std::string& type_name, void(*function)(void*)) {
@@ -123,6 +147,19 @@ namespace zombye {
 		auto result = script_engine_->RegisterObjectProperty(type_name.c_str(), member_decl.c_str(), offset);
 		if (result < 0 ) {
 			throw std::runtime_error("Could not register member " + member_decl + " at type " + type_name);
+		}
+	}
+
+	void scripting_system::allocate_context() {
+		if (context_pool_.size() == 0) {
+			for (auto i = 0; i < 5; ++i) {
+				context_pool_.emplace_back(std::move(
+					std::unique_ptr<asIScriptContext, void(*)(asIScriptContext*)>{
+						script_engine_->RequestContext(),
+						+[](asIScriptContext* context) {context->Release();}
+					}
+				));
+			}
 		}
 	}
 
