@@ -7,6 +7,7 @@ class player : entity {
         impl_.add_animation_component(mesh, skeleton);
         impl_.add_character_physics_component(box_shape(glm::vec3(0.6, 1, 0.3)), 10.f, 2.f);
         auto@ sc = impl_.add_state_component();
+        sc.emplace("stand", "scripts/character_states/stand.as");
         sc.emplace("run", "scripts/character_states/run.as");
     }
 }

@@ -8,5 +8,5 @@ void update(float delta_time, entity_impl& out owner) {
 }
 
 void leave(entity_impl& out owner) {
-
+    
 }
