@@ -63,6 +63,7 @@ namespace zombye {
         }
 
         current_state_ = &(it->second);
+        current_state_name_ = state_name;
         scripting_system_.prepare(*current_state_->enter);
         scripting_system_.argument(0, owner_);
         scripting_system_.exec();
@@ -88,6 +89,8 @@ namespace zombye {
             });
         scripting_system.register_member_function("state_component", "void change_state(const string& in)",
             +[](state_component& component, const std::string& state_name) { component.change_state(state_name); });
+        scripting_system.register_member_function("state_component", "string current_state()",
+            +[](state_component& component) { return component.current_state(); });
 
         scripting_system.register_member_function("entity_impl",
             "state_component& add_state_component()",

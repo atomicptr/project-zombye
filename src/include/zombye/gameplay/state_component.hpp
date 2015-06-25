@@ -31,6 +31,7 @@ namespace zombye {
         scripting_system& scripting_system_;
         std::unordered_map<std::string, character_state> states_;
         character_state* current_state_;
+        std::string current_state_name_;
 
     public:
         state_component(game& game, entity& owner);
@@ -39,6 +40,10 @@ namespace zombye {
         void emplace(const std::string& state_name, const std::string& file_name);
         void change_state(const std::string& state_name);
         void update(float delta_time);
+
+        auto& current_state() const {
+            return current_state_name_;
+        }
 
         static void register_at_script_engine(game& game);
     };
