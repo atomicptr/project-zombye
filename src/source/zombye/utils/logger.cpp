@@ -16,7 +16,7 @@ std::string zombye::format_time(std::string format) {
 std::unique_ptr<std::fstream> zombye::init_log_system() {
     auto logger = std::unique_ptr<std::fstream>(new std::fstream());
 
-    auto filename = format_time("zombye-%Y-%m-%d-%X.log");
+    auto filename = format_time("zombye-%Y-%m-%d %H.%M.%S.log");
 
     logger->open("logs/" + filename, std::fstream::out | std::fstream::app);
 

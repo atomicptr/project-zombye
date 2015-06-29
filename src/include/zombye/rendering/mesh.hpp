@@ -16,10 +16,10 @@ namespace zombye {
 
 namespace zombye {
     struct header {
-        unsigned int magic;
-        size_t vertex_count;
-        size_t index_count;
-        size_t submesh_count;
+        uint32_t magic;
+        uint64_t vertex_count;
+        uint64_t index_count;
+        uint64_t submesh_count;
     };
 
     struct vertex {
@@ -30,8 +30,8 @@ namespace zombye {
     };
 
     struct submesh {
-        size_t index_count;
-        size_t offset;
+        uint64_t index_count;
+        uint64_t offset;
         std::shared_ptr<const texture> diffuse;
         std::shared_ptr<const texture> normal;
         std::shared_ptr<const texture> material;

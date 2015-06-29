@@ -8,10 +8,10 @@
 
 namespace devtools {
     struct header {
-        const unsigned int magic = 0x31424D5A;
-        size_t vertex_count = 0;
-        size_t index_count = 0;
-        size_t submesh_count = 0;
+        const uint32_t magic = 0x31424D5A;
+        uint64_t vertex_count = 0;
+        uint64_t index_count = 0;
+        uint64_t submesh_count = 0;
     };
 
     struct vertex {
@@ -27,11 +27,11 @@ namespace devtools {
     };
 
     struct submesh {
-        size_t index_count = 0;
-        size_t offset = 0;
-        unsigned long diffuse = 0;
-        unsigned long normal = 0;
-        unsigned long material = 0;
+        uint64_t index_count = 0;
+        uint64_t offset = 0;
+        uint64_t diffuse = 0;
+        uint64_t normal = 0;
+        uint64_t material = 0;
     };
 
     class mesh_converter {

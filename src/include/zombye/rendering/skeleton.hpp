@@ -14,7 +14,7 @@ namespace zombye {
 
 namespace zombye {
     struct bone {
-        int32_t id;
+        uint32_t id;
         int32_t parent;
         glm::mat4 relative_transform;
         glm::mat4 absolute_transform;
@@ -36,7 +36,7 @@ namespace zombye {
     };
 
     struct track {
-        int32_t id;
+        uint32_t id;
         int32_t parent;
         std::vector<translation_keyframe> tkeys;
         std::vector<rotation_keyframe> qkeys;
@@ -50,16 +50,16 @@ namespace zombye {
     };
 
     struct node {
-        int32_t id;
-        int32_t children_count;
+        uint32_t id;
+        uint32_t children_count;
     };
 
     class skeleton {
         struct header {
             uint32_t magic;
-            int64_t size;
-            int64_t bone_count;
-            int64_t animation_count;
+            uint64_t size;
+            uint64_t bone_count;
+            uint64_t animation_count;
         };
 
         friend class animation_component;
