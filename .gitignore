@@ -3,6 +3,12 @@
 /animation_converter/animation_converter
 /mesh_converter/mesh_converter
 
+# some lib files (from mingw for instance) should stay in git
+# but these shouldn't
+/deps/angelscript/*.lib
+/deps/bullet3/*.lib
+/deps/jsoncpp/*.lib
+
 # Created by https://www.gitignore.io
 
 ### OSX ###
