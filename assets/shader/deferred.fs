@@ -13,14 +13,14 @@ uniform mat4 inv_view_projection;
 uniform vec3 view_vector;
 uniform int point_light_num;
 // uniform arry size is a magic magic number. super magic.
-uniform vec3 point_light_positions[83];
-uniform vec3 point_light_colors[83];
-uniform float point_light_radii[83];
+uniform vec3 point_light_positions[40];
+uniform vec3 point_light_colors[40];
+uniform float point_light_radii[40];
 uniform int directional_light_num;
 // uniform arry size is a magic magic number. super magic.
-uniform vec3 directional_light_directions[83];
-uniform vec3 directional_light_colors[83];
-uniform float directional_light_energy[83];
+uniform vec3 directional_light_directions[40];
+uniform vec3 directional_light_colors[40];
+uniform float directional_light_energy[40];
 uniform mat4 shadow_projection;
 uniform vec3 ambient_term;
 
