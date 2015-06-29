@@ -44,6 +44,19 @@ namespace zombye {
         glTexParameteri(target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
+    texture::texture(GLint internal_format, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* data) noexcept
+    : target_{GL_TEXTURE_CUBE_MAP}, width_{static_cast<size_t>(width)}, height_{static_cast<size_t>(height)} {
+        glGenTextures(1, &id_);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, id_);
+        for (auto i = 0; i < 6; ++i) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, width_, height_, 0, format, type, data);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
     texture::~texture() {
         glDeleteTextures(1, &id_);
     }
