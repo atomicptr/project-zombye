@@ -13,7 +13,7 @@ namespace zombye {
             throw std::runtime_error(file_name + " is not an zombye mesh file");
         }
         auto vertex_size = head.vertex_count * sizeof(vertex);
-        auto index_size = head.index_count * sizeof(unsigned int);
+        auto index_size = head.index_count * sizeof(uint32_t);
         auto size = sizeof(header)
             + vertex_size
             + index_size
