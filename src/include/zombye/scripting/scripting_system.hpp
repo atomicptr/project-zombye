@@ -43,9 +43,12 @@ namespace zombye {
 		void prepare(asIScriptFunction& function);
 
 		template <typename t>
-		void argument(int position, t& arg) {
+		void argument(int position, t& arg);
+
+		template <typename t>
+		void argument(int position, t* arg) {
 			allocate_context();
-			used_context_.back()->SetArgObject(position, &arg);
+			used_context_.back()->SetArgObject(position, arg);
 		}
 
 		template <typename t>
