@@ -24,7 +24,7 @@ namespace devtools {
         file.close();
     }
 
-    void mesh_converter::run() {
+    void mesh_converter::run(bool collision_meshes) {
         std::ifstream material_database("material_database.json");
         if (!material_database.is_open()) {
             std::ofstream mdb("material_database.json", std::ios::trunc);
@@ -295,6 +295,26 @@ namespace devtools {
             output.write(reinterpret_cast<char*>(submeshes.data()), submeshes.size() * sizeof(submesh));
 
             output.close();
+
+            if (collision_meshes) {
+                collision_header ch;
+                ch.vertex_count = vertices.size();
+                ch.index_count = indices.size();
+
+                output_file = output_path_ + "meshes/" + mesh_name + ".col";
+                output.open(output_file, std::ios::binary | std::ios::trunc);
+                if (!output.is_open()) {
+                    throw std::runtime_error("could not open output file " + output_file);
+                }
+
+                output.write(reinterpret_cast<char*>(&ch), sizeof(collision_header));
+                for (auto i = 0ul; i < vertices.size(); ++i) {
+                    output.write(reinterpret_cast<char*>(&vertices[i].position), sizeof(glm::vec3));
+                }
+                output.write(reinterpret_cast<char*>(indices.data()), indices.size() * sizeof(unsigned int));
+
+                output.close();
+            }
         }
     }
 }

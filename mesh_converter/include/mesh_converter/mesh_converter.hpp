@@ -14,6 +14,12 @@ namespace devtools {
         uint64_t submesh_count = 0;
     };
 
+    struct collision_header {
+        const uint32_t magic = 0x3142435A;
+        uint64_t vertex_count = 0;
+        uint64_t index_count = 0;
+    };
+
     struct vertex {
         glm::vec3 position;
         glm::vec2 texcoord;
@@ -50,7 +56,7 @@ namespace devtools {
         mesh_converter(mesh_converter&& rhs) = delete;
         mesh_converter& operator=(mesh_converter&& rhs) = delete;
 
-        void run();
+        void run(bool collision_meshes = false);
     };
 }
 

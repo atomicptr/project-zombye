@@ -13,6 +13,6 @@ namespace zombye {
         if (!asset) {
             return nullptr;
         }
-        return std::make_shared<const collision_mesh>(*game_.physics(), asset->content());
+        return std::make_shared<const collision_mesh>(*game_.physics(), asset->content(), name);
     }
 }
