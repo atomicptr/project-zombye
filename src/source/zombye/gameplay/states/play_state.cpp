@@ -6,7 +6,6 @@
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity_manager.hpp>
 #include <zombye/gameplay/states/play_state.hpp>
-#include <zombye/gameplay/command.hpp>
 #include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
 #include <zombye/input/joystick.hpp>
@@ -20,20 +19,13 @@
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/state_machine.hpp>
 
-class test_command : public zombye::command {
-public:
-    test_command() {}
-
-    void execute() {
-        zombye::log("FIRE!!!! PENG PENG!!!");
-    }
-};
-
 zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     auto input = sm->get_game()->input();
     input_ = input->create_manager();
 
-    input_->register_command("FIRE", new test_command());
+    input_->register_action("FIRE", []() {
+        zombye::log("Peng Peng!");
+    });
 
     auto first_joystick = input->first_joystick();
 
@@ -63,9 +55,5 @@ void zombye::play_state::leave() {
 }
 
 void zombye::play_state::update(float delta_time) {
-    auto command = input_->handle_input();
-
-    if(command != nullptr) {
-        command->execute();
-    }
+    input_->handle_input();
 }

@@ -4,12 +4,12 @@
 #include <cmath>
 #include <unordered_map>
 #include <utility>
+#include <functional>
 #include <string>
 #include <queue>
 
 namespace zombye {
     class button;
-    class command;
     class input_system;
 }
 
@@ -21,15 +21,15 @@ namespace zombye {
         void register_event(std::string, button&);
         void register_keyboard_event(std::string, std::string);
 
-        void register_command(std::string, command*);
+        void register_action(std::string, std::function<void()>);
 
-        command* handle_input();
+        void handle_input();
 
     private:
         input_system *input_;
 
-        std::unordered_map<std::string, command*> commands_;
-        std::queue<command*> event_queue_;
+        std::unordered_map<std::string, std::function<void()>> commands_;
+        std::queue<std::function<void()>> event_queue_;
     };
 }
 
