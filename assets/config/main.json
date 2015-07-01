@@ -3,5 +3,6 @@
    "height" : 600,
    "width" : 800,
    "shadow_resolution": 1024,
-   "physics_debug_draw": false
+   "physics_debug_draw": false,
+   "deferred_shading_debug_draw": false
 }

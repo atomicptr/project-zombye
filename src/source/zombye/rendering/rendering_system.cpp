@@ -267,8 +267,8 @@ namespace zombye {
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
-		static auto debug_mode = true;
 		render_screen_quad();
+		static auto debug_mode = game_.config()->get("main", "deferred_shading_debug_draw").asBool();
 		if (debug_mode) {
 			render_debug_screen_quads();
 		}
