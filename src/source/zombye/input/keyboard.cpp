@@ -73,8 +73,6 @@ void zombye::keyboard::update(SDL_Event &event) {
 void zombye::keyboard::notify_listeners(sdl_keyevent_map &listeners, SDL_Scancode code) {
     auto v = listeners[code];
 
-    std::cout << v.size() << std::endl;
-
     for(auto &listener : v) {
         listener();
     }
