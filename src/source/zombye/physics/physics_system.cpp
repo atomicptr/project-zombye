@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <zombye/config/config_system.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/physics/character_physics_component.hpp>
 #include <zombye/physics/debug_renderer.hpp>
@@ -37,9 +38,10 @@ zombye::physics_system::physics_system(game& game)
 
     world_->setDebugDrawer(bt_debug_drawer_.get());
 
-#ifdef ZOMBYE_DEBUG
-    bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
-#endif
+    auto debug_draw = game_.config()->get("main", "physics_debug_draw").asBool();
+    if (debug_draw) {
+        bt_debug_drawer_->setDebugMode(DEBUG_DRAW_CONFIG);
+    }
 }
 
 zombye::physics_system::~physics_system() {

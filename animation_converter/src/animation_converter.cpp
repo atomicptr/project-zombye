@@ -7,7 +7,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 void to_string(const glm::quat& q) {
-    std::cout << "fqat(" << glm::angle(q) << ", " << glm::axis(q).x 
+    std::cout << "fqat(" << glm::angle(q) << ", " << glm::axis(q).x
         << ", " << glm::axis(q).y << ", " << glm::axis(q).z << ")" << std::endl;
 }
 
@@ -321,7 +321,7 @@ namespace devtools {
                 output.write(reinterpret_cast<char*>(&a.length), sizeof(float));
                 output.write(reinterpret_cast<char*>(&a.track_count), sizeof(size_t));
 
-                for (auto i = 0; i < a.track_count; ++i) {
+                for (auto i = uint64_t{0}; i < a.track_count; ++i) {
                     auto& t = all_tracks[track_ptr + i];
                     output.write(reinterpret_cast<char*>(&t), sizeof(track));
 

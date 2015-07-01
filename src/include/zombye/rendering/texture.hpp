@@ -15,6 +15,7 @@ namespace zombye {
     public:
         texture(const gli::texture2D& texture) noexcept;
         texture(GLenum target, GLint internal_format, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* data = nullptr) noexcept;
+        texture(GLint internal_format, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid* data = nullptr) noexcept;
         ~texture();
 
         texture(const texture& rhs) = delete;

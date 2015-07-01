@@ -58,14 +58,14 @@ namespace zombye {
 
         if (current_state_) {
             scripting_system_.prepare(*current_state_->leave);
-            scripting_system_.argument(0, owner_);
+            scripting_system_.argument(0, &owner_);
             scripting_system_.exec();
         }
 
         current_state_ = &(it->second);
         current_state_name_ = state_name;
         scripting_system_.prepare(*current_state_->enter);
-        scripting_system_.argument(0, owner_);
+        scripting_system_.argument(0, &owner_);
         scripting_system_.exec();
     }
 
@@ -73,7 +73,7 @@ namespace zombye {
         if (current_state_) {
             scripting_system_.prepare(*current_state_->update);
             scripting_system_.argument(0, delta_time);
-            scripting_system_.argument(1, owner_);
+            scripting_system_.argument(1, &owner_);
             scripting_system_.exec();
         }
     }

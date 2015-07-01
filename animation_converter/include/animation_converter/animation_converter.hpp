@@ -14,18 +14,18 @@
 namespace devtools {
     struct header {
         const uint32_t magic = 0x3142415A;
-        int64_t size = 0;
-        int64_t bone_count = 0;
-        int64_t animation_count = 0;
+        uint64_t size = 0;
+        uint64_t bone_count = 0;
+        uint64_t animation_count = 0;
     };
 
     struct node {
-        int32_t id;
-        int32_t children_count;
+        uint32_t id;
+        uint32_t children_count;
     };
 
     struct bone {
-        int32_t id;
+        uint32_t id;
         int32_t parent;
         glm::mat4 relative_transform;
         glm::mat4 absolute_transform;
@@ -47,17 +47,17 @@ namespace devtools {
     };
 
     struct track {
-        int32_t id;
+        uint32_t id;
         int32_t parent;
-        int64_t tkey_count;
-        int64_t qkey_count;
-        int64_t skey_count;
+        uint64_t tkey_count;
+        uint64_t qkey_count;
+        uint64_t skey_count;
     };
 
     struct animation {
         std::string name;
         float length;
-        int64_t track_count;
+        uint64_t track_count;
     };
 
     class animation_converter {

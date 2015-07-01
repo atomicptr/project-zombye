@@ -37,6 +37,17 @@ namespace zombye {
 			bind_default();
 		}
 
+		template <typename... arguments>
+		void attach_cubemap(arguments&&... args) {
+			bind();
+			auto tex = std::make_unique<texture>(std::forward<arguments>(args)...);
+			for (auto i = 0; i < 6; ++i) {
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, tex->id_, 0);
+			}
+			attachments_.insert(std::make_pair(GL_TEXTURE_CUBE_MAP, std::move(tex)));
+			bind_default();
+		}
+
 		texture& attachment(GLenum attachment) const;
 		static void bind_default() noexcept;
 	};

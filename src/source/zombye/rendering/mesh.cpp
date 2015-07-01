@@ -13,7 +13,7 @@ namespace zombye {
             throw std::runtime_error(file_name + " is not an zombye mesh file");
         }
         auto vertex_size = head.vertex_count * sizeof(vertex);
-        auto index_size = head.index_count * sizeof(unsigned int);
+        auto index_size = head.index_count * sizeof(uint32_t);
         auto size = sizeof(header)
             + vertex_size
             + index_size
@@ -34,18 +34,18 @@ namespace zombye {
         for (auto i = 0; i < head.submesh_count; ++i) {
             submesh s;
 
-            s.index_count = *reinterpret_cast<const size_t*>(data_ptr);
-            data_ptr += sizeof(size_t);
-            s.offset = *reinterpret_cast<const size_t*>(data_ptr);
-            data_ptr += sizeof(size_t);
+            s.index_count = *reinterpret_cast<const uint64_t*>(data_ptr);
+            data_ptr += sizeof(uint64_t);
+            s.offset = *reinterpret_cast<const uint64_t*>(data_ptr);
+            data_ptr += sizeof(uint64_t);
 
-            auto texture_id = *reinterpret_cast<const unsigned long*>(data_ptr);
+            auto texture_id = *reinterpret_cast<const uint64_t*>(data_ptr);
             auto texture_name = std::to_string(texture_id) + ".dds";
             s.diffuse = rendering_system.texture_manager().load("texture/" + texture_name);
             if (!s.diffuse) {
                 throw std::runtime_error("could not load texure " + texture_name);
             }
-            data_ptr += sizeof(unsigned long);
+            data_ptr += sizeof(uint64_t);
 
             texture_id = *reinterpret_cast<const unsigned long*>(data_ptr);
             texture_name = std::to_string(texture_id) + ".dds";
@@ -53,7 +53,7 @@ namespace zombye {
             if (!s.normal) {
                 throw std::runtime_error("could not load texure " + texture_name);
             }
-            data_ptr += sizeof(unsigned long);
+            data_ptr += sizeof(uint64_t);
 
             texture_id = *reinterpret_cast<const unsigned long*>(data_ptr);
             texture_name = std::to_string(texture_id) + ".dds";
@@ -61,7 +61,7 @@ namespace zombye {
             if (!s.material) {
                 throw std::runtime_error("could not load texure " + texture_name);
             }
-            data_ptr += sizeof(unsigned long);
+            data_ptr += sizeof(uint64_t);
 
             submeshes_.emplace_back(s);
         }

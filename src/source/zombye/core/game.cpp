@@ -19,6 +19,7 @@
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/physics_system.hpp>
 #include <zombye/physics/shapes/box_shape.hpp>
+#include <zombye/physics/shapes/triangle_mesh_shape.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/animation_system.hpp>
 #include <zombye/rendering/camera_component.hpp>
@@ -164,6 +165,7 @@ void zombye::game::register_components() {
     shadow_component::register_at_script_engine(*this);
     state_component::register_at_script_engine(*this);
     staticmesh_component::register_at_script_engine(*this);
+    triangle_mesh_shape::register_at_script_engine(*this);
 }
 
 int zombye::game::width() const {

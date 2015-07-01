@@ -1,4 +1,3 @@
-#include <zombye/gameplay/command.hpp>
 #include <zombye/input/button.hpp>
 #include <zombye/input/input_manager.hpp>
 #include <zombye/input/input_system.hpp>
@@ -19,18 +18,16 @@ void zombye::input_manager::register_keyboard_event(std::string event_name, std:
     });
 }
 
-void zombye::input_manager::register_command(std::string event_name, zombye::command *cmd) {
+void zombye::input_manager::register_action(std::string event_name, std::function<void()> cmd) {
     commands_.insert(std::make_pair(event_name, cmd));
 }
 
-zombye::command* zombye::input_manager::handle_input() {
-    if(!event_queue_.empty()) {
+void zombye::input_manager::handle_input() {
+    while(!event_queue_.empty()) {
         auto cmd = event_queue_.front();
 
         event_queue_.pop();
 
-        return cmd;
+        cmd();
     }
-
-    return nullptr;
 }
