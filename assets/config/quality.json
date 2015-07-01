@@ -9,5 +9,9 @@
 
     "high": {
         "shadow_resolution": 1024
+    },
+
+    "custom": {
+        "shadow_resolution": 4096
     }
 }
