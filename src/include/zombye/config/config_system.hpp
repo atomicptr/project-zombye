@@ -18,9 +18,10 @@ namespace zombye {
     public:
         config_system();
 
-        Json::Value get(std::string, std::string);
+        Json::Value get(std::string, std::string) const;
         void set(std::string, std::string, Json::Value);
-        bool has(std::string);
+        bool has(std::string) const;
+        bool has_identifier(std::string, std::string) const;
 
         void commit();
         void commit(std::string);

@@ -5,6 +5,8 @@
 #include <zombye/assets/asset_manager.hpp>
 #include <zombye/config/config_system.hpp>
 
+#include <zombye/utils/logger.hpp>
+
 zombye::config_system::config_system() {
     asset_manager manager;
 
@@ -22,12 +24,21 @@ zombye::config_system::config_system() {
 
     register_config("main", main.get());
 
+    auto quality = manager.load("config/quality.json");
+    register_config("quality", quality.get());
+
+    auto current_quality_setting = get("main", "quality").asString();
+
+    if(!has_identifier("quality", current_quality_setting)) {
+        zombye::log(LOG_WARNING, "Unknown quality setting selected: " + current_quality_setting);
+    }
+
     if(gamepad != nullptr) {
         register_config("gamepad", gamepad.get());
     }
 }
 
-Json::Value zombye::config_system::get(std::string file, std::string ident) {
+Json::Value zombye::config_system::get(std::string file, std::string ident) const {
     auto it = configs_.find(file);
 
     if(it != configs_.end()) {
@@ -45,10 +56,18 @@ void zombye::config_system::set(std::string file, std::string ident, Json::Value
     }
 }
 
-bool zombye::config_system::has(std::string file) {
+bool zombye::config_system::has(std::string file) const {
     auto it = configs_.find(file);
 
     return it != configs_.end();
+}
+
+bool zombye::config_system::has_identifier(std::string file, std::string ident) const {
+    if(!has(file)) {
+        return false;
+    }
+
+    return configs_.at(file).isMember(ident);
 }
 
 void zombye::config_system::commit() {
