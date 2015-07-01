@@ -2,6 +2,6 @@
    "fullscreen" : false,
    "height" : 600,
    "width" : 800,
-   "shadow_resolution": 1024,
+   "quality": "low",
    "physics_debug_draw": false
 }

@@ -148,7 +148,10 @@ namespace zombye {
 		screen_quad_ = std::make_unique<screen_quad>(staticmesh_layout_, glm::vec2(0.f, height_), glm::vec2(width_, 0.f));
 
 		auto config = game.config();
-		shadow_resolution_ = config->get("main", "shadow_resolution").asInt();
+		auto quality_level = config->get("main", "quality").asString();
+		auto quality = config->get("quality", quality_level);
+
+		shadow_resolution_ = quality["shadow_resolution"].asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
 		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);

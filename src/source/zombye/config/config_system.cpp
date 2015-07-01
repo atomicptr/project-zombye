@@ -22,6 +22,9 @@ zombye::config_system::config_system() {
 
     register_config("main", main.get());
 
+    auto quality = manager.load("config/quality.json");
+    register_config("quality", quality.get());
+
     if(gamepad != nullptr) {
         register_config("gamepad", gamepad.get());
     }

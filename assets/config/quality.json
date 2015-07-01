@@ -1,0 +1,13 @@
+{
+    "low": {
+        "shadow_resolution": 256
+    },
+
+    "medium": {
+        "shadow_resolution": 512
+    },
+
+    "high": {
+        "shadow_resolution": 1024
+    }
+}
