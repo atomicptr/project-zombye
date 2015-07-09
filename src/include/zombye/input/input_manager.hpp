@@ -19,7 +19,10 @@ namespace zombye {
         input_manager(input_system*);
 
         void register_event(std::string, button&);
+        void register_up_event(std::string, button&);
+
         void register_keyboard_event(std::string, std::string);
+        void register_keyboard_up_event(std::string, std::string);
 
         void register_action(std::string, std::function<void()>);
 

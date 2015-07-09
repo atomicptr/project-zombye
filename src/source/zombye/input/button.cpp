@@ -19,7 +19,7 @@ bool zombye::button::just_pressed() {
 void zombye::button::key_down() {
     was_pressed = true;
 
-    for(auto &listener : listeners_) {
+    for(auto &listener : keydown_listeners_) {
         listener(*this);
     }
 }
@@ -27,8 +27,16 @@ void zombye::button::key_down() {
 void zombye::button::key_up() {
     was_pressed = false;
     was_just_pressed = false;
+
+    for(auto &listener : keyup_listeners_) {
+        listener(*this);
+    }
 }
 
 void zombye::button::register_keydown_listener(std::function<void(zombye::button&)> listener) {
-    listeners_.push_back(listener);
+    keydown_listeners_.push_back(listener);
+}
+
+void zombye::button::register_keyup_listener(std::function<void(zombye::button&)> listener) {
+    keyup_listeners_.push_back(listener);
 }
