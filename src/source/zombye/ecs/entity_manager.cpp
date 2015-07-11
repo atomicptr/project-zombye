@@ -18,6 +18,11 @@ namespace zombye {
             entity_factory
         );
 
+        static std::function<entity*(unsigned long)> resolve_entity = [this](unsigned long id) {
+            return resolve(id);
+        };
+        scripting_system.register_function("entity_impl@ get_entity(uint64 id)", resolve_entity);
+
         scripting_system.register_member_function("entity_impl", "uint64 id()",
             +[](entity& e) { return e.id(); });
         scripting_system.register_member_function("entity_impl", "const glm::vec3& position() const",
@@ -32,6 +37,9 @@ namespace zombye {
             +[](const entity& e) -> const glm::vec3& { return e.scalation(); });
         scripting_system.register_member_function("entity_impl", "void scale(const glm::vec3& in value)",
             +[](entity& e, const glm::vec3& value) { e.scalation(value); });
+
+        static auto player_id = 0ul;
+        scripting_system.register_global_object("uint64 player_id", &player_id);
     }
 
     zombye::entity& entity_manager::emplace(const glm::vec3& position, const glm::quat& rotation,
