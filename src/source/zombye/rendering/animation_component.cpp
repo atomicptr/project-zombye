@@ -260,10 +260,10 @@ namespace zombye {
             +[](animation_component& component, const std::string& state) { component.change_state(state); });
         scripting_system.register_member_function("animation_component", "void blend_ani(const string& in)",
             +[](animation_component& component, const std::string& state) { component.change_state_blend(state); });
-        scripting_system.register_member_function("animation_component", "void is_playing(const string& in)",
+        scripting_system.register_member_function("animation_component", "bool is_playing(const string& in)",
             +[](animation_component& component, const std::string& state) { return component.is_playing(state); });
-        scripting_system.register_member_function("animation_component", "void is_blending()",
-            +[](animation_component& component) { component.is_blending(); });
+        scripting_system.register_member_function("animation_component", "bool is_blending()",
+            +[](animation_component& component) { return component.is_blending(); });
 
         scripting_system.register_member_function("entity_impl",
             "animation_component& add_animation_component(const string& in mesh, const string& in skeleton)",
