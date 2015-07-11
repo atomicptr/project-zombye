@@ -10,5 +10,7 @@ class player : entity {
         sc.emplace("stand", "scripts/character_states/stand.as");
         sc.emplace("run", "scripts/character_states/run.as");
         sc.emplace("walk_backward", "scripts/character_states/walk_backward.as");
+
+        sc.change_state("stand");
     }
 }
