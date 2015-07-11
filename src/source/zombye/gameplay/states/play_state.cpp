@@ -23,30 +23,8 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     auto input = sm->get_game()->input();
     input_ = input->create_manager();
 
-    /*input_->register_action("FIRE", []() {
-        zombye::log("Peng Peng!");
-    });*/
     input_->register_actions(*sm->get_game(), "scripts/input/play_state.as");
     input_->load_config(*sm->get_game(), "config/input/play_state.json");
-
-    input_->register_action("FIRE_END", []() {
-        zombye::log("No more peng :(");
-    });
-
-    auto first_joystick = input->first_joystick();
-
-    if(first_joystick) {
-        input_->register_event("FIRE", first_joystick->button_A());
-        input_->register_event("FIRE", first_joystick->button_B());
-
-        input_->register_up_event("FIRE_END", first_joystick->button_A());
-        input_->register_up_event("FIRE_END", first_joystick->button_B());
-    }
-
-    input_->register_event("FIRE", input->mouse()->left_button());
-    input_->register_keyboard_event("FIRE", "space");
-    input_->register_up_event("FIRE_END", input->mouse()->left_button());
-    input_->register_keyboard_up_event("FIRE_END", "space");
 }
 
 void zombye::play_state::enter() {
