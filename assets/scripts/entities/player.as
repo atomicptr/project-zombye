@@ -9,5 +9,6 @@ class player : entity {
         auto@ sc = impl_.add_state_component();
         sc.emplace("stand", "scripts/character_states/stand.as");
         sc.emplace("run", "scripts/character_states/run.as");
+        sc.emplace("walk_backward", "scripts/character_states/walk_backward.as");
     }
 }
