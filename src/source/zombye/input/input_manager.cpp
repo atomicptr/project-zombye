@@ -1,3 +1,7 @@
+#include <json/json.h>
+
+#include <zombye/assets/asset.hpp>
+#include <zombye/assets/asset_manager.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/input/button.hpp>
 #include <zombye/input/input_manager.hpp>
@@ -58,6 +62,37 @@ void zombye::input_manager::register_actions(game& game, const std::string& file
                 scripting_system.exec();
             }
         );
+    }
+}
+
+void zombye::input_manager::load_config(game& game, const std::string& file_name) {
+    auto input_config = game.asset_manager().load(file_name);
+    if (!input_config) {
+        throw std::runtime_error("Could not load input config " + file_name);
+    }
+
+    Json::Reader reader;
+    Json::Value root;
+    auto& content = input_config->content();
+    reader.parse(content.data(), content.data() + content.size(), root);
+
+    for (auto it = root.begin(); it != root.end(); ++it) {
+        auto action_base_name = it.key().asString();
+        auto action_key = it->asString();
+
+        auto action_begin_name = action_base_name + "_begin";
+        auto command_it = commands_.find(action_begin_name);
+        if (command_it == commands_.end()) {
+            throw std::runtime_error("No action registered with name " + action_begin_name);
+        }
+        register_keyboard_event(action_begin_name, action_key);
+
+        auto action_end_name = action_base_name + "_end";
+        command_it = commands_.find(action_end_name);
+        if (command_it == commands_.end()) {
+            throw std::runtime_error("No action registered with name " + action_end_name);
+        }
+        register_keyboard_up_event(action_end_name, action_key);
     }
 }
 

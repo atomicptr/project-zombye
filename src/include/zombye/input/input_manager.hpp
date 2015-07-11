@@ -28,6 +28,8 @@ namespace zombye {
         void register_action(std::string, std::function<void()>);
         void register_actions(game& game, const std::string& file_name);
 
+        void load_config(game& game, const std::string& file_name);
+
         void handle_input();
 
     private:
