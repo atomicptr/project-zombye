@@ -27,6 +27,7 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
         zombye::log("Peng Peng!");
     });*/
     input_->register_actions(*sm->get_game(), "scripts/input/play_state.as");
+    input_->load_config(*sm->get_game(), "config/input/play_state.json");
 
     input_->register_action("FIRE_END", []() {
         zombye::log("No more peng :(");
@@ -46,15 +47,6 @@ zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     input_->register_keyboard_event("FIRE", "space");
     input_->register_up_event("FIRE_END", input->mouse()->left_button());
     input_->register_keyboard_up_event("FIRE_END", "space");
-
-    input_->register_keyboard_event("move_forward_begin", "w");
-    input_->register_keyboard_up_event("move_forward_end", "w");
-    input_->register_keyboard_event("move_backward_begin", "s");
-    input_->register_keyboard_up_event("move_backward_end", "s");
-    input_->register_keyboard_event("move_right_begin", "d");
-    input_->register_keyboard_up_event("move_right_end", "d");
-    input_->register_keyboard_event("move_left_begin", "a");
-    input_->register_keyboard_up_event("move_left_end", "a");
 }
 
 void zombye::play_state::enter() {
