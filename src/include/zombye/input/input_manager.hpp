@@ -10,6 +10,7 @@
 
 namespace zombye {
     class button;
+    class game;
     class input_system;
 }
 
@@ -25,6 +26,7 @@ namespace zombye {
         void register_keyboard_up_event(std::string, std::string);
 
         void register_action(std::string, std::function<void()>);
+        void register_actions(game& game, const std::string& file_name);
 
         void handle_input();
 
