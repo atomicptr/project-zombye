@@ -52,6 +52,14 @@ namespace zombye {
 		}
 
 		template <typename t>
+		void register_global_object(const std::string& decl, const t& object) {
+			auto result = script_engine_->RegisterGlobalProperty(decl.c_str(), object);
+			if (result < 0) {
+				throw std::runtime_error("could not register global property " + decl);
+			}
+		}
+
+		template <typename t>
 		void register_function(const std::string function_decl, const t& function) {
 			auto result = script_engine_->RegisterGlobalFunction(function_decl.c_str(), asFUNCTION(function), asCALL_CDECL);
 			if (result < 0) {
