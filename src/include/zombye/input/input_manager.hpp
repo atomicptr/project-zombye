@@ -22,8 +22,8 @@ namespace zombye {
         void register_event(std::string, button&);
         void register_up_event(std::string, button&);
 
-        void register_keyboard_event(std::string, std::string);
-        void register_keyboard_up_event(std::string, std::string);
+        void register_keyboard_event(std::string, std::string, bool continuous=false);
+        void register_keyboard_up_event(std::string, std::string, bool continuous=false);
 
         void register_action(std::string, std::function<void()>);
         void register_actions(game& game, const std::string& file_name);

@@ -24,16 +24,16 @@ void zombye::input_manager::register_up_event(std::string event_name, zombye::bu
     });
 }
 
-void zombye::input_manager::register_keyboard_event(std::string event_name, std::string key) {
+void zombye::input_manager::register_keyboard_event(std::string event_name, std::string key, bool continuous) {
     input_->keyboard()->register_keydown_listener(key, [event_name, that=this]() {
         that->event_queue_.push(that->commands_.at(event_name));
-    });
+    }, continuous);
 }
 
-void zombye::input_manager::register_keyboard_up_event(std::string event_name, std::string key) {
+void zombye::input_manager::register_keyboard_up_event(std::string event_name, std::string key, bool continuous) {
     input_->keyboard()->register_keyup_listener(key, [event_name, that=this]() {
         that->event_queue_.push(that->commands_.at(event_name));
-    });
+    }, continuous);
 }
 
 void zombye::input_manager::register_action(std::string event_name, std::function<void()> cmd) {
@@ -85,14 +85,14 @@ void zombye::input_manager::load_config(game& game, const std::string& file_name
         if (command_it == commands_.end()) {
             throw std::runtime_error("No action registered with name " + action_begin_name);
         }
-        register_keyboard_event(action_begin_name, action_key);
+        register_keyboard_event(action_begin_name, action_key, true);
 
         auto action_end_name = action_base_name + "_end";
         command_it = commands_.find(action_end_name);
         if (command_it == commands_.end()) {
             throw std::runtime_error("No action registered with name " + action_end_name);
         }
-        register_keyboard_up_event(action_end_name, action_key);
+        register_keyboard_up_event(action_end_name, action_key, true);
     }
 }
 
