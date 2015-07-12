@@ -24,6 +24,7 @@
 #include <zombye/rendering/animation_system.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/directional_light_component.hpp>
+#include <zombye/rendering/no_occluder_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/light_component.hpp>
 #include <zombye/rendering/shadow_component.hpp>
@@ -168,6 +169,7 @@ void zombye::game::register_components() {
     state_component::register_at_script_engine(*this);
     staticmesh_component::register_at_script_engine(*this);
     triangle_mesh_shape::register_at_script_engine(*this);
+    no_occluder_component::register_at_script_engine(*this);
 }
 
 int zombye::game::width() const {

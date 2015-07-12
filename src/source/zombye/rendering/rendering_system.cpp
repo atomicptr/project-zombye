@@ -19,6 +19,7 @@
 #include <zombye/rendering/mesh.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/shadow_component.hpp>
+#include <zombye/rendering/no_occluder_component.hpp>
 #include <zombye/scripting/scripting_system.hpp>
 #include <zombye/utils/component_helper.hpp>
 #include <zombye/utils/logger.hpp>
@@ -398,9 +399,12 @@ namespace zombye {
 		shadow_staticmesh_program_->uniform("m", false, glm::mat4{1.f});
 		shadow_staticmesh_program_->uniform("mit", false, glm::mat4{1.f});
 		for (auto& s : staticmesh_components_) {
-			auto model = s->owner().transform();
-			shadow_staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
-			s->draw();
+			auto& owner = s->owner();
+			if (!owner.component<no_occluder_component>()) {
+				auto model = owner.transform();
+				shadow_staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
+				s->draw();
+			}
 		}
 
 		shadow_animation_program_->use();
@@ -410,10 +414,13 @@ namespace zombye {
 		shadow_animation_program_->uniform("m", false, glm::mat4{1.f});
 		shadow_animation_program_->uniform("mit", false, glm::mat4{1.f});
 		for (auto& a : animation_components_) {
-			auto model = a->owner().transform();
-			shadow_animation_program_->uniform("mvp", false, shadow_projection_ * model);
-			shadow_animation_program_->uniform("pose", a->pose().size(), false, a->pose());
-			a->draw();
+			auto& owner = a->owner();
+			if (!owner.component<no_occluder_component>()) {
+				auto model = owner.transform();
+				shadow_animation_program_->uniform("mvp", false, shadow_projection_ * model);
+				shadow_animation_program_->uniform("pose", a->pose().size(), false, a->pose());
+				a->draw();
+			}
 		}
 
 		shadow_map_->bind_default();
