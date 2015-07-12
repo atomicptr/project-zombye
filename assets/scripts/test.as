@@ -4,6 +4,7 @@
 #include "../assets/scripts/entities/light.as"
 #include "../assets/scripts/entities/player.as"
 #include "../assets/scripts/entities/plane.as"
+#include "../assets/scripts/entities/skybox.as"
 
 void main() {
     camera c(glm::vec3(-10, 4, 0), glm::quat(glm::radians(-15), glm::vec3(1, 0, 0)));
@@ -17,5 +18,5 @@ void main() {
     directional_light dl(glm::vec3(1, 0.3, 1), glm::vec3(1), 1, true);
     c.follow(p.id());
     c.impl().get_camera_follow_component().initial_position(glm::vec3(0,0,0));
-    //d.impl().get_physics_component().apply_central_impulse(glm::vec3(5, 5, 0));
+    skybox sk();
 }
