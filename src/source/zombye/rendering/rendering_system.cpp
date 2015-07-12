@@ -239,6 +239,8 @@ namespace zombye {
 		glEnable(GL_DEPTH_TEST);
 		g_buffer_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
 
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_texture", 0);
@@ -267,6 +269,7 @@ namespace zombye {
 			a->draw();
 		}
 
+		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
