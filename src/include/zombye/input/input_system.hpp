@@ -32,6 +32,7 @@ namespace zombye {
         input_manager* create_manager();
 
         void update(SDL_Event&);
+        void update_continuous();
     private:
         std::map<int, std::shared_ptr<zombye::joystick>> joysticks_;
         std::unique_ptr<zombye::mouse> mouse_;

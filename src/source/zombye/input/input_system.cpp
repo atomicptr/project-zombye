@@ -86,6 +86,10 @@ void zombye::input_system::update(SDL_Event &event) {
     }
 }
 
+void zombye::input_system::update_continuous() {
+    keyboard_->update_continuous();
+}
+
 void zombye::input_system::detect_joysticks() {
     zombye::log("trying to detect joysticks...");
 

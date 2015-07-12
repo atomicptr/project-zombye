@@ -120,6 +120,8 @@ void zombye::game::run() {
         current_time = SDL_GetTicks() / 1000.f;
         delta_time = current_time - old_time;
 
+        input_system_->update_continuous();
+
         physics_system_->update(delta_time);
         gameplay_system_->update(delta_time);
         animation_system_->update(delta_time);
