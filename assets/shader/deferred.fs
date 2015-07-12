@@ -76,6 +76,7 @@ void main() {
 	vec3 V = normalize(view_vector - p);
 	vec3 diffuse_color = texture(albedo_texture, texcoord_).rgb;
 	vec3 spec_color = texture(specular_texture, texcoord_).rrr;
+	float emission = texture(specular_texture, texcoord_).g;
 	vec3 final_color = vec3(0.0);
 	for (int i = 0; i < point_light_num; ++i) {
 		vec3 L = point_light_positions[i] - p;
@@ -100,5 +101,5 @@ void main() {
 			* energy * shadow_amount;
 	}
 
-	frag_color = vec4(final_color, 1.0);
+	frag_color = vec4(mix(final_color, diffuse_color, emission), 1.0);
 }
