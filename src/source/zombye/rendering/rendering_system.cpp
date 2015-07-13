@@ -154,11 +154,13 @@ namespace zombye {
 
 		shadow_resolution_ = quality["shadow_resolution"].asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
+		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_->bind();
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		GLenum shadow_buffers[2] = { GL_COLOR_ATTACHMENT0, GL_NONE };
+		glDrawBuffers(2, shadow_buffers);
 		shadow_map_->bind_default();
 
 		shadow_staticmesh_program_ = std::make_unique<program>();
@@ -190,11 +192,12 @@ namespace zombye {
 		shadow_animation_program_->link();
 
 		shadow_map_blured_ = std::make_unique<framebuffer>();
+		shadow_map_blured_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_blured_->bind();
-		glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		glDrawBuffers(2, shadow_buffers);
 		shadow_map_blured_->bind_default();
 
 		shadow_blur_program_ = std::make_unique<program>();
@@ -389,7 +392,7 @@ namespace zombye {
 		shadow_map_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shadow_projection_ = glm::ortho(-20.f, 20.f, -20.f, 20.f, -20.f, 20.f);
+		shadow_projection_ = glm::ortho(-30.f, 30.f, -30.f, 30.f, -30.f, 30.f);
 		shadow_projection_ *= glm::lookAt(owner.position(), glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
 
 		shadow_staticmesh_program_->use();
