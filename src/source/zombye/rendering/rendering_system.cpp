@@ -155,7 +155,7 @@ namespace zombye {
 		shadow_resolution_ = quality["shadow_resolution"].asInt();
 		shadow_map_ = std::make_unique<framebuffer>();
 		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
-		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_R32F, shadow_resolution_, shadow_resolution_, GL_RED, GL_FLOAT);
+		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_->bind();
@@ -193,7 +193,7 @@ namespace zombye {
 
 		shadow_map_blured_ = std::make_unique<framebuffer>();
 		shadow_map_blured_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
-		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_R32F, shadow_resolution_, shadow_resolution_, GL_RED, GL_FLOAT);
+		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_blured_->bind();

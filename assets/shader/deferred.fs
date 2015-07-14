@@ -53,15 +53,9 @@ float sample_variance_shadow(sampler2D shadow_map, vec2 texcoord, float compare)
 	return min(max(p, p_max), 1.0);
 }
 
-float sample_exponential_shadow(sampler2D shadow_map, vec2 texcoord, float d) {
-	float exp_z = texture(shadow_map, texcoord).x;
-	float exp_d = exp(-80.0 * d);
-	return clamp(exp_d * exp_z, 0.0, 1.0);
-}
-
 float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
 	vec3 shadow_coord = initial_shadow_coord.xyz / initial_shadow_coord.w;
-	return sample_exponential_shadow(shadow_map, shadow_coord.xy, shadow_coord.z);
+	return sample_variance_shadow(shadow_map, shadow_coord.xy, shadow_coord.z);
 }
 
 void main() {
