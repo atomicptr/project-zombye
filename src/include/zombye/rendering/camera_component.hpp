@@ -15,9 +15,15 @@ namespace zombye {
 namespace zombye {
     class camera_component : public reflective<camera_component, component> {
         friend class reflective<camera_component, component>;
+
+    private:
+        float near_;
+        float far_;
         glm::mat4 projection_;
+        std::vector<float> split_planes_;
+
     public:
-        camera_component(game& game, entity& owner, const glm::mat4& projection) noexcept;
+        camera_component(game& game, entity& owner, float fov, float width, float height, float near, float far) noexcept;
         ~camera_component() noexcept;
 
         auto& projection() const {
@@ -34,6 +40,18 @@ namespace zombye {
 
         auto projection_view() const {
             return projection() * view();
+        }
+
+        auto near() const  {
+            return near_;
+        }
+
+        auto far() const {
+            return far_;
+        }
+
+        auto& split_planes() const {
+            return split_planes_;
         }
 
         static void register_at_script_engine(game& game);

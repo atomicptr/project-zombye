@@ -3,7 +3,7 @@
 class camera : entity {
     camera(const glm::vec3& in position, const glm::quat& in rotation) {
         super(position, rotation, glm::vec3(1.f));
-        impl_.add_camera_component(glm::perspectiveFov(glm::radians(45), width(), height(), 0.01f, 1000.0f));
+        impl_.add_camera_component(glm::radians(45), width(), height(), 0.01f, 100.0f);
         impl_.add_camera_follow_component();
     }
 

@@ -1,17 +1,21 @@
 {
     "low": {
-        "shadow_resolution": 256
+        "shadow_resolution": 256,
+        "shadow_frustum_splits": 0
     },
 
     "medium": {
-        "shadow_resolution": 512
+        "shadow_resolution": 512,
+        "shadow_frustum_splits": 1
     },
 
     "high": {
-        "shadow_resolution": 1024
+        "shadow_resolution": 1024,
+        "shadow_frustum_splits": 2
     },
 
     "custom": {
-        "shadow_resolution": 4096
+        "shadow_resolution": 4096,
+        "shadow_frustum_splits": 4
     }
 }

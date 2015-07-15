@@ -4,5 +4,6 @@
    "width" : 800,
    "quality": "low",
    "physics_debug_draw": false,
-   "deferred_shading_debug_draw": false
+   "deferred_shading_debug_draw": false,
+   "shadow_frustum_split_weight": 0.5
 }

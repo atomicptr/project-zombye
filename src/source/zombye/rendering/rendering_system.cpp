@@ -1,3 +1,4 @@
+#include <cassert>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -348,9 +349,15 @@ namespace zombye {
 		auto camera = camera_components_.find(active_camera_);
 		auto projection_view = glm::mat4{1.f};
 		auto camera_position = glm::vec3{0.f};
+		std::vector<float> split_planes;
+		auto near_plane = 0.f;
+		auto far_plane = 0.f;
 		if (camera != camera_components_.end()) {
 			projection_view = camera->second->projection_view();
 			camera_position = camera->second->owner().position();
+			split_planes = camera->second->split_planes();
+			near_plane = camera->second->near();
+			far_plane = camera->second->far();
 		}
 
 		composition_program_->use();
@@ -372,6 +379,10 @@ namespace zombye {
 		composition_program_->uniform("directional_light_energy", directional_light_components_.size(), directional_light_energy);
 		composition_program_->uniform("shadow_projection", false, shadow_projection_);
 		composition_program_->uniform("ambient_term", glm::vec3(0.1));
+		composition_program_->uniform("num_splits", static_cast<int32_t>(split_planes.size()));
+		composition_program_->uniform("split_planes", split_planes.size(), split_planes);
+		composition_program_->uniform("near_plane", near_plane);
+		composition_program_->uniform("far_plane", far_plane);
 
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
