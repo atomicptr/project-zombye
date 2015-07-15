@@ -402,6 +402,8 @@ namespace zombye {
 			return;
 		}
 
+		shadow_projection_ = dir_light_shadow->view_projection();
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_CLAMP);
 		glFrontFace(GL_CCW);
@@ -411,9 +413,6 @@ namespace zombye {
 
 		shadow_map_->bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		shadow_projection_ = glm::ortho(-30.f, 30.f, -30.f, 30.f, -30.f, 30.f);
-		shadow_projection_ *= glm::lookAt(owner.position(), glm::vec3{0.f}, glm::vec3{0.f, 1.f, 0.f});
 
 		shadow_staticmesh_program_->use();
 		shadow_staticmesh_program_->uniform("diffuse_texture", 0);
