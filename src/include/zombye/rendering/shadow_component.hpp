@@ -11,6 +11,7 @@
 
 namespace zombye {
     class game;
+    struct aabb;
 }
 
 namespace zombye {
@@ -43,6 +44,8 @@ namespace zombye {
         auto view_projection() const {
             return projection_ * view();
         }
+
+        std::vector<glm::mat4>&& calculate_crop_matricies(const std::vector<aabb> aabbs) const;
 
         static void register_at_script_engine(game& game);
 
