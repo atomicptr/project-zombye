@@ -1,8 +1,10 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <zombye/config/config_system.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
+#include <zombye/rendering/aabb.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/scripting/scripting_system.hpp>
@@ -20,14 +22,51 @@ namespace zombye {
 
         auto splits = quality["shadow_frustum_splits"].asInt();
         auto m = splits + 1;
-        split_planes_.resize(m - 1);
+        split_planes_.resize(m + 1);
 
         auto lambda = config->get("main", "shadow_frustum_split_weight").asFloat();
         for (auto i = 0ul; i < split_planes_.size(); ++i) {
-            auto c_i_log = near_ * pow((far_ / near_), (static_cast<float>(i + 1) / static_cast<float>(m)));
-            auto c_i_uni = near_ + (far_ - near_) * (static_cast<float>(i + 1) / static_cast<float>(m));
+            auto c_i_log = near_ * pow((far_ / near_), (static_cast<float>(i) / static_cast<float>(m)));
+            auto c_i_uni = near_ + (far_ - near_) * (static_cast<float>(i) / static_cast<float>(m));
             split_planes_[i] = lambda * c_i_log + (1.f - lambda) * c_i_uni;
-            std::cout << "split " << i << ": " << split_planes_[i] << std::endl;
+            //std::cout << split_planes_[i] << std::endl;
+        }
+
+        auto view_matrix = view();
+        auto top_left = glm::vec4{1.f, 1.f, 1.f, 1.f};
+        auto bottom_right = glm::vec4{-1.f, -1.f, 1.f, 1.f};
+
+        auto model_matrix = owner_.transform();
+
+        sub_frusta_aabbs_.resize(m);
+        for (auto i = 0; i < m; ++i) {
+            auto projection = glm::perspectiveFov(fov, width, height, split_planes_[i], split_planes_[i + 1]);
+            auto projection_inv = glm::inverse(projection);
+
+            auto top_left_p = projection_inv * top_left;
+            top_left_p /= glm::vec4{top_left_p.w};
+
+            auto bottom_right_p = projection_inv * bottom_right;
+            bottom_right_p /= glm::vec4{bottom_right_p.w};
+
+            top_left_p = model_matrix * top_left_p;
+            sub_frusta_aabbs_[i].max = glm::vec3{top_left_p};
+
+            if (i == m - 1) {
+                sub_frusta_aabbs_[i].max.z = -split_planes_[m];
+            }
+
+            if (i == 0) {
+                bottom_right_p.z = -split_planes_[0];
+            } else {
+                bottom_right_p.z = sub_frusta_aabbs_[i - 1].max.z;
+            }
+
+            bottom_right_p = model_matrix * bottom_right_p;
+            sub_frusta_aabbs_[i].min = glm::vec3{bottom_right_p};
+
+            //std::cout << glm::to_string(bottom_right_p) << std::endl;
+            //std::cout << glm::to_string(top_left_p) << std::endl << std::endl;
         }
     }
 

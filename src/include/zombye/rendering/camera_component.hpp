@@ -10,6 +10,7 @@
 
 namespace zombye {
     class game;
+    struct aabb;
 }
 
 namespace zombye {
@@ -21,6 +22,7 @@ namespace zombye {
         float far_;
         glm::mat4 projection_;
         std::vector<float> split_planes_;
+        std::vector<aabb> sub_frusta_aabbs_;
 
     public:
         camera_component(game& game, entity& owner, float fov, float width, float height, float near, float far) noexcept;
@@ -52,6 +54,10 @@ namespace zombye {
 
         auto& split_planes() const {
             return split_planes_;
+        }
+
+        auto& sub_frusta_aabbs() const {
+            return sub_frusta_aabbs_;
         }
 
         static void register_at_script_engine(game& game);

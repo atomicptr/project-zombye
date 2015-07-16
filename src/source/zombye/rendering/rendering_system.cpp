@@ -381,8 +381,6 @@ namespace zombye {
 		composition_program_->uniform("ambient_term", glm::vec3(0.1));
 		composition_program_->uniform("num_splits", static_cast<int32_t>(split_planes.size()));
 		composition_program_->uniform("split_planes", split_planes.size(), split_planes);
-		composition_program_->uniform("near_plane", near_plane);
-		composition_program_->uniform("far_plane", far_plane);
 
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);

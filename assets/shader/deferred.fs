@@ -25,9 +25,7 @@ uniform mat4 shadow_projection;
 uniform vec3 ambient_term;
 
 uniform int num_splits;
-uniform float split_planes[4];
-uniform float near_plane;
-uniform float far_plane;
+uniform float split_planes[6];
 
 vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3 spec_color, float shininess) {
 	vec3 H = normalize(L + V);
@@ -66,18 +64,19 @@ float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
 vec4 render_split_frusta(float depth, vec4 final_color) {
 	vec4 frag_color = final_color;
 
+	float near_plane = split_planes[0];
+	float far_plane = split_planes[num_splits - 1];
 	float z = 0.5 * depth + 0.5;
 	z = (2.f * near_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
 
-	bool set = false;
-	for (int i = 0; i < num_splits; ++i) {
-		float split_plane = linstep(near_plane, far_plane, split_planes[i]);
-		if (z < split_plane) {
-			set = true;
-			if (i == 3) {
+	for (int i = 0; i < num_splits - 1; ++i) {
+		float near_split_plane = linstep(near_plane, far_plane, split_planes[i]);
+		float far_split_plane = linstep(near_plane, far_plane, split_planes[i + 1]);
+		if (z >= near_split_plane && z < far_split_plane) {
+			if (i == 4) {
 				frag_color[0] *= 0.5;
-				frag_color[1] *= 0.5;
-				frag_color[2] = 0;
+				frag_color[1] = 0;
+				frag_color[2] *= 0.5;
 				break;
 			}
 			frag_color[(i + 1) % 3] = 0.0;
@@ -86,11 +85,6 @@ vec4 render_split_frusta(float depth, vec4 final_color) {
 		} else {
 			continue;
 		}
-	}
-
-	if (!set) {
-		frag_color[0] = 0.0;
-		frag_color[2] *= 0.5;
 	}
 
 	return frag_color;
