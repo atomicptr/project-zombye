@@ -3,14 +3,15 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <zombye/ecs/component.hpp>
 #include <zombye/ecs/entity.hpp>
 #include <zombye/ecs/reflective.hpp>
+#include <zombye/rendering/bounding_box.hpp>
 
 namespace zombye {
     class game;
-    struct aabb;
 }
 
 namespace zombye {
@@ -22,7 +23,7 @@ namespace zombye {
         float far_;
         glm::mat4 projection_;
         std::vector<float> split_planes_;
-        std::vector<aabb> sub_frusta_aabbs_;
+        std::vector<bounding_box> sub_frusta_bbs_;
 
     public:
         camera_component(game& game, entity& owner, float fov, float width, float height, float near, float far) noexcept;
@@ -56,8 +57,17 @@ namespace zombye {
             return split_planes_;
         }
 
-        auto& sub_frusta_aabbs() const {
-            return sub_frusta_aabbs_;
+        auto sub_frusta_bbs() const {
+            std::vector<bounding_box> sub_frusta_bbs = sub_frusta_bbs_;
+
+            auto model_matrix = owner_.transform();
+            for (auto& bb : sub_frusta_bbs) {
+                for (auto& point : bb.points) {
+                    point =  glm::vec3{model_matrix * glm::vec4{point, 1.f}};
+                }
+            }
+
+            return sub_frusta_bbs;
         }
 
         static void register_at_script_engine(game& game);

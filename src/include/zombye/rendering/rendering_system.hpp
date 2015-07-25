@@ -74,7 +74,9 @@ namespace zombye {
         std::unique_ptr<program> composition_program_;
 
         int shadow_resolution_;
-        std::unique_ptr<framebuffer> shadow_map_;
+        int num_splits_;
+        std::vector<glm::mat4> crop_matricies_;
+        std::vector<framebuffer> shadow_maps_;
         glm::mat4 shadow_projection_;
         std::unique_ptr<program> shadow_staticmesh_program_;
         std::unique_ptr<program> shadow_animation_program_;

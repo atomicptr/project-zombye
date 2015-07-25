@@ -5,7 +5,7 @@ class directional_light : entity {
         super(direction, glm::quat(0, glm::vec3(0)), glm::vec3(1));
         impl_.add_directional_light_component(color, energy);
         if (shadow) {
-            impl_.add_shadow_component(glm::ortho(-30, 30, -30, 30, -30, 30));
+            impl_.add_shadow_component(glm::ortho(-200, 200, -200, 200, -200, 200));
         }
     }
 }

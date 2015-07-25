@@ -8,7 +8,7 @@ uniform sampler2D albedo_texture;
 uniform sampler2D normal_texture;
 uniform sampler2D specular_texture;
 uniform sampler2D depth_texture;
-uniform sampler2D shadow_texture;
+uniform sampler2D shadow_texture[5];
 uniform mat4 inv_view_projection;
 uniform vec3 view_vector;
 uniform int point_light_num;
@@ -22,6 +22,9 @@ uniform vec3 directional_light_directions[40];
 uniform vec3 directional_light_colors[40];
 uniform float directional_light_energy[40];
 uniform mat4 shadow_projection;
+uniform mat4 view;
+uniform int num_sub_projections;
+uniform mat4 sub_projections[5];
 uniform vec3 ambient_term;
 
 uniform int num_splits;
@@ -61,18 +64,38 @@ float calculate_shadow_amount(sampler2D shadow_map, vec4 initial_shadow_coord) {
 	return sample_variance_shadow(shadow_map, shadow_coord.xy, shadow_coord.z);
 }
 
+float sample_pssm(sampler2D shadow_maps[5], mat4 shadow_projections[5], float splits[6], float depth_view_space, vec3 p) {
+	float light = 1.f;
+	mat4 bias = mat4(0.5);
+	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
+
+	if (depth_view_space < splits[1]) {
+		vec4 position_shadow = bias * sub_projections[0] * vec4(p, 1.0);
+		light = calculate_shadow_amount(shadow_maps[0], position_shadow);
+	} else if (depth_view_space < splits[2]) {
+		vec4 position_shadow = bias * sub_projections[1] * vec4(p, 1.0);
+		light = calculate_shadow_amount(shadow_maps[1], position_shadow);
+	} else if (depth_view_space < splits[3]) {
+		vec4 position_shadow = bias * sub_projections[2] * vec4(p, 1.0);
+		light = calculate_shadow_amount(shadow_maps[2], position_shadow);
+	} else if (depth_view_space < splits[4]) {
+		vec4 position_shadow = bias * sub_projections[3] * vec4(p, 1.0);
+		light = calculate_shadow_amount(shadow_maps[3], position_shadow);
+	} else if (depth_view_space < splits[5]) {
+		vec4 position_shadow = bias * sub_projections[4] * vec4(p, 1.0);
+		light = calculate_shadow_amount(shadow_maps[4], position_shadow);
+	}
+
+	return light;
+}
+
 vec4 render_split_frusta(float depth, vec4 final_color) {
 	vec4 frag_color = final_color;
 
-	float near_plane = split_planes[0];
-	float far_plane = split_planes[num_splits - 1];
-	float z = 0.5 * depth + 0.5;
-	z = (2.f * near_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
-
 	for (int i = 0; i < num_splits - 1; ++i) {
-		float near_split_plane = linstep(near_plane, far_plane, split_planes[i]);
-		float far_split_plane = linstep(near_plane, far_plane, split_planes[i + 1]);
-		if (z >= near_split_plane && z < far_split_plane) {
+		float near_split_plane = split_planes[i];
+		float far_split_plane = split_planes[i + 1];
+		if (depth >= near_split_plane && depth < far_split_plane) {
 			if (i == 4) {
 				frag_color[0] *= 0.5;
 				frag_color[1] = 0;
@@ -98,11 +121,8 @@ void main() {
 	vec4 world_space = inv_view_projection *  vec4(clip_space,1.0);
 	vec3 p = world_space.xyz / world_space.w;
 
-	mat4 bias = mat4(0.5);
-	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
-	vec4 position_shadow = bias * shadow_projection * vec4(p, 1.0);
-	float shadow_amount = 1.0;
-	shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow);
+	vec4 view_space = view * vec4(p, 1.f);
+	float shadow_amount = sample_pssm(shadow_texture, sub_projections, split_planes, view_space.z, p);
 
 	vec3 N = normalize(texture(normal_texture, texcoord_).xyz);
 	vec3 V = normalize(view_vector - p);
@@ -135,5 +155,5 @@ void main() {
 
 	frag_color = vec4(mix(final_color, diffuse_color, emission), 1.0);
 
-	frag_color = render_split_frusta(depth, frag_color);
+	//frag_color = render_split_frusta(view_space.z, frag_color);
 }

@@ -8,6 +8,7 @@
 #include <zombye/config/config_system.hpp>
 #include <zombye/core/game.hpp>
 #include <zombye/ecs/entity.hpp>
+#include <zombye/rendering/bounding_box.hpp>
 #include <zombye/rendering/animation_component.hpp>
 #include <zombye/rendering/camera_component.hpp>
 #include <zombye/rendering/directional_light_component.hpp>
@@ -154,15 +155,23 @@ namespace zombye {
 		auto quality = config->get("quality", quality_level);
 
 		shadow_resolution_ = quality["shadow_resolution"].asInt();
-		shadow_map_ = std::make_unique<framebuffer>();
-		shadow_map_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
-		shadow_map_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
-		shadow_map_->bind();
-		GLenum shadow_buffers[2] = { GL_COLOR_ATTACHMENT0, GL_NONE };
-		glDrawBuffers(2, shadow_buffers);
-		shadow_map_->bind_default();
+
+		GLenum shadow_buffers[2] = {GL_COLOR_ATTACHMENT0, GL_NONE};
+
+		num_splits_ = quality["shadow_frustum_splits"].asInt();
+		for (auto i = 0; i < num_splits_ + 1; ++i) {
+			shadow_maps_.emplace_back();
+
+			shadow_maps_[i].attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
+
+			shadow_maps_[i].attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			shadow_maps_[i].attachment(GL_COLOR_ATTACHMENT0).apply_settings();
+			shadow_maps_[i].bind();
+
+			glDrawBuffers(2, shadow_buffers);
+			shadow_maps_[i].bind_default();
+		}
 
 		shadow_staticmesh_program_ = std::make_unique<program>();
 		vertex_shader = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
@@ -192,13 +201,14 @@ namespace zombye {
 		skinnedmesh_layout_.setup_program(*shadow_animation_program_, "frag_color");
 		shadow_animation_program_->link();
 
+		/*
 		shadow_map_blured_ = std::make_unique<framebuffer>();
 		shadow_map_blured_->attach(GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, GL_DEPTH_COMPONENT32F, shadow_resolution_, shadow_resolution_, GL_DEPTH_COMPONENT, GL_FLOAT);
 		shadow_map_blured_->attach(GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GL_RG32F, shadow_resolution_, shadow_resolution_, GL_RGBA, GL_FLOAT);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).apply_settings();
 		shadow_map_blured_->bind();
-		glDrawBuffers(2, shadow_buffers);
+		glDrawBuffers(2, shadow_buffers));
 		shadow_map_blured_->bind_default();
 
 		shadow_blur_program_ = std::make_unique<program>();
@@ -212,8 +222,8 @@ namespace zombye {
 			throw std::runtime_error("could not load gaussian_blur.fs");
 		}
 		shadow_blur_program_->attach_shader(fragment_shader);
-		staticmesh_layout_.setup_program(*shadow_blur_program_, "frag_color");
-		shadow_blur_program_->link();
+		staticmesh_layout_.setup_program(*shadow_blur_program_, "shadow_level_0");
+		shadow_blur_program_->link();*/
 
 		register_at_script_engine();
 	}
@@ -308,8 +318,8 @@ namespace zombye {
 		screen_quad_program_->uniform("far_plane", 1000.f);
 		screen_quad_program_->uniform("color_texture", 0);
 
-		for (auto i = 0; i < 4; ++i) {
-			g_buffer_->attachment(attachments[i]).bind(0);
+		for (auto i = 0; i < num_splits_ + 1; ++i) {
+			shadow_maps_[i].attachment(GL_COLOR_ATTACHMENT0).bind(0);
 
 			screen_quad_program_->uniform("linearize", false);
 			if (attachments[i] == GL_DEPTH_ATTACHMENT) {
@@ -348,16 +358,24 @@ namespace zombye {
 
 		auto camera = camera_components_.find(active_camera_);
 		auto projection_view = glm::mat4{1.f};
+		auto view = glm::mat4{1.f};
 		auto camera_position = glm::vec3{0.f};
 		std::vector<float> split_planes;
 		auto near_plane = 0.f;
 		auto far_plane = 0.f;
 		if (camera != camera_components_.end()) {
 			projection_view = camera->second->projection_view();
+			view = camera->second->projection_view();
 			camera_position = camera->second->owner().position();
 			split_planes = camera->second->split_planes();
 			near_plane = camera->second->near();
 			far_plane = camera->second->far();
+		}
+
+		std::vector<glm::mat4> sub_projections;
+		std::vector<int> shadow_maps = {4, 5, 6, 7, 8};
+		for (auto& cm : crop_matricies_) {
+			sub_projections.emplace_back(cm * shadow_projection_);
 		}
 
 		composition_program_->use();
@@ -366,7 +384,7 @@ namespace zombye {
 		composition_program_->uniform("normal_texture", 1);
 		composition_program_->uniform("specular_texture", 2);
 		composition_program_->uniform("depth_texture", 3);
-		composition_program_->uniform("shadow_texture", 4);
+		composition_program_->uniform("shadow_texture", shadow_maps.size(), shadow_maps);
 		composition_program_->uniform("inv_view_projection", false, glm::inverse(projection_view));
 		composition_program_->uniform("view_vector", camera_position);
 		composition_program_->uniform("point_light_num", static_cast<int32_t>(light_components_.size()));
@@ -378,6 +396,9 @@ namespace zombye {
 		composition_program_->uniform("directional_light_colors", directional_light_components_.size(), directional_light_colors);
 		composition_program_->uniform("directional_light_energy", directional_light_components_.size(), directional_light_energy);
 		composition_program_->uniform("shadow_projection", false, shadow_projection_);
+		composition_program_->uniform("view", false, view);
+		composition_program_->uniform("sub_projections", crop_matricies_.size(), false, sub_projections);
+		composition_program_->uniform("num_sub_projections", static_cast<int32_t>(crop_matricies_.size()));
 		composition_program_->uniform("ambient_term", glm::vec3(0.1));
 		composition_program_->uniform("num_splits", static_cast<int32_t>(split_planes.size()));
 		composition_program_->uniform("split_planes", split_planes.size(), split_planes);
@@ -385,7 +406,11 @@ namespace zombye {
 		for (auto i = 0; i < 4; ++i) {
 			g_buffer_->attachment(attachments[i]).bind(i);
 		}
-		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
+
+		for (auto i = 0; i < num_splits_ + 1; ++i) {
+			shadow_maps_[i].attachment(GL_COLOR_ATTACHMENT0).bind(shadow_maps[i]);
+		}
+
 		screen_quad_->draw();
 	}
 
@@ -402,6 +427,14 @@ namespace zombye {
 
 		shadow_projection_ = dir_light_shadow->view_projection();
 
+		auto camera = camera_components_.find(active_camera_);
+		if (camera == camera_components_.end()) {
+			return;
+		}
+
+		auto sub_frusta_bbs = camera->second->sub_frusta_bbs();
+		crop_matricies_ = dir_light_shadow->calculate_crop_matricies(sub_frusta_bbs);
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_DEPTH_CLAMP);
 		glFrontFace(GL_CCW);
@@ -409,44 +442,50 @@ namespace zombye {
 		glEnable(GL_CULL_FACE);
 		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
 
-		shadow_map_->bind();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		for (auto i = size_t{0}; i < shadow_maps_.size(); ++i) {
+			shadow_maps_[i].bind();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shadow_staticmesh_program_->use();
-		shadow_staticmesh_program_->uniform("diffuse_texture", 0);
-		shadow_staticmesh_program_->uniform("specular_texture", 1);
-		shadow_staticmesh_program_->uniform("normal_texture", 2);
-		shadow_staticmesh_program_->uniform("m", false, glm::mat4{1.f});
-		shadow_staticmesh_program_->uniform("mit", false, glm::mat4{1.f});
-		for (auto& s : staticmesh_components_) {
-			auto& owner = s->owner();
-			if (!owner.component<no_occluder_component>()) {
-				auto model = owner.transform();
-				shadow_staticmesh_program_->uniform("mvp", false, shadow_projection_ * model);
-				s->draw();
+			shadow_staticmesh_program_->use();
+			shadow_staticmesh_program_->uniform("diffuse_texture", 0);
+			shadow_staticmesh_program_->uniform("specular_texture", 1);
+			shadow_staticmesh_program_->uniform("normal_texture", 2);
+			shadow_staticmesh_program_->uniform("m", false, glm::mat4{1.f});
+			shadow_staticmesh_program_->uniform("mit", false, glm::mat4{1.f});
+			shadow_staticmesh_program_->uniform("num_shadow_level", static_cast<int32_t>(crop_matricies_.size()));
+			for (auto& s : staticmesh_components_) {
+				auto& owner = s->owner();
+				if (!owner.component<no_occluder_component>()) {
+					auto model = owner.transform();
+					auto mvp = crop_matricies_[i] * shadow_projection_ * model;
+					shadow_staticmesh_program_->uniform("mvp", false, mvp);
+					s->draw();
+				}
 			}
+
+			shadow_animation_program_->use();
+			shadow_animation_program_->uniform("diffuse_texture", 0);
+			shadow_animation_program_->uniform("specular_texture", 1);
+			shadow_animation_program_->uniform("normal_texture", 2);
+			shadow_animation_program_->uniform("m", false, glm::mat4{1.f});
+			shadow_animation_program_->uniform("mit", false, glm::mat4{1.f});
+			shadow_animation_program_->uniform("num_shadow_level", static_cast<uint32_t>(crop_matricies_.size()));
+			for (auto& a : animation_components_) {
+				auto& owner = a->owner();
+				if (!owner.component<no_occluder_component>()) {
+					auto model = owner.transform();
+					auto mvp = crop_matricies_[i] * shadow_projection_ * model;
+					shadow_animation_program_->uniform("mvp", false, mvp);
+					shadow_animation_program_->uniform("pose", a->pose().size(), false, a->pose());
+					a->draw();
+				}
+			}
+
+			shadow_maps_[i].attachment(GL_COLOR_ATTACHMENT0).bind(0);
+			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 
-		shadow_animation_program_->use();
-		shadow_animation_program_->uniform("diffuse_texture", 0);
-		shadow_animation_program_->uniform("specular_texture", 1);
-		shadow_animation_program_->uniform("normal_texture", 2);
-		shadow_animation_program_->uniform("m", false, glm::mat4{1.f});
-		shadow_animation_program_->uniform("mit", false, glm::mat4{1.f});
-		for (auto& a : animation_components_) {
-			auto& owner = a->owner();
-			if (!owner.component<no_occluder_component>()) {
-				auto model = owner.transform();
-				shadow_animation_program_->uniform("mvp", false, shadow_projection_ * model);
-				shadow_animation_program_->uniform("pose", a->pose().size(), false, a->pose());
-				a->draw();
-			}
-		}
-
-		shadow_map_->bind_default();
-
-		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(0);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		shadow_maps_[0].bind_default();
 
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -454,7 +493,7 @@ namespace zombye {
 	}
 
 	void rendering_system::apply_gaussian_blur() {
-		glViewport(0, 0, shadow_resolution_, shadow_resolution_);
+		/*glViewport(0, 0, shadow_resolution_, shadow_resolution_);
 		shadow_map_blured_->bind();
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -482,7 +521,7 @@ namespace zombye {
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		shadow_map_blured_->bind_default();
-		glViewport(0, 0, width_, height_);
+		glViewport(0, 0, width_, height_);*/
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

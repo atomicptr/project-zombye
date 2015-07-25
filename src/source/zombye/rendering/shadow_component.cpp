@@ -1,6 +1,10 @@
+#include <limits>
+
+#include <glm/gtx/string_cast.hpp>
+
 #include <zombye/ecs/entity.hpp>
 #include <zombye/core/game.hpp>
-#include <zombye/rendering/aabb.hpp>
+#include <zombye/rendering/bounding_box.hpp>
 #include <zombye/rendering/rendering_system.hpp>
 #include <zombye/rendering/shadow_component.hpp>
 #include <zombye/scripting/scripting_system.hpp>
@@ -15,35 +19,61 @@ namespace zombye {
         game_.rendering_system().unregister_component(this);
     }
 
-    std::vector<glm::mat4>&& shadow_component::calculate_crop_matricies(const std::vector<aabb> aabbs) const {
+    std::vector<glm::mat4> shadow_component::calculate_crop_matricies(const std::vector<bounding_box> bbs) {
         std::vector<glm::mat4> crop_matricies;
-        crop_matricies.resize(aabbs.size());
+        crop_matricies.resize(bbs.size());
 
-        for (auto i = size_t{0}; i < aabbs.size(); ++i) {
-            auto crop_aabb = aabbs[i];
-            crop_aabb.min = glm::vec3{view_projection() * glm::vec4{crop_aabb.min, 1.f}};
-            crop_aabb.max = glm::vec3{view_projection() * glm::vec4{crop_aabb.max, 1.f}};
+        for (auto i = size_t{0}; i < bbs.size(); ++i) {
+            auto min_x = std::numeric_limits<float>::max();
+            auto max_x = std::numeric_limits<float>::min();
+            auto min_y = std::numeric_limits<float>::max();
+            auto max_y = std::numeric_limits<float>::min();
+            auto min_z = std::numeric_limits<float>::max();
+            auto max_z = std::numeric_limits<float>::min();
 
-            crop_aabb.min.z = 0.f;
+            auto crop_bb = bbs[i];
+            for (auto& p : crop_bb.points) {
+                auto point = view_projection() * glm::vec4{p, 1.f};
+                point /= point.w;
+                if (point.x < min_x) {
+                    min_x = point.x;
+                }
+                if (point.x > max_x) {
+                    max_x = point.x;
+                }
+                if (point.y < min_y) {
+                    min_y = point.y;
+                }
+                if (point.y > max_y) {
+                    max_y = point.y;
+                }
+                if (point.z < min_z) {
+                    min_z = point.z;
+                }
+                if (point.z > max_z) {
+                    max_z = point.z;
+                }
+            }
 
-            auto scale_x = 2.f / (crop_aabb.max.x - crop_aabb.min.x);
-            auto scale_y = 2.f / (crop_aabb.max.y - crop_aabb.min.y);
-            auto scale_z = 1.f / (crop_aabb.max.z - crop_aabb.min.z);
-            auto offset_x = -0.5f * (crop_aabb.max.x + crop_aabb.min.x) * scale_x;
-            auto offset_y = -0.5f * (crop_aabb.max.y + crop_aabb.min.y) * scale_y;
-            auto offset_z = -crop_aabb.min.z * scale_z;
+            auto min = glm::vec3{min_x, min_y, -1.f};
+            auto max = glm::vec3{max_x, max_y, max_z};
 
-            auto crop_matrix = glm::mat4{
+            auto scale_x = 2.f / (max.x - min.x);
+            auto scale_y = 2.f / (max.y - min.y);
+            auto scale_z = 2.f / (max.z - min.z);
+            auto offset_x = -0.5f * (max.x + min.x) * scale_x;
+            auto offset_y = -0.5f * (max.y + min.y) * scale_y;
+            auto offset_z = -0.5f * (max.z + min.z) * scale_z;
+
+            crop_matricies[i] = glm::mat4{
                 scale_x, 0.f, 0.f, 0.f,
                 0.f, scale_y, 0.f, 0.f,
                 0.f, 0.f, scale_z, 0.f,
                 offset_x, offset_y, offset_z, 1.f
             };
-
-            crop_matricies[i] = crop_matrix;
         }
 
-        return std::move(crop_matricies);
+        return crop_matricies;
     }
 
     void shadow_component::register_at_script_engine(game& game) {
