@@ -35,33 +35,40 @@ namespace zombye {
         auto top_right = glm::vec4{1.f, 1.f, 1.f, 1.f};
         auto bottom_left = glm::vec4{-1.f, -1.f, -1.f, 1.f};
 
+        const std::array<glm::vec3, 8> corners = {
+            glm::vec3{-1.f, 1.f, 1.f},
+            glm::vec3{1.f, 1.f, 1.f},
+            glm::vec3{-1.f, -1.f, 1.f},
+            glm::vec3{1.f, -1.f, 1.f},
+            glm::vec3{-1.f, 1.f, -1.f},
+            glm::vec3{1.f, 1.f, -1.f},
+            glm::vec3{-1.f, -1.f, -1.f},
+            glm::vec3{1.f, -1.f, -1.f}
+        };
+
         sub_frusta_bbs_.resize(m);
         for (auto i = 0; i < m; ++i) {
             auto projection = glm::perspectiveFov(fov, width, height, split_planes_[i], split_planes_[i + 1]);
             auto projection_inv = glm::inverse(projection);
 
-            auto top_right_p = projection_inv * top_right;
-            top_right_p /= glm::vec4{top_right_p.w};
-
-            auto bottom_left_p = projection_inv * bottom_left;
-            bottom_left_p /= glm::vec4{bottom_left_p.w};
-            bottom_left_p.x = -top_right_p.x;
-            bottom_left_p.y = -top_right_p.y;
-
             bounding_box bb;
-            bb.points[0] = glm::vec3{bottom_left_p};
-            bb.points[1] = glm::vec3{bottom_left_p} + glm::vec3{top_right_p.x, 0.f, 0.f};
-            bb.points[2] = glm::vec3{bottom_left_p} + glm::vec3{0.f, top_right_p.y, 0.f};
-            bb.points[3] = glm::vec3{bottom_left_p} + glm::vec3{top_right_p.x, top_right_p.y, 0.f};
-            bb.points[4] = glm::vec3{top_right_p};
-            bb.points[5] = glm::vec3{top_right_p} + glm::vec3{bottom_left_p.x, 0.f, 0.f};
-            bb.points[6] = glm::vec3{top_right_p} + glm::vec3{0.f, bottom_left_p.y, 0.f};
-            bb.points[7] = glm::vec3{top_right_p} + glm::vec3{bottom_left_p.x, bottom_left_p.y, 0.f};
-
-            std::cout << glm::to_string(bottom_left_p) << std::endl;
-            std::cout << glm::to_string(top_right_p) << std::endl << std::endl;
-
+            for (auto i = 0; i < corners.size(); ++i) {
+                auto corner = projection_inv * glm::vec4{corners[i], 1.f};
+                corner /= corner.w;
+                bb.points[i] = glm::vec3{corner};
+            }
             sub_frusta_bbs_[i] = bb;
+
+            bb.points[4] = glm::vec3{bb.points[0].x, bb.points[0].y, bb.points[4].z};
+            bb.points[5] = glm::vec3{bb.points[1].x, bb.points[1].y, bb.points[5].z};
+            bb.points[6] = glm::vec3{bb.points[2].x, bb.points[2].y, bb.points[6].z};
+            bb.points[7] = glm::vec3{bb.points[3].x, bb.points[3].y, bb.points[7].z};
+
+
+            for (auto& p : bb.points) {
+                std::cout << glm::to_string(p) << std::endl;
+            }
+            std::cout << std::endl;
         }
     }
 

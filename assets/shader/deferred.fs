@@ -70,23 +70,49 @@ float sample_pssm(sampler2D shadow_maps[5], mat4 shadow_projections[5], float sp
 	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
 
 	if (depth_view_space < splits[1]) {
-		vec4 position_shadow = bias * sub_projections[0] * vec4(p, 1.0);
+		vec4 position_shadow = bias * shadow_projections[0] * vec4(p, 1.0);
 		light = calculate_shadow_amount(shadow_maps[0], position_shadow);
 	} else if (depth_view_space < splits[2]) {
-		vec4 position_shadow = bias * sub_projections[1] * vec4(p, 1.0);
+		vec4 position_shadow = bias * shadow_projections[1] * vec4(p, 1.0);
 		light = calculate_shadow_amount(shadow_maps[1], position_shadow);
 	} else if (depth_view_space < splits[3]) {
-		vec4 position_shadow = bias * sub_projections[2] * vec4(p, 1.0);
+		vec4 position_shadow = bias * shadow_projections[2] * vec4(p, 1.0);
 		light = calculate_shadow_amount(shadow_maps[2], position_shadow);
 	} else if (depth_view_space < splits[4]) {
-		vec4 position_shadow = bias * sub_projections[3] * vec4(p, 1.0);
+		vec4 position_shadow = bias * shadow_projections[3] * vec4(p, 1.0);
 		light = calculate_shadow_amount(shadow_maps[3], position_shadow);
 	} else if (depth_view_space < splits[5]) {
-		vec4 position_shadow = bias * sub_projections[4] * vec4(p, 1.0);
+		vec4 position_shadow = bias * shadow_projections[4] * vec4(p, 1.0);
 		light = calculate_shadow_amount(shadow_maps[4], position_shadow);
 	}
 
 	return light;
+}
+
+vec4 render_shdow_projections(mat4 shadow_projections[5], float splits[6], float depth_view_space, vec3 p, vec4 color) {
+	float light = 1.f;
+	mat4 bias = mat4(0.5);
+	bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
+
+	vec4 colors[5];
+	colors[0] = vec4(1.f, 0.f, 0.f, 1.f);
+	colors[1] = vec4(0.f, 1.f, 0.f, 1.f);
+	colors[2] = vec4(0.f, 0.f, 1.f, 1.f);
+	colors[3] = vec4(0.5f, 0.5f, 0.f, 1.f);
+	colors[4] = vec4(1.f, 0.5f, 0.f, 1.f);
+
+	for (int i = 0; i < 3; ++i) {
+		vec4 position_shadow = bias * shadow_projections[i] * vec4(p, 1.f);
+		if (((position_shadow.x > 0.f) && (position_shadow.x < 1.f))
+			&& ((position_shadow.y > 0.f) && (position_shadow.y < 1.f))
+			&& ((position_shadow.z > 0.f) && (position_shadow.z < 1.f))
+		) {
+			color *= colors[i];
+			break;
+		}
+	}
+
+	return color;
 }
 
 vec4 render_split_frusta(float depth, vec4 final_color) {
@@ -156,4 +182,5 @@ void main() {
 	frag_color = vec4(mix(final_color, diffuse_color, emission), 1.0);
 
 	//frag_color = render_split_frusta(view_space.z, frag_color);
+	//frag_color = render_shdow_projections(sub_projections, split_planes, view_space.z, p, frag_color);
 }

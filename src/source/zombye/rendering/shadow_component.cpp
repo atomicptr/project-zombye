@@ -25,11 +25,11 @@ namespace zombye {
 
         for (auto i = size_t{0}; i < bbs.size(); ++i) {
             auto min_x = std::numeric_limits<float>::max();
-            auto max_x = std::numeric_limits<float>::min();
+            auto max_x = std::numeric_limits<float>::lowest();
             auto min_y = std::numeric_limits<float>::max();
-            auto max_y = std::numeric_limits<float>::min();
+            auto max_y = std::numeric_limits<float>::lowest();
             auto min_z = std::numeric_limits<float>::max();
-            auto max_z = std::numeric_limits<float>::min();
+            auto max_z = std::numeric_limits<float>::lowest();
 
             auto crop_bb = bbs[i];
             for (auto& p : crop_bb.points) {
