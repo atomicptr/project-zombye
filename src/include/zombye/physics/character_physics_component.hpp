@@ -30,6 +30,7 @@ namespace zombye {
         float max_angular_velocity_;
         float current_velocity_;
         float current_angular_velocity_;
+        glm::vec3 direction_;
 
     public:
         character_physics_component(game& game, entity& owner, collision_shape* collision_shape, float max_velocity, float max_angular_velocity);
@@ -69,6 +70,10 @@ namespace zombye {
 
         void angular_velocity(float angular_velocity) {
             current_angular_velocity_ = angular_velocity < max_angular_velocity_ ? angular_velocity : max_angular_velocity_;
+        }
+
+        const glm::vec3& direction() const {
+            return direction_;
         }
 
         static void register_at_script_engine(game& game);

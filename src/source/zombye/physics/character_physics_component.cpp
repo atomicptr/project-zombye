@@ -12,7 +12,8 @@ namespace zombye {
     character_physics_component::character_physics_component(game& game, entity& owner, collision_shape* shape,
     float max_velocity, float max_angular_velocity)
     : reflective{game, owner}, physics_{*game_.physics()}, world_{*physics_.world()}, max_velocity_{max_velocity},
-    max_angular_velocity_{max_angular_velocity}, current_velocity_{0.f}, current_angular_velocity_{0.f} {
+    max_angular_velocity_{max_angular_velocity}, current_velocity_{0.f}, current_angular_velocity_{0.f},
+    direction_{0.f, 0.f, 1.f} {
         physics_.register_component(this);
 
         collision_shape_ = std::unique_ptr<collision_shape>(shape);
@@ -48,8 +49,8 @@ namespace zombye {
 
     void character_physics_component::update(float delta_time) {
         auto rotation = owner_.rotation();
-        auto direction = glm::rotate(rotation, glm::vec3{0.f, 0.f, 1.f});
-        auto velocity = glm::vec3{direction} * current_velocity_ * delta_time;
+        direction_ = glm::rotate(rotation, glm::vec3{0.f, 0.f, 1.f});
+        auto velocity = glm::vec3{direction_} * current_velocity_ * delta_time;
         character_controller_->setWalkDirection(btVector3{velocity.x, velocity.y, velocity.z});
 
         auto angular_velocity = glm::quat{0.f, 0.f, current_angular_velocity_, 0.f};
@@ -100,6 +101,8 @@ namespace zombye {
             +[](character_physics_component& component, float velocity) { component.velocity(velocity); });
         scripting_system.register_member_function("character_physics_component", "void angular_velocity(float)",
             +[](character_physics_component& component, float angular_velocity) { component.angular_velocity(angular_velocity); });
+        scripting_system.register_member_function("character_physics_component", "const glm::vec3& direction() const",
+            +[](character_physics_component& component) -> const glm::vec3& { return component.direction(); });
 
         scripting_system.register_member_function("entity_impl", "character_physics_component@ get_character_physics_component()",
             +[](entity& owner) { return owner.component<character_physics_component>(); });
