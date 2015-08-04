@@ -82,6 +82,9 @@ namespace zombye {
         std::unique_ptr<framebuffer> shadow_map_blured_;
         std::unique_ptr<program> shadow_blur_program_;
 
+        std::unique_ptr<program> skybox_program_;
+        std::shared_ptr<const mesh> skybox_mesh_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
@@ -145,6 +148,7 @@ namespace zombye {
         void render_screen_quad();
         void render_shadowmap();
         void apply_gaussian_blur();
+        void render_skybox() const;
 
         void register_at_script_engine();
 

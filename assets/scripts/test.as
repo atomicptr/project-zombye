@@ -18,5 +18,4 @@ void main() {
     directional_light dl(glm::vec3(1, 0.3, 1), glm::vec3(1), 1, true);
     c.follow(p.id());
     c.impl().get_camera_follow_component().initial_position(glm::vec3(0,0,0));
-    skybox sk();
 }

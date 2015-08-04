@@ -26,7 +26,7 @@
 
 namespace zombye {
 	rendering_system::rendering_system(game& game, SDL_Window* window)
-	: game_{game}, window_{window}, mesh_manager_{game_}, shader_manager_{game_}, skinned_mesh_manager_{game_},
+	: game_{game}, window_{window}, mesh_manager_{game_, *this}, shader_manager_{game_}, skinned_mesh_manager_{game_},
 	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, shadow_resolution_{3072} {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -214,6 +214,28 @@ namespace zombye {
 		staticmesh_layout_.setup_program(*shadow_blur_program_, "frag_color");
 		shadow_blur_program_->link();
 
+
+		skybox_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/skybox.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error("could not load skybox.vs");
+		}
+		skybox_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/skybox.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error("could not load skybox.fs");
+		}
+		skybox_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*skybox_program_, "albedo_color");
+		skybox_program_->bind_frag_data_location("normal_color", 1);
+		skybox_program_->bind_frag_data_location("specular_color", 2);
+		skybox_program_->link();
+
+		skybox_mesh_ = mesh_manager_.load("meshes/skybox.msh");
+		if (!skybox_mesh_) {
+			throw std::runtime_error("could not load skybox.msh");
+		}
+
 		register_at_script_engine();
 	}
 
@@ -245,6 +267,8 @@ namespace zombye {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glCullFace(GL_BACK);
 		glEnable(GL_CULL_FACE);
+
+		render_skybox();
 
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_texture", 0);
@@ -466,6 +490,18 @@ namespace zombye {
 
 		shadow_map_blured_->bind_default();
 		glViewport(0, 0, width_, height_);
+	}
+
+	void rendering_system::render_skybox() const {
+		auto camera = camera_components_.find(active_camera_);
+		auto projection_view = glm::mat4{1.f};
+		if (camera != camera_components_.end()) {
+			projection_view = camera->second->projection_view();
+		}
+
+		skybox_program_->use();
+		skybox_program_->uniform("mvp", false, projection_view * glm::scale(glm::mat4{1.f}, glm::vec3{100.f}));
+		skybox_mesh_->draw();
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {
