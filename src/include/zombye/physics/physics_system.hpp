@@ -1,6 +1,9 @@
 #ifndef __ZOMBYE_PHYSICS_SYSTEM_HPP__
 #define __ZOMBYE_PHYSICS_SYSTEM_HPP__
 
+#include <functional>
+#include <tuple>
+
 #include <btBulletDynamicsCommon.h>
 
 #include <zombye/physics/collision_mesh_manager.hpp>
@@ -14,6 +17,7 @@ namespace zombye {
 }
 
 namespace zombye {
+
     class physics_system {
         friend class physics_component;
         friend class character_physics_component;
@@ -54,10 +58,14 @@ namespace zombye {
         std::unique_ptr<debug_render_bridge> bt_debug_drawer_;
         std::unique_ptr<debug_renderer> debug_renderer_;
 
+        std::vector<std::tuple<physics_component*, physics_component*, std::function<void(physics_component*, physics_component*)>>> collision_handlers_;
+
         void register_component(physics_component*);
         void unregister_component(physics_component*);
         void register_component(character_physics_component* component);
         void unregister_component(character_physics_component* component);
+
+        void register_collision_callback(physics_component*, physics_component*, std::function<void(physics_component*, physics_component*)>);
     };
 }
 

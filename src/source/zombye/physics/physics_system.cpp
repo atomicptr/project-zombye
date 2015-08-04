@@ -55,6 +55,16 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
 void zombye::physics_system::update(float delta_time) {
     world_->stepSimulation(delta_time);
 
+    for(auto &handler : collision_handlers_) {
+        auto first = std::get<0>(handler);
+        auto second = std::get<1>(handler);
+        auto callback = std::get<2>(handler);
+
+        if(first->collides_with(second)) {
+            callback(first, second);
+        }
+    }
+
     for(auto comp : components_) {
         comp->sync();
     }
@@ -114,4 +124,8 @@ void zombye::physics_system::register_component(character_physics_component* com
 
 void zombye::physics_system::unregister_component(character_physics_component* component) {
     remove(character_physics_components_, component);
+}
+
+void zombye::physics_system::register_collision_callback(zombye::physics_component* first, zombye::physics_component* second, std::function<void(physics_component*, physics_component*)> callback) {
+    collision_handlers_.push_back(std::make_tuple(first, second, callback));
 }

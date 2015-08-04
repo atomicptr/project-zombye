@@ -29,6 +29,15 @@ namespace zombye {
         void sync() const;
         void apply_central_impulse(const glm::vec3& force);
 
+        auto body() noexcept {
+            return body_.get();
+        }
+
+        bool collides_with(physics_component* other) const;
+
+        void collide(entity& other, std::function<void(physics_component*, physics_component*)>);
+        void collide(physics_component* other, std::function<void(physics_component*, physics_component*)>);
+
         static void register_at_script_engine(game& game);
     private:
         physics_system* physics_;
