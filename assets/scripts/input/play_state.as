@@ -1,3 +1,5 @@
+#include "../../assets/scripts/entities/light_cube.as"
+
 void move_forward_begin() {
 	auto player = get_entity(player_id);
 	auto player_state = player.get_state_component();
@@ -76,4 +78,16 @@ void stand_begin() {
 	if (player_state.current_state() != "stand") {
 		player_state.change_state("stand");
 	}
+}
+
+void throw_light_begin() {
+	auto player = get_entity(player_id);
+	glm::vec3 direction = player.get_character_physics_component().direction();
+	glm::vec3 position = player.position();
+	light_cube lc(position + direction * 2.f, player.rotation());
+	lc.impl().get_physics_component().apply_central_impulse((direction + glm::vec3(0.f, 0.2f, 0.f)) * 5.f);
+}
+
+void throw_light_end() {
+
 }
