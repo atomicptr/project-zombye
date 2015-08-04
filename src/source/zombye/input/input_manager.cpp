@@ -78,21 +78,22 @@ void zombye::input_manager::load_config(game& game, const std::string& file_name
 
     for (auto it = root.begin(); it != root.end(); ++it) {
         auto action_base_name = it.key().asString();
-        auto action_key = it->asString();
+        auto action_key = (*it)["key"].asString();
+        auto continuous = (*it)["continuous"].asBool();
 
         auto action_begin_name = action_base_name + "_begin";
         auto command_it = commands_.find(action_begin_name);
         if (command_it == commands_.end()) {
             throw std::runtime_error("No action registered with name " + action_begin_name);
         }
-        register_keyboard_event(action_begin_name, action_key, true);
+        register_keyboard_event(action_begin_name, action_key, continuous);
 
         auto action_end_name = action_base_name + "_end";
         command_it = commands_.find(action_end_name);
         if (command_it == commands_.end()) {
             throw std::runtime_error("No action registered with name " + action_end_name);
         }
-        register_keyboard_up_event(action_end_name, action_key, true);
+        register_keyboard_up_event(action_end_name, action_key, continuous);
     }
 }
 

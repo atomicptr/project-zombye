@@ -1,6 +1,22 @@
 {
-	"move_forward" : "W",
-	"move_backward" : "S",
-	"move_right" : "D",
-	"move_left" : "A"
+	"move_forward" : {
+		"key" : "W",
+		"continuous" : true
+	},
+	"move_backward" : {
+		"key" : "S",
+		"continuous" : true
+	},
+	"move_right" : {
+		"key" : "D",
+		"continuous" : true
+	},
+	"move_left" : {
+		"key" : "A",
+		"continuous" : true
+	},
+	"throw_light" : {
+		"key" : "Space",
+		"continuous" : false
+	}
 }
