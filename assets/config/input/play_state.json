@@ -16,7 +16,7 @@
 		"continuous" : true
 	},
 	"throw_light" : {
-		"key" : "Space",
+		"key" : "Q",
 		"continuous" : false
 	}
 }
