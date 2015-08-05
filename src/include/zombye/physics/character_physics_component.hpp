@@ -76,6 +76,18 @@ namespace zombye {
             return direction_;
         }
 
+        bool can_jump() const {
+            return character_controller_->canJump();
+        }
+
+        void jump() {
+            character_controller_->jump();
+        }
+
+        bool on_ground() const {
+            return character_controller_->onGround();
+        }
+
         static void register_at_script_engine(game& game);
 
     private:

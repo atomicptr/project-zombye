@@ -103,6 +103,12 @@ namespace zombye {
             +[](character_physics_component& component, float angular_velocity) { component.angular_velocity(angular_velocity); });
         scripting_system.register_member_function("character_physics_component", "const glm::vec3& direction() const",
             +[](character_physics_component& component) -> const glm::vec3& { return component.direction(); });
+        scripting_system.register_member_function("character_physics_component", "bool can_jump() const",
+            +[](character_physics_component& component) { return component.can_jump(); });
+        scripting_system.register_member_function("character_physics_component", "bool jump()",
+            +[](character_physics_component& component) { component.jump(); });
+        scripting_system.register_member_function("character_physics_component", "bool on_ground() const",
+            +[](character_physics_component& component) { return component.on_ground(); });
 
         scripting_system.register_member_function("entity_impl", "character_physics_component@ get_character_physics_component()",
             +[](entity& owner) { return owner.component<character_physics_component>(); });
