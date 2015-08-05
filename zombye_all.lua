@@ -151,6 +151,8 @@ solution "project-zombye"
 
         buildoptions {"-x c++", "-std=c++1y", "-fno-strict-aliasing"}
 
+        defines{"AS_USE_STLNAMES=1"}
+
         files {
             "deps/angelscript/source/**.cpp"
         }

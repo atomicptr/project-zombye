@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <scriptstdstring/scriptstdstring.h>
+#include <scriptarray/scriptarray.h>
 
 #include <zombye/assets/asset.hpp>
 #include <zombye/assets/asset_manager.hpp>
@@ -52,6 +53,7 @@ namespace zombye {
 		used_context_.reserve(15);
 
 		RegisterStdString(script_engine_.get());
+		RegisterScriptArray(script_engine_.get(), true);
 
 		script_builder_ = std::make_unique<CScriptBuilder>();
 
