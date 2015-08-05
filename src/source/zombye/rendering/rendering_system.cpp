@@ -236,6 +236,22 @@ namespace zombye {
 			throw std::runtime_error("could not load skybox.msh");
 		}
 
+		light_cube_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/light_cube.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error("could not load light_cube.vs");
+		}
+		light_cube_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/light_cube.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error("could not load light_cube.fs");
+		}
+		light_cube_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*light_cube_program_, "albedo_color");
+		light_cube_program_->bind_frag_data_location("normal_color", 1);
+		light_cube_program_->bind_frag_data_location("specular_color", 2);
+		light_cube_program_->link();
+
 		register_at_script_engine();
 	}
 
@@ -270,11 +286,26 @@ namespace zombye {
 
 		render_skybox();
 
+		light_cube_program_->use();
+		for (auto& l : light_components_) {
+			auto mesh = l->owner().component<staticmesh_component>();
+			if (!mesh) {
+				continue;
+			}
+			auto model = l->owner().transform();
+			light_cube_program_->uniform("mvp", false, projection_view * model);
+			light_cube_program_->uniform("color", l->color());
+			mesh->draw();
+		}
+
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_texture", 0);
 		staticmesh_program_->uniform("specular_texture", 1);
 		staticmesh_program_->uniform("normal_texture", 2);
 		for (auto& s : staticmesh_components_) {
+			if (s->owner().component<light_component>()) {
+				continue;
+			}
 			auto model = s->owner().transform();
 			auto model_it = glm::inverse(glm::transpose(model));
 			staticmesh_program_->uniform("m", false, model);

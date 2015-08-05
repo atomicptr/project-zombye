@@ -85,6 +85,8 @@ namespace zombye {
         std::unique_ptr<program> skybox_program_;
         std::shared_ptr<const mesh> skybox_mesh_;
 
+        std::unique_ptr<program> light_cube_program_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
