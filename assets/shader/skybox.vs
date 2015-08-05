@@ -5,6 +5,7 @@ in vec3 _position;
 out vec3 color_;
 
 uniform mat4 mvp;
+uniform float sun_intensity;
 
 void main() {
     if (_position.y >= 1.f) {
@@ -12,5 +13,6 @@ void main() {
     } else {
         color_ = vec3(0.57, 0.62, 0.69);
     }
+    color_ *= sun_intensity;
     gl_Position = mvp * vec4(_position, 1.0);
 }

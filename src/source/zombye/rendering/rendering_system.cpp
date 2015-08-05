@@ -530,8 +530,15 @@ namespace zombye {
 			projection_view = camera->second->projection_view();
 		}
 
+		auto intensity = 1.f;
+		if (directional_light_components_.size() != 0) {
+			auto dir_light = directional_light_components_.front();
+			intensity = dir_light->energy();
+		}
+
 		skybox_program_->use();
 		skybox_program_->uniform("mvp", false, projection_view * glm::scale(glm::mat4{1.f}, glm::vec3{100.f}));
+		skybox_program_->uniform("sun_intensity", intensity);
 		skybox_mesh_->draw();
 	}
 
