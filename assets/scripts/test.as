@@ -10,7 +10,7 @@ void main() {
     camera c(glm::vec3(-10, 4, 0), glm::quat(glm::radians(-15), glm::vec3(1, 0, 0)));
     c.activate();
     plane pl(glm::vec3(0, 1, 0), glm::quat(glm::radians(0), glm::vec3(1, 0, 0)), glm::vec3(1));
-    dummy d(glm::vec3(4, 4, 0), glm::quat(glm::radians(45), glm::vec3(0, 1, 0)), glm::vec3(1.f), "meshes/dummy.msh");
+    dummy d(glm::vec3(4, 4, 0), glm::quat(glm::radians(45), glm::vec3(0, 1, 0)), glm::vec3(1.f), "meshes/cube.msh");
     light l(glm::vec3(-4.f, 4.f, 2.f), glm::vec3(1), 20);
     light l2(glm::vec3(10.f, 2.f, -2.f), glm::vec3(0.f, 0.3f, 1.0f), 20);
     player p(glm::vec3(-3.f, 2.f, -14.f), glm::quat(glm::radians(90), glm::vec3(0, 1, 0)), glm::vec3(1), "meshes/human.msh", "anims/human.skl");
