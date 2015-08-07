@@ -271,8 +271,10 @@ namespace zombye {
 	void rendering_system::update(float delta_time) {
 		auto camera = camera_components_.find(active_camera_);
 		auto projection_view = glm::mat4{1.f};
+		auto view_vector = glm::vec3{1.f};
 		if (camera != camera_components_.end()) {
 			projection_view = camera->second->projection_view();
+			view_vector = camera->second->owner().position();
 		}
 
 		render_shadowmap();
@@ -298,10 +300,17 @@ namespace zombye {
 			mesh->draw();
 		}
 
+		float disp_map_scale = 0.04f;
+		float base_bias = disp_map_scale / 2.f;
+		float disp_map_offset = -1.0f;
+
 		staticmesh_program_->use();
 		staticmesh_program_->uniform("diffuse_texture", 0);
 		staticmesh_program_->uniform("specular_texture", 1);
 		staticmesh_program_->uniform("normal_texture", 2);
+		staticmesh_program_->uniform("view_vector", view_vector);
+		staticmesh_program_->uniform("disp_map_scale", disp_map_scale);
+		staticmesh_program_->uniform("disp_map_bias", -base_bias + base_bias * disp_map_offset);
 		for (auto& s : staticmesh_components_) {
 			if (s->owner().component<light_component>()) {
 				continue;
