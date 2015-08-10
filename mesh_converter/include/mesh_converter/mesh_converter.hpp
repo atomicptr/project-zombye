@@ -12,6 +12,7 @@ namespace devtools {
         uint64_t vertex_count = 0;
         uint64_t index_count = 0;
         uint64_t submesh_count = 0;
+        bool parallax_mapping = true;
     };
 
     struct collision_header {

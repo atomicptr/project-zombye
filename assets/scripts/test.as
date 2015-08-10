@@ -18,5 +18,4 @@ void main() {
     directional_light dl(glm::vec3(1, 0.3, 0), glm::vec3(1), 1, true);
     c.follow(p.id());
     c.impl().get_camera_follow_component().initial_position(glm::vec3(0,0,0));
-    plane2 pl2(glm::vec3(-5, 1.2, 0), glm::quat(glm::radians(0), glm::vec3(1, 0, 0)), glm::vec3(3));
 }

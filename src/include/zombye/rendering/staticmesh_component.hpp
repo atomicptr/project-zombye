@@ -25,7 +25,7 @@ namespace zombye {
 
         void draw() const noexcept;
 
-        auto mesh() const noexcept {
+        auto& mesh() const noexcept {
             return mesh_;
         }
 

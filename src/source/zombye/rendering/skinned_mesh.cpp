@@ -8,13 +8,16 @@
 
 namespace zombye {
     skinned_mesh::skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept
-    : vbo_{0, GL_STATIC_DRAW}, ibo_{0, GL_STATIC_DRAW} {
+    : vbo_{0, GL_STATIC_DRAW}, ibo_{0, GL_STATIC_DRAW}, parallax_mapping_{false} {
         auto data_ptr = source.data();
 
         auto head = *reinterpret_cast<const header*>(data_ptr);
         if (head.magic != 0x31424D5A) {
             throw std::runtime_error(file_name + " is not an zombye mesh file");
         }
+
+        parallax_mapping_ = head.parallax_mapping;
+
         auto vertex_size = head.vertex_count * sizeof(skinned_vertex);
         auto index_size = head.index_count * sizeof(uint32_t);
         auto size = sizeof(header)

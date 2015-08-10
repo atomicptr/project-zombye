@@ -15,6 +15,7 @@ uniform sampler2D normal_texture;
 uniform vec3 view_vector;
 uniform float disp_map_scale;
 uniform float disp_map_bias;
+uniform bool parallax_mapping;
 
 vec3 calc_normal(sampler2D normal_map, vec2 texcoord, mat3 tbn) {
 	vec3 normal = normalize(2.0 * texture(normal_map, texcoord).xyz - vec3(1.0, 1.0, 1.0));
@@ -31,8 +32,12 @@ void main() {
 
 	vec3 direction_to_view = normalize(view_vector - world_pos_);
 
-	vec2 texcoord = texcoord_ + (tbn * direction_to_view).xy * (texture(specular_texture, texcoord_).b
-		* disp_map_scale + disp_map_bias);
+	vec2 texcoord = texcoord_;
+
+	if (parallax_mapping) {
+		texcoord = texcoord_ + (tbn * direction_to_view).xy * (texture(specular_texture, texcoord_).b
+			* disp_map_scale + disp_map_bias);
+	}
 
     normal_color = calc_normal(normal_texture, texcoord, tbn);
     albedo_color = texture(color_texture, texcoord);

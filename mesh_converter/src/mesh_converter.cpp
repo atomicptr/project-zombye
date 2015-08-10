@@ -265,6 +265,11 @@ namespace devtools {
                 submeshes.emplace_back(sm);
             }
 
+            auto parallax_mapping = value["parallax"];
+            if (parallax_mapping.isNull()) {
+                throw std::runtime_error("no property 'parallax' in " + mesh_name);
+            }
+
             std::ofstream mdb_write("material_database.json", std::ios::trunc);
             if (!mdb_write.is_open()) {
                 throw std::runtime_error("could not open material database to write");
@@ -277,6 +282,7 @@ namespace devtools {
             h.vertex_count = vertices.size();
             h.index_count = indices.size();
             h.submesh_count = submeshes.size();
+            h.parallax_mapping = parallax_mapping.asBool();
 
             std::string output_file = output_path_ + "meshes/" + mesh_name + ".msh";
             std::ofstream output(output_file, std::ios::binary | std::ios::trunc);

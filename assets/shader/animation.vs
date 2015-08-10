@@ -10,6 +10,7 @@ in vec4 _weight;
 out vec2 texcoord_;
 out vec3 normal_;
 out vec3 tangent_;
+out vec3 world_pos_;
 
 uniform mat4 m;
 uniform mat4 mit;
@@ -30,6 +31,7 @@ void main() {
 
     normal_ = (mit * nor).xyz;
     tangent_ = (mit * tan).xyz;
+    world_pos_ = (m * vec4(_position, 1.0)).xyz;
 
     gl_Position = mvp * vec4(pos.xyz, 1.0);
 }

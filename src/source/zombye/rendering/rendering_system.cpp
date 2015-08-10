@@ -320,6 +320,7 @@ namespace zombye {
 			staticmesh_program_->uniform("m", false, model);
 			staticmesh_program_->uniform("mit", false, model_it);
 			staticmesh_program_->uniform("mvp", false, projection_view * model);
+			staticmesh_program_->uniform("parallax_mapping", s->mesh()->parallax_mapping());
 			s->draw();
 		}
 
@@ -327,6 +328,8 @@ namespace zombye {
 		animation_program_->uniform("diffuse_texture", 0);
 		animation_program_->uniform("specular_texture", 1);
 		animation_program_->uniform("normal_texture", 2);
+		animation_program_->uniform("view_vector", view_vector);
+		animation_program_->uniform("disp_map_scale", disp_map_scale);
 		for (auto& a: animation_components_) {
 			auto model = a->owner().transform();
 			auto model_it = glm::inverse(glm::transpose(model));
@@ -334,6 +337,7 @@ namespace zombye {
 			animation_program_->uniform("mit", false, model_it);
 			animation_program_->uniform("mvp", false, projection_view * model);
 			animation_program_->uniform("pose", a->pose().size(), false, a->pose());
+			animation_program_->uniform("parallax_mapping", a->mesh()->parallax_mapping());
 			a->draw();
 		}
 

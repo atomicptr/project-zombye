@@ -29,6 +29,7 @@ namespace zombye {
         vertex_array vao_;
         vertex_buffer vbo_;
         index_buffer ibo_;
+        bool parallax_mapping_;
     public:
         skinned_mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept;
         skinned_mesh(const skinned_mesh& other) = delete;
@@ -41,6 +42,10 @@ namespace zombye {
 
         auto& vao() const noexcept {
             return vao_;
+        }
+
+        auto parallax_mapping() const {
+            return parallax_mapping_;
         }
     };
 }

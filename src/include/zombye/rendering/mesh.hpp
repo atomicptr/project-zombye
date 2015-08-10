@@ -20,6 +20,7 @@ namespace zombye {
         uint64_t vertex_count;
         uint64_t index_count;
         uint64_t submesh_count;
+        bool parallax_mapping;
     };
 
     struct vertex {
@@ -42,6 +43,7 @@ namespace zombye {
         vertex_array vao_;
         vertex_buffer vbo_;
         index_buffer ibo_;
+        bool parallax_mapping_;
     public:
         mesh(rendering_system& rendering_system, const std::vector<char>& source, const std::string& file_name) noexcept;
         mesh(const mesh& other) = delete;
@@ -54,6 +56,10 @@ namespace zombye {
 
         auto& vao() const noexcept {
             return vao_;
+        }
+
+        auto parallax_mapping() const {
+            return parallax_mapping_;
         }
     };
 }
