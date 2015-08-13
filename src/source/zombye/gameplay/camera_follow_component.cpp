@@ -75,12 +75,7 @@ namespace zombye {
         }
         owner_.position(new_pos);
 
-        auto old_orientation = glm::toMat3(owner_.rotation());
-        auto old_up = old_orientation[1];
-        auto new_up = local_y;
-        auto interpolated_up = glm::mix(old_up, new_up, 0.5f * std::min(1.f, delta_time * 10));
-
-        auto view = glm::lookAt(owner_.position(), look_at, interpolated_up);
+        auto view = glm::lookAt(owner_.position(), look_at, glm::vec3{0.f, 1.f, 0.f});
         auto rot = glm::quat_cast(view);
         owner_.rotation(glm::inverse(rot));
     }
