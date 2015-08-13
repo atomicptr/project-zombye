@@ -53,7 +53,7 @@ namespace zombye {
 		height_ = static_cast<float>(game.height());
 
 		glEnable(GL_DEPTH_TEST);
-		clear_color(0.4, 0.5, 0.9, 1.0);
+		clear_color(0.f, 0.f, 0.f, 0.f);
 
 		auto vertex_shader = shader_manager_.load("shader/staticmesh.vs", GL_VERTEX_SHADER);
 		auto fragment_shader = shader_manager_.load("shader/staticmesh.fs", GL_FRAGMENT_SHADER);
@@ -100,7 +100,7 @@ namespace zombye {
 		g_buffer_->attach(GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, GL_RGB32F, width_, height_, GL_RGBA, GL_FLOAT);
 
 		g_buffer_->bind();
-		glClearColor(0.4f, 0.6f, 0.9f, 1.f);
+		glClearColor(0.f, 0.f, 0.f, 0.f);
 		GLenum buf[4] = {
 			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
@@ -252,6 +252,39 @@ namespace zombye {
 		light_cube_program_->bind_frag_data_location("specular_color", 2);
 		light_cube_program_->link();
 
+		point_light_volume_ = mesh_manager_.load("meshes/point_light_volume.msh");
+		if (!point_light_volume_) {
+			throw std::runtime_error("could not load point_light_volume.msh");
+		}
+
+		point_light_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/point_light.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error("could not load point_light.vs");
+		}
+		point_light_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/point_light.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error("could not load point_light.fs");
+		}
+		point_light_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*point_light_program_, "frag_color");
+		point_light_program_->link();
+
+		directional_light_program_ = std::make_unique<program>();
+		vertex_shader = shader_manager_.load("shader/directional_light.vs", GL_VERTEX_SHADER);
+		if (!vertex_shader) {
+			throw std::runtime_error("could not load directional_light.vs");
+		}
+		directional_light_program_->attach_shader(vertex_shader);
+		fragment_shader = shader_manager_.load("shader/directional_light.fs", GL_FRAGMENT_SHADER);
+		if (!fragment_shader) {
+			throw std::runtime_error("could not load directional_light.fs");
+		}
+		directional_light_program_->attach_shader(fragment_shader);
+		staticmesh_layout_.setup_program(*directional_light_program_, "frag_color");
+		directional_light_program_->link();
+
 		register_at_script_engine();
 	}
 
@@ -345,7 +378,7 @@ namespace zombye {
 		glDisable(GL_DEPTH_TEST);
 		g_buffer_->bind_default();
 
-		render_screen_quad();
+		render_lights();
 		static auto debug_mode = game_.config()->get("main", "deferred_shading_debug_draw").asBool();
 		if (debug_mode) {
 			render_debug_screen_quads();
@@ -553,6 +586,107 @@ namespace zombye {
 		skybox_program_->uniform("mvp", false, projection_view * glm::scale(glm::mat4{1.f}, glm::vec3{100.f}));
 		skybox_program_->uniform("sun_intensity", intensity);
 		skybox_mesh_->draw();
+	}
+
+	void rendering_system::render_lights() const {
+		const static GLenum attachments[4] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2,
+			GL_DEPTH_ATTACHMENT
+		};
+
+		auto camera = camera_components_.find(active_camera_);
+		if (camera == camera_components_.end()) {
+			return;
+		}
+
+		for (auto i = 0; i < 4; ++i) {
+			g_buffer_->attachment(attachments[i]).bind(i);
+		}
+		shadow_map_->attachment(GL_COLOR_ATTACHMENT0).bind(4);
+
+		render_directional_lights(*camera->second);
+
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_ONE, GL_ONE);
+
+		glCullFace(GL_FRONT);
+		glEnable(GL_CULL_FACE);
+
+		render_point_lights(*camera->second);
+
+		glDisable(GL_CULL_FACE);
+
+		glDisable(GL_BLEND);
+	}
+
+	void rendering_system::render_directional_lights(const camera_component& camera) const {
+		auto inv_view_projection = glm::inverse(camera.projection_view());
+
+		directional_light_program_->use();
+		directional_light_program_->uniform("albedo_texture", 0);
+		directional_light_program_->uniform("normal_texture", 1);
+		directional_light_program_->uniform("specular_texture", 2);
+		directional_light_program_->uniform("depth_texture", 3);
+		directional_light_program_->uniform("shadow_texture", 4);
+		directional_light_program_->uniform("projection", false, ortho_projection_);
+		directional_light_program_->uniform("inv_view_projection", false, inv_view_projection);
+		directional_light_program_->uniform("view_vector", camera.owner().position());
+		directional_light_program_->uniform("shadow_projection", false, shadow_projection_);
+		directional_light_program_->uniform("ambient_term", glm::vec3{0.1f});
+		directional_light_program_->uniform("resolution", glm::vec2(width_, height_));
+		for (auto& dl : directional_light_components_) {
+			directional_light_program_->uniform("directional_light_direction", dl->owner().position());
+			directional_light_program_->uniform("directional_light_color", dl->color());
+			directional_light_program_->uniform("directional_light_energy", dl->energy());
+
+			screen_quad_->draw();
+		}
+	}
+
+	void rendering_system::render_point_lights(const camera_component& camera) const {
+		auto inv_view_projection = glm::inverse(camera.projection_view());
+
+		point_light_program_->use();
+		point_light_program_->uniform("albedo_texture", 0);
+		point_light_program_->uniform("normal_texture", 1);
+		point_light_program_->uniform("specular_texture", 2);
+		point_light_program_->uniform("depth_texture", 3);
+		point_light_program_->uniform("inv_view_projection", false, inv_view_projection);
+		point_light_program_->uniform("view_vector", camera.owner().position());
+		point_light_program_->uniform("resolution", glm::vec2(width_, height_));
+		for (auto& pl : light_components_) {
+			auto extend = calculate_point_light_extend(*pl);
+			auto scale = glm::scale(glm::mat4{1.f}, glm::vec3{extend});
+			auto rotation = glm::toMat4(camera.owner().rotation());
+			auto translation = glm::translate(glm::mat4{1.f}, pl->owner().position());
+			auto model_matrix = translation * rotation * scale;
+
+			point_light_program_->uniform("mvp", false, camera.projection_view() * model_matrix);
+			point_light_program_->uniform("point_light_position", pl->owner().position());
+			point_light_program_->uniform("point_light_color", pl->color());
+			point_light_program_->uniform("point_light_radius", pl->distance());
+
+			point_light_volume_->vao().bind();
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		}
+	}
+
+	float rendering_system::calculate_point_light_extend(const light_component& light) const {
+		auto& color = light.color();
+		auto max_channel = fmaxf(fmaxf(color.r, color.g), color.b);
+
+		auto radius = light.distance();
+		auto ac = 1.f;
+		auto al = 2.f / radius;
+		auto ae = 1.f / powf(radius, 2.f);
+
+		auto p = al / ae;
+		auto q = (ac - 256.f / 5.f * max_channel) / ae;
+		auto extend = -p / 2.f + sqrtf((p / 2.f) * (p / 2.f) - q);
+		return extend;
 	}
 
 	void rendering_system::clear_color(float red, float green, float blue, float alpha) {

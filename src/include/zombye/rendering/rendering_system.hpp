@@ -87,6 +87,11 @@ namespace zombye {
 
         std::unique_ptr<program> light_cube_program_;
 
+        std::unique_ptr<program> point_light_program_;
+        std::shared_ptr<const mesh> point_light_volume_;
+
+        std::unique_ptr<program> directional_light_program_;
+
     public:
         rendering_system(game& game, SDL_Window* window);
         rendering_system(const rendering_system& other) = delete;
@@ -151,6 +156,10 @@ namespace zombye {
         void render_shadowmap();
         void apply_gaussian_blur();
         void render_skybox() const;
+        void render_lights() const;
+        void render_directional_lights(const camera_component& camera) const;
+        void render_point_lights(const camera_component& camera) const;
+        float calculate_point_light_extend(const light_component& light) const;
 
         void register_at_script_engine();
 
