@@ -58,6 +58,10 @@ namespace zombye {
             return vao_;
         }
 
+        auto& vbo() const noexcept {
+            return vbo_;
+        }
+
         auto parallax_mapping() const {
             return parallax_mapping_;
         }

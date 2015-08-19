@@ -33,6 +33,13 @@ namespace zombye {
 }
 
 namespace zombye {
+    struct light_attributes {
+        glm::mat4 mvp;
+        glm::vec3 position;
+        glm::vec3 color;
+        float radius;
+    };
+
     class rendering_system {
         friend class animation_component;
         friend class camera_component;
@@ -87,8 +94,11 @@ namespace zombye {
 
         std::unique_ptr<program> light_cube_program_;
 
+        vertex_layout light_volume_layout_;
+
         std::unique_ptr<program> point_light_program_;
         std::shared_ptr<const mesh> point_light_volume_;
+        std::unique_ptr<vertex_buffer> point_light_instance_data_;
 
         std::unique_ptr<program> directional_light_program_;
 

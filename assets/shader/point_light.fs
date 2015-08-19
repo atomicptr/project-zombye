@@ -1,5 +1,9 @@
 #version 140
 
+in vec3 point_light_position;
+in vec3 point_light_color;
+in float point_light_radius;
+
 out vec4 frag_color;
 
 uniform sampler2D albedo_texture;
@@ -8,9 +12,6 @@ uniform sampler2D specular_texture;
 uniform sampler2D depth_texture;
 uniform mat4 inv_view_projection;
 uniform vec3 view_vector;
-uniform vec3 point_light_position;
-uniform vec3 point_light_color;
-uniform float point_light_radius;
 uniform vec2 resolution;
 
 vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3 spec_color, float shininess) {

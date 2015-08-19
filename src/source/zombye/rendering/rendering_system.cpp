@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <string>
 
 #include <glm/glm.hpp>
@@ -252,10 +253,26 @@ namespace zombye {
 		light_cube_program_->bind_frag_data_location("specular_color", 2);
 		light_cube_program_->link();
 
+		light_volume_layout_.emplace_back("_position", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, position));
+		light_volume_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, texcoord));
+		light_volume_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, normal));
+		light_volume_layout_.emplace_back("_tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, tangent));
+		light_volume_layout_.emplace_back("mvp", 4, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, mvp), sizeof(glm::mat4), 4, 1, 1);
+		light_volume_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, position), 1, 1);
+		light_volume_layout_.emplace_back("color", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, color), 1, 1);
+		light_volume_layout_.emplace_back("radius", 1, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, radius), 1, 1);
+
 		point_light_volume_ = mesh_manager_.load("meshes/point_light_volume.msh");
 		if (!point_light_volume_) {
 			throw std::runtime_error("could not load point_light_volume.msh");
 		}
+
+		point_light_instance_data_ = std::make_unique<vertex_buffer>(0, GL_DYNAMIC_DRAW);
+		const vertex_buffer* light_buffer[2] = {
+			&point_light_volume_->vbo(),
+			point_light_instance_data_.get()
+		};
+		light_volume_layout_.setup_layout(point_light_volume_->vao(), light_buffer);
 
 		point_light_program_ = std::make_unique<program>();
 		vertex_shader = shader_manager_.load("shader/point_light.vs", GL_VERTEX_SHADER);
@@ -268,7 +285,7 @@ namespace zombye {
 			throw std::runtime_error("could not load point_light.fs");
 		}
 		point_light_program_->attach_shader(fragment_shader);
-		staticmesh_layout_.setup_program(*point_light_program_, "frag_color");
+		light_volume_layout_.setup_program(*point_light_program_, "frag_color");
 		point_light_program_->link();
 
 		directional_light_program_ = std::make_unique<program>();
@@ -282,7 +299,7 @@ namespace zombye {
 			throw std::runtime_error("could not load directional_light.fs");
 		}
 		directional_light_program_->attach_shader(fragment_shader);
-		staticmesh_layout_.setup_program(*directional_light_program_, "frag_color");
+		light_volume_layout_.setup_program(*directional_light_program_, "frag_color");
 		directional_light_program_->link();
 
 		register_at_script_engine();
@@ -649,6 +666,24 @@ namespace zombye {
 	void rendering_system::render_point_lights(const camera_component& camera) const {
 		auto inv_view_projection = glm::inverse(camera.projection_view());
 
+		std::vector<light_attributes> instance_data;
+		for (auto& pl : light_components_) {
+			auto extend = calculate_point_light_extend(*pl);
+			auto scale = glm::scale(glm::mat4{1.f}, glm::vec3{extend});
+			auto rotation = glm::toMat4(camera.owner().rotation());
+			auto translation = glm::translate(glm::mat4{1.f}, pl->owner().position());
+			auto model_matrix = translation * rotation * scale;
+			instance_data.emplace_back(
+				light_attributes{
+					camera.projection_view() * model_matrix,
+					pl->owner().position(),
+					pl->color(),
+					pl->distance()
+				}
+			);
+		}
+		point_light_instance_data_->data(instance_data.size() * sizeof(light_attributes), instance_data.data());
+
 		point_light_program_->use();
 		point_light_program_->uniform("albedo_texture", 0);
 		point_light_program_->uniform("normal_texture", 1);
@@ -657,21 +692,8 @@ namespace zombye {
 		point_light_program_->uniform("inv_view_projection", false, inv_view_projection);
 		point_light_program_->uniform("view_vector", camera.owner().position());
 		point_light_program_->uniform("resolution", glm::vec2(width_, height_));
-		for (auto& pl : light_components_) {
-			auto extend = calculate_point_light_extend(*pl);
-			auto scale = glm::scale(glm::mat4{1.f}, glm::vec3{extend});
-			auto rotation = glm::toMat4(camera.owner().rotation());
-			auto translation = glm::translate(glm::mat4{1.f}, pl->owner().position());
-			auto model_matrix = translation * rotation * scale;
-
-			point_light_program_->uniform("mvp", false, camera.projection_view() * model_matrix);
-			point_light_program_->uniform("point_light_position", pl->owner().position());
-			point_light_program_->uniform("point_light_color", pl->color());
-			point_light_program_->uniform("point_light_radius", pl->distance());
-
-			point_light_volume_->vao().bind();
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-		}
+		point_light_volume_->vao().bind();
+		glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0, light_components_.size());
 	}
 
 	float rendering_system::calculate_point_light_extend(const light_component& light) const {
