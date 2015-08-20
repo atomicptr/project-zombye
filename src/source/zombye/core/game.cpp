@@ -134,15 +134,10 @@ void zombye::game::run() {
 
         entity_manager_->clear();
 
-        fps.update();
-
 #ifdef ZOMBYE_DEBUG
-        auto ntitle = title_ + " [ FPS: " + std::to_string(fps.fps()) + " ]";
-        SDL_SetWindowTitle(window_.get(), ntitle.c_str());
+        update_fps(delta_time);
 #endif
     }
-
-    log("Average FPS: " + std::to_string(fps.fps()));
 
     // to ensure that the last game state "leaves" before SDL_Quit
     gameplay_system_->dispose_current();
@@ -198,6 +193,24 @@ zombye::config_system* zombye::game::config() {
 
 zombye::physics_system* zombye::game::physics() {
     return physics_system_.get();
+}
+
+void zombye::game::update_fps(float delta_time) {
+    const auto smooth_factor = 0.1f;
+    static auto delta_time_smoothed = 0.f;
+    static auto time_since_last_fps_output = 0.f;
+
+    delta_time_smoothed = ( 1.0f - smooth_factor) * delta_time_smoothed + smooth_factor * delta_time;
+
+    time_since_last_fps_output += delta_time;
+    if(time_since_last_fps_output >= 1.0f){
+        time_since_last_fps_output = 0.0f;
+        std::ostringstream osstr;
+        osstr << title_ << " (" << (int((1.0f / delta_time_smoothed) * 10.0f) / 10.0f) << " FPS, ";
+        osstr << (int(delta_time_smoothed * 10000.0f) / 10.0f) << " ms / frame)";
+        SDL_SetWindowTitle(window_.get(), osstr.str().c_str());
+    }
+    SDL_GL_SwapWindow(window_.get());
 }
 
 int glCreateGame(const char* name) {

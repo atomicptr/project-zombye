@@ -82,6 +82,8 @@ namespace zombye {
 
         // This MUST stay the last thing here, thank you :P
         std::unique_ptr<zombye::entity_manager> entity_manager_;
+
+        void update_fps(float delta_time);
     };
 }
 
