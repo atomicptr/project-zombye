@@ -17,6 +17,7 @@ uniform float directional_light_energy;
 uniform mat4 shadow_projection;
 uniform vec3 ambient_term;
 uniform vec2 resolution;
+uniform bool shadow_casting;
 
 vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3 spec_color, float shininess) {
 	vec3 H = normalize(L + V);
@@ -60,11 +61,13 @@ void main() {
     vec4 world_space = inv_view_projection *  vec4(clip_space,1.0);
     vec3 p = world_space.xyz / world_space.w;
 
-    mat4 bias = mat4(0.5);
-    bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
-    vec4 position_shadow = bias * shadow_projection * vec4(p, 1.0);
-    float shadow_amount = 1.0;
-    shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow);
+	float shadow_amount = 1.0;
+	if (shadow_casting) {
+	    mat4 bias = mat4(0.5);
+	    bias[3] = vec4(0.5, 0.5, 0.5, 1.0);
+	    vec4 position_shadow = bias * shadow_projection * vec4(p, 1.0);
+	    shadow_amount = calculate_shadow_amount(shadow_texture, position_shadow);
+	}
 
     vec3 N = normalize(texture(normal_texture, gl_FragCoord.xy / resolution).xyz);
     vec3 V = normalize(view_vector - p);

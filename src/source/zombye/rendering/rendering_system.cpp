@@ -655,6 +655,13 @@ namespace zombye {
 		directional_light_program_->uniform("ambient_term", glm::vec3{0.1f});
 		directional_light_program_->uniform("resolution", glm::vec2(width_, height_));
 		for (auto& dl : directional_light_components_) {
+			auto sc = dl->owner().component<shadow_component>();
+			if (sc) {
+				directional_light_program_->uniform("shadow_casting", true);
+			} else {
+				directional_light_program_->uniform("shadow_casting", false);
+			}
+
 			directional_light_program_->uniform("directional_light_direction", dl->owner().position());
 			directional_light_program_->uniform("directional_light_color", dl->color());
 			directional_light_program_->uniform("directional_light_energy", dl->energy());
