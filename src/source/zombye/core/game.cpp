@@ -131,6 +131,7 @@ void zombye::game::run() {
         rendering_system_->update(delta_time);
         physics_system_->debug_draw();
         rendering_system_->end_scene();
+        SDL_GL_SwapWindow(window_.get());
 
         entity_manager_->clear();
 
@@ -210,7 +211,6 @@ void zombye::game::update_fps(float delta_time) {
         osstr << (int(delta_time_smoothed * 10000.0f) / 10.0f) << " ms / frame)";
         SDL_SetWindowTitle(window_.get(), osstr.str().c_str());
     }
-    SDL_GL_SwapWindow(window_.get());
 }
 
 int glCreateGame(const char* name) {
