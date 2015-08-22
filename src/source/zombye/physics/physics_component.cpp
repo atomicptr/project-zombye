@@ -78,18 +78,6 @@ void zombye::physics_component::apply_central_impulse(const glm::vec3& force) {
     body_->applyCentralImpulse(btVector3(force.x, force.y, force.z));
 }
 
-bool  zombye::physics_component::collides_with(physics_component* other) const {
-    return body_->checkCollideWithOverride(other->body());
-}
-
-void zombye::physics_component::collide(entity& other, std::function<void(physics_component*, physics_component*)> callback) {
-    collide(other.component<physics_component>(), callback);
-}
-
-void zombye::physics_component::collide(physics_component* other, std::function<void(physics_component*, physics_component*)> callback) {
-    physics_->register_collision_callback(this, other, callback);
-}
-
 void zombye::physics_component::register_at_script_engine(game& game) {
     auto& scripting_system = game.scripting_system();
 
