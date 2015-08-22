@@ -8,6 +8,7 @@
 #include <zombye/physics/physics_component.hpp>
 #include <zombye/physics/physics_system.hpp>
 #include <zombye/utils/component_helper.hpp>
+#include <zombye/ecs/entity.hpp>
 
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
@@ -54,6 +55,8 @@ btDiscreteDynamicsWorld* zombye::physics_system::world() {
 
 void zombye::physics_system::update(float delta_time) {
     world_->stepSimulation(delta_time);
+
+    check_collisions();
 
     for(auto comp : components_) {
         comp->sync();
@@ -114,4 +117,90 @@ void zombye::physics_system::register_component(character_physics_component* com
 
 void zombye::physics_system::unregister_component(character_physics_component* component) {
     remove(character_physics_components_, component);
+}
+
+void zombye::physics_system::register_collision_callback(entity* a, entity* b, std::function<void(entity*, entity*)> callback) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    set_user_pointer(a);
+    set_user_pointer(b);
+
+    collision_listeners_[std::make_pair(id_a, id_b)] = callback;
+}
+
+bool zombye::physics_system::has_collision_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    auto it = collision_listeners_.find(std::make_pair(id_a, id_b));
+
+    return it != collision_listeners_.end();
+}
+
+void zombye::physics_system::fire_collision_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    if(has_collision_callback(a, b)) {
+        collision_listeners_[std::make_pair(id_a, id_b)](a, b);
+    }
+}
+
+void zombye::physics_system::check_collisions() {
+    auto num = world_->getDispatcher()->getNumManifolds();
+
+    for(auto i = 0u; i < num; i++) {
+        auto contact = world_->getDispatcher()->getManifoldByIndexInternal(i);
+
+        auto a = static_cast<const btCollisionObject*>(contact->getBody0());
+        auto b = static_cast<const btCollisionObject*>(contact->getBody1());
+
+        auto num_contacts = contact->getNumContacts();
+
+        for(auto j = 0u; j < num_contacts; j++) {
+            auto& point = contact->getContactPoint(j);
+
+            if(point.getDistance() < 0.f) {
+                auto entity_a = static_cast<entity*>(a->getUserPointer());
+                auto entity_b = static_cast<entity*>(b->getUserPointer());
+
+                // both were set as user pointer
+                if(entity_a != nullptr && entity_b != nullptr) {
+
+                    if(has_collision_callback(entity_a, entity_b)) {
+                        fire_collision_callback(entity_a, entity_b);
+                    } else if(has_collision_callback(entity_b, entity_a)) {
+                        fire_collision_callback(entity_b, entity_a);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void zombye::physics_system::set_user_pointer(entity* en) {
+    auto physics_comp = en->component<physics_component>();
+
+    btCollisionObject* obj = nullptr;
+
+    // has no physics component? Maybe it's a character_physics_component
+    if(physics_comp == nullptr) {
+        auto character_physics_comp = en->component<character_physics_component>();
+
+        if(character_physics_comp != nullptr) {
+            obj = character_physics_comp->collision_object();
+        } else {
+            // this means the character has no kind of physics thing Oo
+            zombye::log(LOG_ERROR, "Entity (id: " + std::to_string(en->id()) + ") has no physics or character controller component!");
+        }
+    } else {
+        obj = physics_comp->collision_object();
+    }
+
+    if(obj != nullptr) {
+        obj->setUserPointer((void*)en);
+    } else {
+        zombye::log(LOG_ERROR, "Entity (id: " + std::to_string(en->id()) + ") can't set user pointer...");
+    }
 }

@@ -29,6 +29,10 @@ namespace zombye {
         void sync() const;
         void apply_central_impulse(const glm::vec3& force);
 
+        btCollisionObject* collision_object() const {
+            return static_cast<btCollisionObject*>(body_.get());
+        }
+
         static void register_at_script_engine(game& game);
     private:
         physics_system* physics_;

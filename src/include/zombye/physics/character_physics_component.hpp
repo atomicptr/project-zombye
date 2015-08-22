@@ -71,6 +71,10 @@ namespace zombye {
             current_angular_velocity_ = angular_velocity < max_angular_velocity_ ? angular_velocity : max_angular_velocity_;
         }
 
+        btCollisionObject* collision_object() const {
+            return (btCollisionObject*)(character_controller_->getGhostObject());
+        }
+
         static void register_at_script_engine(game& game);
 
     private:
