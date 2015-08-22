@@ -99,6 +99,13 @@ void zombye::game::run() {
 
     auto fps = fps_counter{};
 
+    #ifdef ZOMBYE_DEBUG
+    fps.on_fps_output([this](auto& fps) {
+        auto ntitle = title_ + " [ FPS: " + std::to_string(fps.fps()) + " ]";
+        SDL_SetWindowTitle(window_.get(), ntitle.c_str());
+    });
+    #endif
+
     while(running_) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
@@ -134,12 +141,7 @@ void zombye::game::run() {
 
         entity_manager_->clear();
 
-        fps.update();
-
-#ifdef ZOMBYE_DEBUG
-        auto ntitle = title_ + " [ FPS: " + std::to_string(fps.fps()) + " ]";
-        SDL_SetWindowTitle(window_.get(), ntitle.c_str());
-#endif
+        fps.update(delta_time);
     }
 
     log("Average FPS: " + std::to_string(fps.fps()));

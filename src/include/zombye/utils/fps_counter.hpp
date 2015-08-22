@@ -1,26 +1,28 @@
 #ifndef __ZOMBYE_FPS_COUNTER_HPP__
 #define __ZOMBYE_FPS_COUNTER_HPP__
 
-#include <SDL2/SDL.h>
-
-#include <array>
-
-#define FRAME_NUM 1000
+#include <functional>
+#include <vector>
 
 namespace zombye {
     class fps_counter {
     public:
         fps_counter();
+        void update(float);
+        int fps() const;
+        int ms_per_frame() const;
 
-        void update();
-
-        float fps() const;
-
+        void on_fps_output(std::function<void(fps_counter&)>);
     private:
-        unsigned int framecount_;
-        unsigned int last_frame_time_;
+        const float smooth_factor_;
+        float delta_smoothed_;
+        float time_since_last_output_;
+        int fps_;
+        int ms_per_frame_;
 
-        std::array<unsigned int, FRAME_NUM> frame_times_;
+        std::vector<std::function<void(fps_counter&)>> listeners_;
+
+        void fire_listeners();
     };
 }
 
