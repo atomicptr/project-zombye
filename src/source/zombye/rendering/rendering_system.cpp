@@ -660,7 +660,7 @@ namespace zombye {
 		directional_light_program_->uniform("inv_view_projection", false, inv_view_projection);
 		directional_light_program_->uniform("view_vector", camera.owner().position());
 		directional_light_program_->uniform("shadow_projection", false, shadow_projection_);
-		directional_light_program_->uniform("ambient_term", glm::vec3{0.1f});
+		directional_light_program_->uniform("ambient_term", glm::vec3{0.f});
 		directional_light_program_->uniform("resolution", glm::vec2(width_, height_));
 		for (auto& dl : directional_light_components_) {
 			auto sc = dl->owner().component<shadow_component>();
