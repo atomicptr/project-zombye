@@ -46,17 +46,6 @@ namespace zombye {
 		auto version = std::string{reinterpret_cast<const char*>(glGetString(GL_VERSION))};
 		log("OpenGL version " + version);
 
-		if(GLEW_KHR_debug){
-			glDebugMessageCallback(
-				+[](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, void*) {
-					std::cerr << std::string(message,length) << " (source: " << source << ", type: " <<type<< ", id: "
-						<< id <<", severity: " << severity << ")" <<std::endl;
-				}, nullptr);
-		}
-		else{
-			log("no opengL debug log available.");
-		}
-
 		width_ = static_cast<float>(game.width());
 		height_ = static_cast<float>(game.height());
 
