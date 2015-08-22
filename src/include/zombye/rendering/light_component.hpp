@@ -18,8 +18,9 @@ namespace zombye {
         glm::vec3 color_;
         glm::vec3 specular_color_;
         float distance_;
+        float exponent_;
     public:
-        light_component(game& game, entity& owner, const glm::vec3& color, const glm::vec3& specular_color, float distance) noexcept;
+        light_component(game& game, entity& owner, const glm::vec3& color, const glm::vec3& specular_color, float distance, float exponent) noexcept;
         ~light_component() noexcept;
 
         auto& color() const noexcept {
@@ -44,6 +45,14 @@ namespace zombye {
 
         void distance(const float& distance) {
             distance_ = distance;
+        }
+
+        auto exponent() const noexcept {
+            return exponent_;
+        }
+
+        void exponent(float exponent) {
+            exponent_ = exponent;
         }
 
         static void register_at_script_engine(game& game);

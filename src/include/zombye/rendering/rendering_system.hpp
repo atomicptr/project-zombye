@@ -38,6 +38,7 @@ namespace zombye {
         glm::vec3 position;
         glm::vec3 color;
         float radius;
+        float exponent;
     };
 
     class rendering_system {

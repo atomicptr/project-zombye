@@ -50,13 +50,23 @@ zombye::game::game(std::string title) : title_(title), running_(false), window_(
     height_ = config_system_->get("main", "height").asInt();
     fullscreen_ = config_system_->get("main", "fullscreen").asBool();
 
-    SDL_Init(SDL_INIT_EVERYTHING);
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        auto sdl_error = std::string{SDL_GetError()};
+        SDL_ClearError();
+        throw std::runtime_error{"could not initialize SDL" + sdl_error};
+    }
 
     scripting_system_ = std::make_unique<zombye::scripting_system>(*this);
     entity_manager_ = std::unique_ptr<zombye::entity_manager>(new zombye::entity_manager(*this));
     register_components();
 
-    auto mask = SDL_WINDOW_OPENGL | (fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+    auto mask = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | (fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     window_ = make_window(title_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_,
         height_, mask);
@@ -131,7 +141,6 @@ void zombye::game::run() {
         rendering_system_->update(delta_time);
         physics_system_->debug_draw();
         rendering_system_->end_scene();
-        SDL_GL_SwapWindow(window_.get());
 
         entity_manager_->clear();
 

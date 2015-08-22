@@ -3,6 +3,7 @@
 in vec3 point_light_position;
 in vec3 point_light_color;
 in float point_light_radius;
+in float point_light_exponent;
 
 out vec4 frag_color;
 
@@ -39,15 +40,16 @@ void main() {
 
     vec3 L = point_light_position - p;
 
-    float d = length(L);
-    float r = point_light_radius;
-    float ac = 1;
-    float al = 2 / r;
-    float ae = 1 / pow(r, 2.0);
-    float attenuation_denominator = ac + al * d + ae * pow(d, 2.0);
+	float d = length(L);
+	float r = point_light_radius;
+	if (d <= r) {
+		float attenuation = 1.0 - (pow(d / r, point_light_exponent));
 
-    L = normalize(L);
-    vec3 final_color = blinn_phong(N, L, V, point_light_color, diffuse_color, spec_color, 50) / attenuation_denominator;
+		L = normalize(L);
+		vec3 final_color = blinn_phong(N, L, V, point_light_color, diffuse_color, spec_color, 50) * attenuation;
 
-    frag_color = vec4(mix(final_color, vec3(0.f, 0.f, 0.f), emission), 1.0);
+		frag_color = vec4(mix(final_color, vec3(0.f, 0.f, 0.f), emission), 1.0);
+	} else {
+		discard;
+	}
 }

@@ -29,10 +29,6 @@ namespace zombye {
 	rendering_system::rendering_system(game& game, SDL_Window* window)
 	: game_{game}, window_{window}, mesh_manager_{game_, *this}, shader_manager_{game_}, skinned_mesh_manager_{game_},
 	skeleton_manager_{game_}, texture_manager_{game_}, active_camera_{0}, shadow_resolution_{3072} {
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
 		context_ = SDL_GL_CreateContext(window_);
 		auto error = std::string{SDL_GetError()};
 		if (error != "") {
@@ -49,6 +45,17 @@ namespace zombye {
 
 		auto version = std::string{reinterpret_cast<const char*>(glGetString(GL_VERSION))};
 		log("OpenGL version " + version);
+
+		if(GLEW_KHR_debug){
+			glDebugMessageCallback(
+				+[](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, void*) {
+					std::cerr << std::string(message,length) << " (source: " << source << ", type: " <<type<< ", id: "
+						<< id <<", severity: " << severity << ")" <<std::endl;
+				}, nullptr);
+		}
+		else{
+			log("no opengL debug log available.");
+		}
 
 		width_ = static_cast<float>(game.width());
 		height_ = static_cast<float>(game.height());
@@ -261,6 +268,7 @@ namespace zombye {
 		light_volume_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, position), 1, 1);
 		light_volume_layout_.emplace_back("color", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, color), 1, 1);
 		light_volume_layout_.emplace_back("radius", 1, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, radius), 1, 1);
+		light_volume_layout_.emplace_back("exponent", 1, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, exponent), 1, 1);
 
 		point_light_volume_ = mesh_manager_.load("meshes/point_light_volume.msh");
 		if (!point_light_volume_) {
@@ -676,7 +684,7 @@ namespace zombye {
 		std::vector<light_attributes> instance_data;
 		for (auto& pl : light_components_) {
 			auto extend = calculate_point_light_extend(*pl);
-			auto scale = glm::scale(glm::mat4{1.f}, glm::vec3{extend});
+			auto scale = glm::scale(glm::mat4{1.f}, glm::vec3{2.f * pl->distance()});
 			auto rotation = glm::toMat4(camera.owner().rotation());
 			auto translation = glm::translate(glm::mat4{1.f}, pl->owner().position());
 			auto model_matrix = translation * rotation * scale;
@@ -685,7 +693,8 @@ namespace zombye {
 					camera.projection_view() * model_matrix,
 					pl->owner().position(),
 					pl->color(),
-					pl->distance()
+					pl->distance(),
+					pl->exponent()
 				}
 			);
 		}
