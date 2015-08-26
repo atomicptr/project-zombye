@@ -31,7 +31,7 @@ void main() {
 
     normal_ = (mit * nor).xyz;
     tangent_ = (mit * tan).xyz;
-    world_pos_ = (m * vec4(_position, 1.0)).xyz;
+    world_pos_ = (m * vec4(pos.xyz, 1.0)).xyz;
 
     gl_Position = mvp * vec4(pos.xyz, 1.0);
 }
