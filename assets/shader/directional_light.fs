@@ -15,7 +15,7 @@ uniform vec3 directional_light_direction;
 uniform vec3 directional_light_color;
 uniform float directional_light_energy;
 uniform mat4 shadow_projection;
-uniform vec3 ambient_term;
+uniform float ambient_term;
 uniform vec2 resolution;
 uniform bool shadow_casting;
 
@@ -25,7 +25,7 @@ vec3 blinn_phong(vec3 N, vec3 L, vec3 V, vec3 light_color, vec3 diff_color, vec3
 	float NdotL = max(0.0, dot(N, L));
 	float NdotH = max(0.0, dot(N, H));
 
-	return ambient_term + light_color * diff_color * NdotL + light_color * spec_color * pow(NdotH, shininess);
+	return light_color * diff_color * NdotL + light_color * spec_color * pow(NdotH, shininess);
 }
 
 float sample_shadow(sampler2D shadow_map, vec2 texcoord, float compare) {
@@ -79,6 +79,8 @@ void main() {
 
     vec3 final_color = blinn_phong(N, L, V, directional_light_color, diffuse_color, spec_color, 50)
         * directional_light_energy * shadow_amount;
+
+	final_color += ambient_term * diffuse_color;
 
     frag_color = vec4(mix(final_color, diffuse_color, emission), 1.0);
 }
