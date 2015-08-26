@@ -2,7 +2,7 @@
    "fullscreen" : false,
    "height" : 600,
    "width" : 800,
-   "quality": "low",
+   "quality": "high",
    "physics_debug_draw": false,
    "deferred_shading_debug_draw": false
 }

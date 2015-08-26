@@ -32,6 +32,7 @@ namespace zombye {
         std::shared_ptr<const skinned_mesh> mesh_;
         std::shared_ptr<const zombye::skeleton> skeleton_;
         std::string current_state_;
+        const char* c_str_;
         std::string next_state_;
         float elapsed_time_;
         std::vector<frame> current_keyframes_;
@@ -65,11 +66,9 @@ namespace zombye {
 
         void change_state(const std::string& state) {
             current_state_ = state;
-            for (auto& k : current_keyframes_) {
-                k.tkey = 0;
-                k.qkey = 0;
-                k.skey = 0;
-            }
+            c_str_ = current_state_.c_str();
+            current_keyframes_.assign(current_keyframes_.size(), frame{});
+            next_keyframes_.assign(next_keyframes_.size(), frame{});
             elapsed_time_ = 0.f;
         }
 

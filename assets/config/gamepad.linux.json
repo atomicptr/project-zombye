@@ -1,0 +1,25 @@
+{
+   "config" : {
+      "A" : 0,
+      "B" : 1,
+      "DPADDOWN" : 14,
+      "DPADLEFT" : 11,
+      "DPADRIGHT" : 12,
+      "DPADUP" : 13,
+      "LB" : 4,
+      "LS" : 9,
+      "LS_X" : 0,
+      "LS_Y" : 1,
+      "LT" : 2,
+      "RB" : 5,
+      "RS" : 10,
+      "RS_X" : 3,
+      "RS_Y" : 4,
+      "RT" : 5,
+      "SELECT" : 6,
+      "START" : 7,
+      "X" : 2,
+      "Y" : 3
+   },
+   "hats_are_buttons" : true
+}
