@@ -4,11 +4,12 @@ in vec3 _position;
 in vec2 _texcoord;
 in vec3 _normal;
 in vec3 _tangent;
-in mat4 mvp;
 in vec3 position;
 in vec3 color;
 in float radius;
 in float exponent;
+
+uniform mat4 view_projection;
 
 out flat vec3 point_light_position;
 out flat vec3 point_light_color;
@@ -20,5 +21,5 @@ void main() {
     point_light_color = color;
     point_light_radius = radius;
     point_light_exponent = exponent;
-    gl_Position = mvp * vec4(_position, 1.f);
+    gl_Position = view_projection * vec4(_position * 2.f * radius + position, 1.f);
 }

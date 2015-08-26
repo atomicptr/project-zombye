@@ -253,7 +253,6 @@ namespace zombye {
 		light_volume_layout_.emplace_back("_texcoord", 2, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, texcoord));
 		light_volume_layout_.emplace_back("_normal", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, normal));
 		light_volume_layout_.emplace_back("_tangent", 3, GL_FLOAT, GL_FALSE, sizeof(vertex), offsetof(vertex, tangent));
-		light_volume_layout_.emplace_back("mvp", 4, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, mvp), sizeof(glm::mat4), 4, 1, 1);
 		light_volume_layout_.emplace_back("position", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, position), 1, 1);
 		light_volume_layout_.emplace_back("color", 3, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, color), 1, 1);
 		light_volume_layout_.emplace_back("radius", 1, GL_FLOAT, GL_FALSE, sizeof(light_attributes), offsetof(light_attributes, radius), 1, 1);
@@ -679,7 +678,6 @@ namespace zombye {
 			auto model_matrix = translation * rotation * scale;
 			instance_data.emplace_back(
 				light_attributes{
-					camera.projection_view() * model_matrix,
 					pl->owner().position(),
 					pl->color(),
 					pl->distance(),
@@ -695,6 +693,8 @@ namespace zombye {
 		point_light_program_->uniform("specular_texture", 2);
 		point_light_program_->uniform("depth_texture", 3);
 		point_light_program_->uniform("inv_view_projection", false, inv_view_projection);
+		point_light_program_->uniform("view_projection", false, camera.projection_view());
+		point_light_program_->uniform("camera_rotation", false, glm::toMat4(camera.owner().rotation()));
 		point_light_program_->uniform("view_vector", camera.owner().position());
 		point_light_program_->uniform("resolution", glm::vec2(width_, height_));
 		point_light_volume_->vao().bind();
