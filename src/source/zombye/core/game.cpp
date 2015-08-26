@@ -217,7 +217,8 @@ void zombye::game::update_fps(float delta_time) {
         time_since_last_fps_output = 0.0f;
         std::ostringstream osstr;
         osstr << title_ << " (" << (int((1.0f / delta_time_smoothed) * 10.0f) / 10.0f) << " FPS, ";
-        osstr << (int(delta_time_smoothed * 10000.0f) / 10.0f) << " ms / frame)";
+        osstr << (int(delta_time_smoothed * 10000.0f) / 10.0f) << " ms / frame) | ";
+        osstr << "active point lights: " << rendering_system_->active_point_lights();
         SDL_SetWindowTitle(window_.get(), osstr.str().c_str());
     }
 }

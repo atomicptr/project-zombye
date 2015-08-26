@@ -34,7 +34,6 @@ namespace zombye {
 
 namespace zombye {
     struct light_attributes {
-        glm::mat4 mvp;
         glm::vec3 position;
         glm::vec3 color;
         float radius;
@@ -159,6 +158,10 @@ namespace zombye {
 
         auto& texture_manager() noexcept {
             return texture_manager_;
+        }
+
+        auto active_point_lights() const {
+            return light_components_.size();
         }
 
     private:
