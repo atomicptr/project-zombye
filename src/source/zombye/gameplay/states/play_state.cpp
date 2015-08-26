@@ -19,6 +19,8 @@
 #include <zombye/utils/logger.hpp>
 #include <zombye/utils/state_machine.hpp>
 
+#include <zombye/physics/physics_system.hpp>
+
 zombye::play_state::play_state(zombye::state_machine *sm) : sm_(sm) {
     auto input = sm->get_game()->input();
     input_ = input->create_manager();
@@ -37,6 +39,25 @@ void zombye::play_state::enter() {
     scripting_system.load_script("scripts/test.as");
     scripting_system.end_module();
     scripting_system.exec("void main()", "MyModule");
+
+    auto& em = game.entity_manager();
+
+    auto player = em.resolve(6);
+    auto box = em.resolve(3);
+
+    auto physics = game.physics();
+
+    physics->register_collision_begin_callback(box, player, [](auto box, auto player) {
+        zombye::log("COLLISION BEGIN");
+    });
+
+    physics->register_collision_callback(box, player, [](auto box, auto player) {
+        zombye::log("COLLISION");
+    });
+
+    physics->register_collision_end_callback(box, player, [](auto box, auto player) {
+        zombye::log("COLLISION END");
+    });
 }
 
 void zombye::play_state::leave() {

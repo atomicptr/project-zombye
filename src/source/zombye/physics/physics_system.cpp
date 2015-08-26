@@ -10,6 +10,8 @@
 #include <zombye/utils/component_helper.hpp>
 #include <zombye/ecs/entity.hpp>
 
+#include <zombye/ecs/entity_manager.hpp>
+
 #define ZDBG_DRAW_WIREFRAME 1
 #define ZDBG_DRAW_AAB 2
 #define ZDBG_DRAW_CONTACT_POINTS 8
@@ -129,6 +131,26 @@ void zombye::physics_system::register_collision_callback(entity* a, entity* b, s
     collision_listeners_[std::make_pair(id_a, id_b)] = callback;
 }
 
+void zombye::physics_system::register_collision_begin_callback(entity* a, entity* b, std::function<void(entity*, entity*)> callback) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    set_user_pointer(a);
+    set_user_pointer(b);
+
+    collision_begin_listeners_[std::make_pair(id_a, id_b)] = callback;
+}
+
+void zombye::physics_system::register_collision_end_callback(entity* a, entity* b, std::function<void(entity*, entity*)> callback) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    set_user_pointer(a);
+    set_user_pointer(b);
+
+    collision_end_listeners_[std::make_pair(id_a, id_b)] = callback;
+}
+
 bool zombye::physics_system::has_collision_callback(entity* a, entity* b) {
     auto id_a = a->id();
     auto id_b = b->id();
@@ -138,12 +160,48 @@ bool zombye::physics_system::has_collision_callback(entity* a, entity* b) {
     return it != collision_listeners_.end();
 }
 
+bool zombye::physics_system::has_collision_begin_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    auto it = collision_begin_listeners_.find(std::make_pair(id_a, id_b));
+
+    return it != collision_begin_listeners_.end();
+}
+
+bool zombye::physics_system::has_collision_end_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    auto it = collision_end_listeners_.find(std::make_pair(id_a, id_b));
+
+    return it != collision_end_listeners_.end();
+}
+
 void zombye::physics_system::fire_collision_callback(entity* a, entity* b) {
     auto id_a = a->id();
     auto id_b = b->id();
 
     if(has_collision_callback(a, b)) {
         collision_listeners_[std::make_pair(id_a, id_b)](a, b);
+    }
+}
+
+void zombye::physics_system::fire_collision_begin_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    if(has_collision_begin_callback(a, b)) {
+        collision_begin_listeners_[std::make_pair(id_a, id_b)](a, b);
+    }
+}
+
+void zombye::physics_system::fire_collision_end_callback(entity* a, entity* b) {
+    auto id_a = a->id();
+    auto id_b = b->id();
+
+    if(has_collision_end_callback(a, b)) {
+        collision_end_listeners_[std::make_pair(id_a, id_b)](a, b);
     }
 }
 
@@ -167,6 +225,7 @@ void zombye::physics_system::check_collisions() {
 
                 // both were set as user pointer
                 if(entity_a != nullptr && entity_b != nullptr) {
+                    check_collision_begin_callback(entity_a, entity_b);
 
                     if(has_collision_callback(entity_a, entity_b)) {
                         fire_collision_callback(entity_a, entity_b);
@@ -177,6 +236,8 @@ void zombye::physics_system::check_collisions() {
             }
         }
     }
+
+    check_collision_end_callbacks();
 }
 
 void zombye::physics_system::set_user_pointer(entity* en) {
@@ -203,4 +264,58 @@ void zombye::physics_system::set_user_pointer(entity* en) {
     } else {
         zombye::log(LOG_ERROR, "Entity (id: " + std::to_string(en->id()) + ") can't set user pointer...");
     }
+}
+
+void zombye::physics_system::check_collision_begin_callback(entity* a, entity* b) {
+    auto collided = [this](auto a, auto b) {
+        auto pair = std::make_pair(a->id(), b->id());
+        auto it = did_collide_.find(pair);
+
+        if(it != did_collide_.end()) {
+            did_collide_.at(pair) = true;
+        }
+
+        did_collide_[pair] = true;
+    };
+
+    // they didn't collide already, call begin callback
+    if(!did_collide(a, b)) {
+        collided(a, b);
+        fire_collision_begin_callback(a, b);
+    } else if(!did_collide(b, a)) {
+        collided(b, a);
+        fire_collision_begin_callback(b, a);
+    }
+}
+
+void zombye::physics_system::check_collision_end_callbacks() {
+    for(auto& c : did_collide_) {
+        auto collision_happened = c.second;
+
+        if(collision_happened) {
+            auto id_pair = c.first;
+
+            auto id_a = std::get<0>(id_pair);
+            auto id_b = std::get<1>(id_pair);
+
+            auto& em = game_.entity_manager();
+
+            auto entity_a = em.resolve(id_a);
+            auto entity_b = em.resolve(id_b);
+
+            fire_collision_end_callback(entity_a, entity_b);
+            did_collide_[id_pair] = false;
+        }
+    }
+}
+
+bool zombye::physics_system::did_collide(entity* a, entity* b) {
+    auto pair = std::make_pair(a->id(), b->id());
+    auto it = did_collide_.find(pair);
+
+    if(it != did_collide_.end()) {
+        return did_collide_.at(pair);
+    }
+
+    return false;
 }

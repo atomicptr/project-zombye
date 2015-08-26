@@ -52,7 +52,12 @@ namespace zombye {
         }
 
         void register_collision_callback(entity*, entity*, std::function<void(entity*, entity*)>);
+        void register_collision_begin_callback(entity*, entity*, std::function<void(entity*, entity*)>);
+        void register_collision_end_callback(entity*, entity*, std::function<void(entity*, entity*)>);
+
         bool has_collision_callback(entity*, entity*);
+        bool has_collision_begin_callback(entity*, entity*);
+        bool has_collision_end_callback(entity*, entity*);
 
     private:
         game& game_;
@@ -71,6 +76,10 @@ namespace zombye {
         std::unique_ptr<debug_renderer> debug_renderer_;
 
         std::unordered_map<std::pair<unsigned long, unsigned long>, std::function<void(entity*, entity*)>, entity_id_pair_hash> collision_listeners_;
+        std::unordered_map<std::pair<unsigned long, unsigned long>, std::function<void(entity*, entity*)>, entity_id_pair_hash> collision_begin_listeners_;
+        std::unordered_map<std::pair<unsigned long, unsigned long>, std::function<void(entity*, entity*)>, entity_id_pair_hash> collision_end_listeners_;
+
+        std::unordered_map<std::pair<unsigned long, unsigned long>, bool, entity_id_pair_hash> did_collide_;
 
         void register_component(physics_component*);
         void unregister_component(physics_component*);
@@ -81,6 +90,15 @@ namespace zombye {
 
         void set_user_pointer(entity*);
         void fire_collision_callback(entity*, entity*);
+        void fire_collision_begin_callback(entity*, entity*);
+        void fire_collision_end_callback(entity*, entity*);
+
+        void check_collision_begin_callback(entity*, entity*);
+        void reset_did_collide(entity*, entity*);
+        void collided(entity*, entity*);
+        void check_collision_end_callbacks();
+
+        bool did_collide(entity*, entity*);
     };
 }
 
