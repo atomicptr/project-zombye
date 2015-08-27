@@ -44,6 +44,16 @@ namespace zombye {
 
     character_physics_component::~character_physics_component() {
         physics_.unregister_component(this);
+
+        auto colobj = collision_object();
+
+        if(colobj) {
+            auto userptr = static_cast<physics_user_data*>(colobj->getUserPointer());
+
+            if(userptr) {
+                delete userptr;
+            }
+        }
     }
 
     void character_physics_component::update(float delta_time) {

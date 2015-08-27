@@ -48,6 +48,16 @@ zombye::physics_component::physics_component(game &g, entity &owner, collision_s
 zombye::physics_component::~physics_component() {
     physics_->unregister_component(this);
 
+    auto colobj = collision_object();
+
+    if(colobj) {
+        auto userptr = static_cast<physics_user_data*>(colobj->getUserPointer());
+
+        if(userptr) {
+            delete userptr;
+        }
+    }
+
     world_->removeRigidBody(body_.get());
 }
 

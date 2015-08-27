@@ -27,6 +27,10 @@ namespace zombye {
         }
     };
 
+    struct physics_user_data {
+        unsigned long entity_id_;
+    };
+
     class physics_system {
         friend class physics_component;
         friend class character_physics_component;

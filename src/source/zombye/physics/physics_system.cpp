@@ -220,17 +220,22 @@ void zombye::physics_system::check_collisions() {
             auto& point = contact->getContactPoint(j);
 
             if(point.getDistance() < 0.f) {
-                auto entity_a = static_cast<entity*>(a->getUserPointer());
-                auto entity_b = static_cast<entity*>(b->getUserPointer());
+                auto user_data_a = static_cast<physics_user_data*>(a->getUserPointer());
+                auto user_data_b = static_cast<physics_user_data*>(b->getUserPointer());
 
-                // both were set as user pointer
-                if(entity_a != nullptr && entity_b != nullptr) {
-                    check_collision_begin_callback(entity_a, entity_b);
+                if(user_data_a != nullptr && user_data_b != nullptr) {
+                    auto entity_a = game_.entity_manager().resolve(user_data_a->entity_id_);
+                    auto entity_b = game_.entity_manager().resolve(user_data_b->entity_id_);
 
-                    if(has_collision_callback(entity_a, entity_b)) {
-                        fire_collision_callback(entity_a, entity_b);
-                    } else if(has_collision_callback(entity_b, entity_a)) {
-                        fire_collision_callback(entity_b, entity_a);
+                    // both were set as user pointer
+                    if(entity_a != nullptr && entity_b != nullptr) {
+                        check_collision_begin_callback(entity_a, entity_b);
+
+                        if(has_collision_callback(entity_a, entity_b)) {
+                            fire_collision_callback(entity_a, entity_b);
+                        } else if(has_collision_callback(entity_b, entity_a)) {
+                            fire_collision_callback(entity_b, entity_a);
+                        }
                     }
                 }
             }
@@ -260,7 +265,10 @@ void zombye::physics_system::set_user_pointer(entity* en) {
     }
 
     if(obj != nullptr) {
-        obj->setUserPointer((void*)en);
+        auto user_data = new physics_user_data;
+        user_data->entity_id_ = en->id();
+
+        obj->setUserPointer((void*)user_data);
     } else {
         zombye::log(LOG_ERROR, "Entity (id: " + std::to_string(en->id()) + ") can't set user pointer...");
     }
