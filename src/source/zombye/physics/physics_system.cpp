@@ -237,7 +237,7 @@ void zombye::physics_system::check_collisions() {
         }
     }
 
-    check_collision_end_callbacks();
+    //check_collision_end_callbacks();
 }
 
 void zombye::physics_system::set_user_pointer(entity* en) {
