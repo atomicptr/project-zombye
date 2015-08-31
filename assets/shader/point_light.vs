@@ -11,10 +11,10 @@ in float exponent;
 
 uniform mat4 view_projection;
 
-out flat vec3 point_light_position;
-out flat vec3 point_light_color;
-out flat float point_light_radius;
-out flat float point_light_exponent;
+flat out vec3 point_light_position;
+flat out vec3 point_light_color;
+flat out float point_light_radius;
+flat out float point_light_exponent;
 
 void main() {
     point_light_position = position;

@@ -1,9 +1,9 @@
 #version 140
 
-in vec3 point_light_position;
-in vec3 point_light_color;
-in float point_light_radius;
-in float point_light_exponent;
+flat in vec3 point_light_position;
+flat in vec3 point_light_color;
+flat in float point_light_radius;
+flat in float point_light_exponent;
 
 out vec4 frag_color;
 
