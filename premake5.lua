@@ -29,7 +29,7 @@ solution "project-zombye"
 
     project "zombye"
         kind "WindowedApp"
-
+	targetdir "./"
         buildoptions "-std=c++1y"
 
         files "src/source/zombye/**.cpp"
@@ -60,7 +60,7 @@ solution "project-zombye"
 
             postbuildcommands {
                 "copy deps\\mingw\\SDL2-2.0.3\\x86_64-w64-mingw32\\bin\\SDL2.dll SDL2.dll",
-                "copy deps\\mingw\\SDL2_mixer-2.0.0\\x86_64-w64-mingw32\\bin\\*.dll .\"
+                "copy deps\\mingw\\SDL2_mixer-2.0.0\\x86_64-w64-mingw32\\bin\\*.dll ."
             }
 
         configuration {"gmake", "linux"}

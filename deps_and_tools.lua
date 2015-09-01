@@ -34,7 +34,7 @@ solution "deps_and_tools"
 
     project "animation_converter"
         kind "ConsoleApp"
-
+	targetdir "animation_converter/"
         location "animation_converter/"
 
         buildoptions "-std=c++1y"
@@ -54,7 +54,7 @@ solution "deps_and_tools"
 
     project "mesh_converter"
         kind "ConsoleApp"
-
+	targetdir "mesh_converter/"
         location "mesh_converter"
 
         buildoptions "-std=c++1y"
@@ -74,7 +74,7 @@ solution "deps_and_tools"
 
     project "bullet3"
         kind "StaticLib"
-
+	targetdir "deps/bullet3"
         location "deps/bullet3"
 
         buildoptions {"-x c++", "-std=c++1y"}
@@ -88,13 +88,13 @@ solution "deps_and_tools"
 
         configuration {"gmake", "windows"}
             includedirs {
-                "$(AMDAPPSDKROOT)/include"
-                -- TODO: add NVidia OpenCL include path
+                "$(AMDAPPSDKROOT)/include",
+                "$(CUDA_PATH)/include"
                 -- TODO: add Intel OpenCL include path
             }
             libdirs {
-                "$(AMDAPPSDKROOT)/lib/x64"
-                -- TODO: add NVidia OpenCL lib path
+                "$(AMDAPPSDKROOT)/lib/x64",
+                "$(CUDA_PATH)/lib/x64"
                 -- TODO: add Intel OpenCL lib path
             }
 
@@ -120,7 +120,7 @@ solution "deps_and_tools"
 
     project "jsoncpp"
         kind "StaticLib"
-
+	targetdir "deps/jsoncpp"
         location "deps/jsoncpp"
 
         buildoptions {"-x c++", "-std=c++1y"}
@@ -145,7 +145,7 @@ solution "deps_and_tools"
 
     project "angelscript"
         kind "StaticLib"
-
+	targetdir "deps/angelscript"
         location "deps/angelscript"
 
         buildoptions {"-x c++", "-std=c++1y", "-fno-strict-aliasing"}
